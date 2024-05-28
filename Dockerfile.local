@@ -1,0 +1,19 @@
+# This dockerfile must be built with the monorepo root directory as cwd
+FROM node
+WORKDIR /app
+
+#all files needed for the build
+COPY package.json .
+COPY package-lock.json .
+COPY jsconfig.json .
+COPY svelte.config.js .
+COPY vite.config.js .
+
+#all folders needed for the build
+COPY . .
+
+RUN npm i
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "3000"]
