@@ -9,7 +9,7 @@
     /** @type {string} */
     let image_tag;
 
-    /** @type {{filter: boolean, grid: boolean, graph: boolean}}*/
+    /** @type {{filter: boolean, grid: boolean, graph: boolean, sidepane: boolean}}*/
     export let display_options;
 
     /** @type {{id: number | string, parameters: Object<string, string|number>, output_parameters: Object<string, string|number>, files: Object<string, string>[]}[]} */
@@ -19,11 +19,13 @@
 
     export let set_project;
 
+    console.log(models);
+
     /** @type {{lvalue: string, op: string, rvalue: string | number}[]}*/
     let filter_predicates = [];
 
     /** @type {{id: number | string, parameters: Object<string, string|number>, output_parameters: Object<string, string|number>, files: Object<string, string>[]}[]} */
-    let filtered_models;
+    export let filtered_models;
 
     filter_predicates = [];
     $: if (!display_options.grid) {
@@ -32,9 +34,23 @@
     }
     $: filtered_models = models.filter(predicate_equal(Array.from(filter_predicates)));
 
+    /** @type {string} */
+    let grid_position;
+    $: {
+        if (!display_options.graph && !display_options.sidepane) {
+            grid_position = "grid-column: 1 / 3; grid-row: 1 / 3;"
+        } else if (!display_options.graph && display_options.sidepane) {
+            grid_position = "grid-colum: 1 / 2; grid-row: 1 / 3;"
+        } else if (display_options.graph && !display_options.sidepane) {
+            grid_position = "grid-column: 2 / 3; grid-row: 1 / 3;"
+        } else if (display_options.graph && display_options.sidepane) {
+            grid_position = "grid-column: 2 / 3; grid-row: 2 / 3;"
+        }
+    }
+
 </script>
 
-<div id="swatches" class="font-mono bg-orange-200 w-full h-full overflow-hidden">
+<div id="swatches" class="w-full h-full overflow-hidden bg-orange-200 font-mono border-r-2 border-r-amber-950" style={grid_position}>
     <!-- Options -->
     <div
         id="swatch-option"
@@ -62,7 +78,7 @@
                 on:click={() => {display_options.graph = !display_options.graph;}}
                 class="border-r-2 border-x-amber-950 p-2"
             >
-                Graph
+                XY-Graph
             </button>
         </div>
         {#if display_options.filter}

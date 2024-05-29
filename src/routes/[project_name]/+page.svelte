@@ -10,8 +10,12 @@
     /** @type {import('./$types').PageData} */
     export let data;
 
+    /** @type {{filter: boolean, grid: boolean, graph: boolean, sidepane: boolean}}*/
     let display_options;
     const default_display_options = {sidepane: false, grid: true, filter: false, graph: false};
+
+    /** @type {{id: number | string, parameters: Object<string, string|number>, output_parameters: Object<string, string|number>, files: Object<string, string>[]}[]} */
+    let filtered_models;
 
     $: display_options = {
         sidepane: false,
@@ -52,39 +56,40 @@
 </div>
 
 <!-- Main Data Display -->
-<div id="content" class="flex flex-row w-[100vw] overflow-scroll">
+<div id="content" class="w-[100vw] overflow-scroll">
     <!-- Graph Area -->
     {#if display_options.graph}
-    <XyGraph models={data.models} parameters={
+    <XyGraph models={filtered_models} parameters={
         data.project.variable_metadata
         .map((meta) => meta.field_name)
         .concat(
             data.project.output_metadata.map(
                 (meta) => meta.field_name,
             ),
-        )
-    }/>
+        )}
+        set_project={set_project}
+        bind:display_options={display_options}
+    />
     {/if}
 
-    <div class="flex flex-row">
-        <!-- Item Select area -->
-        <Swatches
-            allowed_tags={data.project.assets.map(asset => asset.tag)}
-            bind:display_options={display_options}
-            models={data.models}
-            project_metadata={data.project}
-            set_project={set_project}
-        />
+    <!-- Item Select area -->
+    <Swatches
+        allowed_tags={data.project.assets.map(asset => asset.tag)}
+        bind:display_options={display_options}
+        models={data.models}
+        project_metadata={data.project}
+        set_project={set_project}
+        bind:filtered_models={filtered_models}
+    />
 
-        {#if display_options.sidepane}
-        <!-- Sidepane Block -->
-        <Sidepane
-            bind:sidepane_active={display_options.sidepane}
-            bind:model={sidepane_model}
-            allowed_tags={data.project.assets.map(asset => asset.tag)}
-        />
-        {/if}
-    </div>
+    {#if display_options.sidepane}
+    <!-- Sidepane Block -->
+    <Sidepane
+        bind:display_options={display_options}
+        bind:model={sidepane_model}
+        allowed_tags={data.project.assets.map(asset => asset.tag)}
+    />
+    {/if}
 </div>
 
 <style>
@@ -94,6 +99,9 @@
 
     #content {
         grid-area: content;
+        display: grid;
+        grid-template-rows: 1fr 1fr;
+        grid-template-columns: 1fr 1fr;
     }
 </style>
 
