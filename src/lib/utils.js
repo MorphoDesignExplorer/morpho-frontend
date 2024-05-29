@@ -35,7 +35,6 @@ export function predicate_equal(predicates) {
                 case optype.gt:
                     return value_to_check > rvalue
                 case optype.lt:
-                    console.log(value_to_check, predicate.op, rvalue, rvalue < value_to_check)
                     return value_to_check < rvalue
                 case optype.eq:
                     return value_to_check == rvalue

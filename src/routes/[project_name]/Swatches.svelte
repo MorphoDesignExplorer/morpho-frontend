@@ -19,8 +19,6 @@
 
     export let set_project;
 
-    console.log(models);
-
     /** @type {{lvalue: string, op: string, rvalue: string | number}[]}*/
     let filter_predicates = [];
 
