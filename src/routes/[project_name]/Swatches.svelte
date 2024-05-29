@@ -2,6 +2,7 @@
     import { LazyImage } from "svelte-lazy-image";
     import Filters from "./Filters.svelte";
     import { get_image_src_or_empty, predicate_equal } from "$lib/utils";
+    import { maxIndex } from "d3";
 
     /** @type {string[]} */
     export let allowed_tags;
@@ -46,6 +47,17 @@
         }
     }
 
+    /** @type {HTMLDivElement}*/
+    let grid_element;
+    let render_item_count = 50;
+
+    function get_percentage() {
+        const percentage = 100 * grid_element.scrollTop / (grid_element.scrollHeight - grid_element.clientHeight);
+
+        if (percentage > 80) {
+            render_item_count = Math.min(render_item_count + 50, filtered_models.length);
+        }
+    }
 </script>
 
 <div id="swatches" class="w-full h-full overflow-hidden bg-orange-200 font-mono border-r-2 border-r-amber-950" style={grid_position}>
@@ -78,6 +90,9 @@
             >
                 XY-Graph
             </button>
+            <span class="border-r-2 border-x-amber-950 p-2 flex flex-row items-center">
+                No. of Solutions: <b>{filtered_models.length}
+            </span>
         </div>
         {#if display_options.filter}
             <Filters
@@ -98,8 +113,10 @@
         <div
             id="swatch-item-grid"
             class="flex flex-row flex-wrap h-full w-full gap-2 p-4 overflow-scroll"
+            bind:this={grid_element}
+            on:scroll={get_percentage}
         >
-            {#each filtered_models as model}
+            {#each filtered_models.slice(0, render_item_count) as model}
                 {#if get_image_src_or_empty(model, image_tag).length > 0}
                     <div
                         role="button"
@@ -114,6 +131,7 @@
                                 model,
                                 image_tag
                             )}
+                            placeholder="https://placehold.co/300/fed7aa/fed7aa"
                             alt={model.files[0].tag}
                             class="w-[10vw]"
                         />
