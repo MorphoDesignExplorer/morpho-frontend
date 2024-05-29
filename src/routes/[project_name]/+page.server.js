@@ -50,5 +50,11 @@ export async function load({ params }) {
     
     aggregated_data.project_data.assets = aggregated_data.project_data.assets.filter(asset => asset.mime_type.indexOf("image") > -1);
 
-    return { project: aggregated_data.project_data, models: aggregated_data.models, project_name: aggregated_data.project_name, project_names: aggregated_data.all_project_names};
+    return {
+        project: aggregated_data.project_data,
+        models: aggregated_data.models,
+        project_name: aggregated_data.project_name,
+        project_names: aggregated_data.all_project_names,
+        prefix: process.env.SUBPATH_PREFIX || ""
+    };
 };

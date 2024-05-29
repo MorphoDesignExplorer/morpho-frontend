@@ -1,9 +1,6 @@
 <script>
     import { goto, invalidateAll } from '$app/navigation';
-    import { LazyImage } from 'svelte-lazy-image';
-    import FilterList from './Filters.svelte'
     import Sidepane from './Sidepane.svelte';
-    import { predicate_equal } from '$lib/utils';
     import Swatches from './Swatches.svelte';
     import XyGraph from './XYGraph.svelte';
 
@@ -28,7 +25,7 @@
     /** @type {(sub_url: string) => Promise<void>} */
     async function navigate_to_page(sub_url) {
         display_options.grid = false;
-        await goto(`/${sub_url}`, {invalidateAll: true});
+        await goto(`${data.prefix}/${sub_url}`, {invalidateAll: true});
         await invalidateAll();
         Object.assign(display_options, default_display_options);
         display_options.grid = true;
