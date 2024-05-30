@@ -7,7 +7,6 @@ let SERVER_URL = "http://backend:8000" + process.env.API_PREFIX;
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load({ params }) {
-    console.log(SERVER_URL)
     if (redis_client === null) {
         redis_client = createClient({
             url: "redis://redis:6379"

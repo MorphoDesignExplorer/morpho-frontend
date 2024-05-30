@@ -1,6 +1,5 @@
 <script>
     import * as d3 from "d3";
-    import { axisLeft } from "d3";
 
     /** @type {number} */
     let width;

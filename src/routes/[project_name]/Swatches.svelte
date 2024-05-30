@@ -2,7 +2,6 @@
     import { LazyImage } from "svelte-lazy-image";
     import Filters from "./Filters.svelte";
     import { get_image_src_or_empty, predicate_equal } from "$lib/utils";
-    import { maxIndex } from "d3";
 
     /** @type {string[]} */
     export let allowed_tags;

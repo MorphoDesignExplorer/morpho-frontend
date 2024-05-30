@@ -1,6 +1,4 @@
 <script>
-    import { slide } from "svelte/transition";
-
     /** @type {parameters: string[]}*/
     export let parameters;
 
@@ -28,7 +26,7 @@
     }
 </script>
 
-<div class="flex flex-col w-full border-t-2 border-amber-950 p-2" in:slide out:slide>
+<div class="flex flex-col w-full border-t-2 border-amber-950 p-2">
     {#each Object.entries(filters) as [index, field]}
     <div class="flex flex-row items-center gap-2">
         <select name={`lvalue-${index}`} bind:value={field.lvalue} class="border-2 border-amber-950 p-2">

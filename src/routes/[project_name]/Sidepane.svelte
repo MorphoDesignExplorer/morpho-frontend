@@ -1,6 +1,4 @@
 <script>
-    import { scale } from "svelte/transition";
-
     /** @type {{filter: boolean, grid: boolean, graph: boolean, sidepane: boolean}}*/
     export let display_options;
 
