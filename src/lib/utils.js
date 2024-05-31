@@ -19,6 +19,11 @@ export function predicate_equal(predicates) {
     */
     return function filter_model_with_predicates(model) {
         return predicates.map(predicate => {
+            if (predicate.rvalue == "") {
+                // if filter is empty, don't filter anything
+                return true;
+            }
+
             const rvalue = parseFloat(predicate.rvalue);
             let value_to_check;
             if (predicate.lvalue in model.parameters) {
