@@ -2,11 +2,14 @@
     /** @type {{filter: boolean, grid: boolean, graph: boolean, sidepane: boolean}}*/
     export let display_options;
 
-    /** @type {{id: number | string, parameters: Object<string, string|number>, output_parameters: Object<string, string|number>, files: Object<string, string>[]}}*/
+    /** @type {{id: number | string, scoped_id: number, parameters: Object<string, string|number>, output_parameters: Object<string, string|number>, files: Object<string, string>[]}}*/
     export let model;
 
     /** @type {string[]} */
     export let allowed_tags;
+
+    /** @type {Object<string, string>}*/
+    export let unit_map;
 
     /** @type {string}*/
     let image_tag;
@@ -55,32 +58,32 @@
             </svg>
     </button>
     <div class="flex flex-row items-center my-2">
-        <span class="text-xl font-semibold">Solution #{model.id}</span>
-        <span class="font-bold ml-auto">Image to Display: </span>
-        <select class="bg-transparent" bind:value={image_tag}>
-            {#each allowed_tags as tag}
-                <option value={tag}>{tag}</option
-                >
-            {/each}
-        </select>
+        <span class="text-xl font-semibold">Solution #{model.scoped_id}</span>
     </div>
     
     <div class="flex flex-row justify-evenly">
-        <div class="flex flex-col items-end border-amber-950 border-2 w-fit h-fit relative">
-            <a
-                class="bg-amber-950 text-orange-200 hover:text-amber-950 hover:bg-orange-200 transition ease-in-out font-bold p-1 text-sm w-fit absolute top-0 right-0"
-                href={get_image_src_or_empty(model, image_tag)}
-                target="_blank">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                    </svg>
-                </a
-            >
-            <img
-                class="m-1 w-80"
-                src={get_image_src_or_empty(model, image_tag)}
-                alt={model.id}
-            />
+        <div class="flex flex-col overflow-scroll gap-4">
+            {#each allowed_tags as tag}
+            {#if get_image_src_or_empty(model, tag) != ""}
+            <div class="flex flex-col items-end border-amber-950 border-2 w-fit h-fit relative">
+                <p class="mr-auto p-2 font-bold">{tag}</p>
+                <a
+                    class="bg-amber-950 text-orange-200 hover:text-amber-950 hover:bg-orange-200 transition ease-in-out font-bold p-1 text-sm w-fit absolute top-0 right-0"
+                    href={get_image_src_or_empty(model, image_tag)}
+                    target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                        </svg>
+                    </a
+                >
+                <img
+                    class="m-1 w-80"
+                    src={get_image_src_or_empty(model, tag)}
+                    alt={model.id}
+                />
+            </div>
+            {/if}
+            {/each}
         </div>
         <div class="flex flex-col overflow-scroll gap-4">
             <table class="border-2 border-amber-950 text-xs h-fit">
@@ -89,7 +92,7 @@
                 </tr>
                 {#each Object.entries(model.parameters) as [param_name, value]}
                 <tr class="border-b-2 border-amber-950">
-                    <td class="border-r-2 border-amber-950 p-2 font-semibold">{param_name}</td>
+                    <td class="border-r-2 border-amber-950 p-2 font-semibold">{param_name} [{unit_map[param_name] || "unitless"}]</td>
                     <td class="p-2">{value}</td>
                 </tr>
                 {/each}
@@ -100,7 +103,7 @@
                 </tr>
                 {#each Object.entries(model.output_parameters) as [param_name, value]}
                 <tr class="border-b-2 border-amber-950">
-                    <td class="border-r-2 border-amber-950 p-2 font-semibold">{param_name}</td>
+                    <td class="border-r-2 border-amber-950 p-2 font-semibold">{param_name} [{unit_map[param_name] || "unitless"}]</td>
                     <td class="p-2">{value}</td>
                 </tr>
                 {/each}

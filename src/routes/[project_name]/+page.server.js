@@ -47,7 +47,9 @@ export async function load({ params }) {
         }
     }
     
-    aggregated_data.project_data.assets = aggregated_data.project_data.assets.filter(asset => asset.mime_type.indexOf("image") > -1);
+    aggregated_data.project_data.assets = aggregated_data.project_data.assets
+                                            .filter(asset => asset.mime_type.indexOf("image") > -1)
+                                            .filter(asset => asset.mime_type.indexOf("jpeg") > -1);
 
     return {
         project: aggregated_data.project_data,

@@ -6,6 +6,6 @@
 
 <style lang="postcss">
   :global(body) {
-    @apply bg-orange-200;
+    @apply bg-white;
   }
 </style>

@@ -3,6 +3,7 @@
     import Sidepane from './Sidepane.svelte';
     import Swatches from './Swatches.svelte';
     import XyGraph from './XYGraph.svelte';
+    import Icon from '$lib/assets/morpho.png';
 
     /** @type {import('./$types').PageData} */
     export let data;
@@ -13,6 +14,17 @@
 
     /** @type {{id: number | string, parameters: Object<string, string|number>, output_parameters: Object<string, string|number>, files: Object<string, string>[]}[]} */
     let filtered_models;
+
+    /** @type {Object<string, string>}*/
+    let unit_map = {}
+    $: {
+        data.project.variable_metadata.forEach(meta => {
+            unit_map[meta["field_name"]] = meta["field_unit"]
+        });
+        data.project.output_metadata.forEach(meta => {
+            unit_map[meta["field_name"]] = meta["field_unit"]
+        });
+    }
 
     $: display_options = {
         sidepane: false,
@@ -40,8 +52,11 @@
 </script>
 
 <!-- Navbar -->
-<div id="navbar" class="border-b-2 border-b-amber-950 p-4 flex items-center text-2xl font-mono font-extrabold gap-3">
-    <h2 class="select-none">🦋 Morpho Design Explorer</h2>
+<div id="navbar" class="border-b-2 border-b-amber-950 p-4 flex items-center text-2xl font-mono font-extrabold gap-3 bg-blue-500 text-white">
+    <a href="/" class="flex flex-row items-center gap-3">
+        <img src={Icon} class="w-28 backdrop-blur-lg" alt="icon">
+        <h2 class="select-none">Morpho Design Explorer</h2>
+    </a>
     <span>/</span>
     <select class="bg-transparent" value={data.project_name} on:change={ async event=> {
         await navigate_to_page(event.target.value);
@@ -56,7 +71,7 @@
 <div id="content" class="w-[100vw] overflow-scroll">
     <!-- Graph Area -->
     {#if display_options.graph}
-    <XyGraph models={filtered_models} parameters={
+    <XyGraph models={data.models} parameters={
         data.project.variable_metadata
         .map((meta) => meta.field_name)
         .concat(
@@ -85,6 +100,7 @@
         bind:display_options={display_options}
         bind:model={sidepane_model}
         allowed_tags={data.project.assets.map(asset => asset.tag)}
+        unit_map={unit_map}
     />
     {/if}
 </div>

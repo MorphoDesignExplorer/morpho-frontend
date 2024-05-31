@@ -12,7 +12,7 @@
     /** @type {{filter: boolean, grid: boolean, graph: boolean, sidepane: boolean}}*/
     export let display_options;
 
-    /** @type {{id: number | string, parameters: Object<string, string|number>, output_parameters: Object<string, string|number>, files: Object<string, string>[]}[]} */
+    /** @type {{id: number | string, scoped_id: number, parameters: Object<string, string|number>, output_parameters: Object<string, string|number>, files: Object<string, string>[]}[]} */
     export let models;
 
     export let project_metadata;
@@ -59,7 +59,7 @@
     }
 </script>
 
-<div id="swatches" class="w-full h-full overflow-hidden bg-orange-200 font-mono border-r-2 border-r-amber-950" style={grid_position}>
+<div id="swatches" class="w-full h-full overflow-hidden font-mono border-r-2 border-r-amber-950" style={grid_position}>
     <!-- Options -->
     <div
         id="swatch-option"
@@ -134,7 +134,7 @@
                             alt={model.files[0].tag}
                             class="w-[10vw]"
                         />
-                        <p>id: {model.id}</p>
+                        <p>id: {model.scoped_id}</p>
                     </div>
                 {/if}
             {/each}
