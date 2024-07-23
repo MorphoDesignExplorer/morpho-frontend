@@ -6,7 +6,7 @@
 
 </script>
 
-<div id="main" class="h-screen w-screen p-12 font-mono">
+<div id="main" class="h-screen w-screen p-12">
     <div id="a" class="flex flex-col gap-2 pr-4">
         <h3 class="text-3xl font-bold flex flex-row items-center gap-2"><img src={Icon} class="w-28" alt="icon"> Morpho Design Explorer</h3>
         <p>Morpho is a multi-objective design exploration tool aimed at aiding designers in making informed decisions during the early design stages. It employs the Non-Destructive Dynamic Population Genetic Algorithm (NDDP-GA), initially used in the ParaGen framework developed by Peter von Buelow <super class="align-super text-xs">[<a href="#ref-one" class="text-blue-500">1</a>]</super> and further explored by Anahita Khodadadi through her dissertation<super class="align-super text-xs">[<a href="#ref-one" class="text-blue-500">2</a>]</super>, <super class="align-super text-xs">[<a href="#ref-one" class="text-blue-500">3</a>]</super>, to search for suitable generative design solutions. Morpho is designed to assist designers in considering both performance-based quantitative design objectives and qualitative design goals, enabling a comprehensive exploration of the design space and facilitating well-rounded decision-making.</p>
