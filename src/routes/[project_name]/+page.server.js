@@ -28,10 +28,10 @@ export async function load({ params }) {
         aggregated_data = JSON.parse(cached_project_data);
     } else {
         try {
-            let projects = await (await fetch(`${SERVER_URL}/project/`)).json();
+            let projects = await (await fetch(`${SERVER_URL}/project/?format=json`)).json();
             let project_names = projects.map((project_object) => project_object.project_name);
-            let project = await (await fetch(`${SERVER_URL}/project/${params.project_name}/`)).json();
-            let models = await (await fetch(`${SERVER_URL}/project/${params.project_name}/model/`)).json();
+            let project = await (await fetch(`${SERVER_URL}/project/${params.project_name}/?format=json`)).json();
+            let models = await (await fetch(`${SERVER_URL}/project/${params.project_name}/model/?format=json`)).json();
 
             aggregated_data = {
                 project_name: params.project_name,
@@ -43,6 +43,7 @@ export async function load({ params }) {
             await redis_client.set(params.project_name, JSON.stringify(aggregated_data));
             console.log(`cached ${params.project_name}`);
         } catch (e) {
+            console.log(e);
             error(404, "Project not found.");
         }
     }

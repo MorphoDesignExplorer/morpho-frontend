@@ -1,4 +1,4 @@
-<div class="main-grid">
+<div class="main-grid font-sans">
     <slot/>
 </div>
 

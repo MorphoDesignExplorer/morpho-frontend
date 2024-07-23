@@ -52,7 +52,7 @@
 </script>
 
 <!-- Navbar -->
-<div id="navbar" class="border-b-2 border-b-amber-950 p-4 flex items-center text-2xl font-mono font-extrabold gap-3 bg-blue-500 text-white">
+<div id="navbar" class="border-b border-b-gray-200 p-4 flex items-center text-2xl font-extrabold gap-3 bg-blue-500 text-white">
     <a href="/" class="flex flex-row items-center gap-3">
         <img src={Icon} class="w-28 backdrop-blur-lg" alt="icon">
         <h2 class="select-none">Morpho Design Explorer</h2>
@@ -62,13 +62,13 @@
         await navigate_to_page(event.target.value);
     }}>
     {#each data.project_names as project_name}
-        <option value={project_name}>{project_name}</option>
+        <option class="text-black" value={project_name}>{project_name}</option>
     {/each}
     </select>
 </div>
 
 <!-- Main Data Display -->
-<div id="content" class="w-[100vw] overflow-scroll">
+<div id="content" class="w-[100vw] overflow-scroll overflow-x-hidden">
     <!-- Graph Area -->
     {#if display_options.graph}
     <XyGraph models={data.models} parameters={
