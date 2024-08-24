@@ -1,3 +1,6 @@
+import type { Model } from "./types";
+import type { FilterPredicates, ManualFilter } from "./context";
+
 /** @enum {string} */
 const optype = {
     ge: ">=",
@@ -8,16 +11,9 @@ const optype = {
     ne: "!="
 }
 
-/**
- * @param {{lvalue: string, op: optype, rvalue: string | number}[]} predicates
-*/
-export function predicate_equal(predicates) {
+export function predicate_equal(predicates: ManualFilter[]) {
     predicates.pop();
-    /**
-     * @param {{output_parameters: Object<string, number|string>, parameters: Object<string, number|string>}} model 
-     * @returns {boolean}
-    */
-    return function filter_model_with_predicates(model) {
+    return function filter_model_with_predicates(model: Model) {
         return predicates.map(predicate => {
             if (predicate.rvalue == "") {
                 // if filter is empty, don't filter anything
@@ -25,7 +21,7 @@ export function predicate_equal(predicates) {
             }
 
             const rvalue = parseFloat(predicate.rvalue);
-            let value_to_check;
+            let value_to_check: string | number;
             if (predicate.lvalue in model.parameters) {
                 value_to_check = model.parameters[predicate.lvalue];
             } else if (predicate.lvalue in model.output_parameters) {
@@ -52,11 +48,7 @@ export function predicate_equal(predicates) {
     }
 }
 
-/**
- * @param {{id: number | string, parameters: Object<string, string|number>, output_parameters: Object<string, string|number>, files: Object<string, string>[]}} model 
- * @param {string} tag 
-*/
-export function get_image_src_or_empty(model, tag) {
+export function get_image_src_or_empty(model: Model, tag: string) {
     const file = model.files.filter(obj => obj.tag == tag)[0];
     if (file !== undefined) 
         return file.file

@@ -1,29 +1,30 @@
-<script>
-    /** @type {{filter: boolean, grid: boolean, graph: boolean, sidepane: boolean}}*/
-    export let display_options;
+<script lang="ts">
+    import { browser } from "$app/environment";
+    import type { DisplayOptions, Model } from "$lib/types";
+    import { onMount } from "svelte";
+    import type { Writable } from "svelte/store";
+    import { fade } from "svelte/transition";
+    import LazyImagePlus from "./LazyImagePlus.svelte";
+    import { get_display_options } from "$lib/context";
 
-    /** @type {{id: number | string, scoped_id: number, parameters: Object<string, string|number>, output_parameters: Object<string, string|number>, files: Object<string, string>[]}}*/
-    export let model;
+    let display_options: Writable<DisplayOptions> = get_display_options();
 
-    /** @type {string[]} */
-    export let allowed_tags;
+    export let model: Model;
 
-    /** @type {Object<string, string>}*/
-    export let unit_map;
+    export let allowed_tags: string[];
 
-    /** @type {string}*/
-    let image_tag;
+    export let unit_map: Record<string, string>;
 
-    let end_anchor;
-    let start_anchor;
-    let at_end = false;
+    let utility_visible = false;
+    let sidepane_container: HTMLDivElement;
+    let close_button: HTMLButtonElement;
 
     /**
-     * @param {{id: number | string, parameters: Object<string, string|number>, output_parameters: Object<string, string|number>, files: Object<string, string>[]}} model 
+     * @param {Model[]} model 
 
      * @param {string} tag 
     */
-    function get_image_src_or_empty(model, tag) {
+    function get_image_src_or_empty(model: Model, tag: string) {
         const file = model.files.filter(obj => obj.tag == tag)[0];
         if (file !== undefined) 
             return file.file
@@ -31,53 +32,106 @@
             return ""
     }
 
-    /** @type {string} */
-    let grid_position;
+    let grid_position: string;
     $: {
-        if (display_options.graph) {
+        if ($display_options.graph) {
             grid_position = "grid-column: 2 / 3; grid-row: 1 / 2;"
         } else {
             grid_position = "grid-column: 2 / 3; grid-row: 1 / 3;"
         }
     }
 
+    if (browser) {
+        onMount(() => {
+            let observer = new IntersectionObserver((entry) => {
+                if (entry[0].isIntersecting === false) {
+                    utility_visible = true;
+                } else {
+                    utility_visible = false;
+                }
+            }, {root: sidepane_container, threshold: 1});
+            observer.observe(close_button);
+        })
+    }
+
 </script>
 
 <div
-    class="relative min-w-[40vw] border-b-2 border-gray-200 flex flex-col gap-2 p-2 overflow-scroll overflow-x-hidden translate-x-0"
+    class="relative min-w-[40vw] border-b-2 border-gray-200 flex flex-col gap-2 p-2 overflow-scroll overflow-x-hidden translate-x-0 scroll-smooth"
     style={grid_position}
+    bind:this={sidepane_container}
 >
+    <span id="sidepane-top-anchor"></span>
     <button
         on:click={() => {
-            display_options.sidepane = !display_options.sidepane;
+            $display_options.sidepane = !$display_options.sidepane;
         }}
-        bind:this={start_anchor}
-        class="flex items-center justify-center w-fit p-1 bg-blue-600 text-orange-200 hover:text-blue-600 hover:bg-orange-200 transition ease-in-out font-bold rounded-md shadow-md">
+        bind:this={close_button}
+        class="flex items-center justify-center w-fit p-1 bg-white text-blue-500 border border-blue-500 hover:text-white hover:bg-blue-500 transition ease-in-out font-bold shadow-md">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
             </svg>
     </button>
-    <div class="flex flex-row items-center my-2">
+    <div id="solution-number" class="flex flex-row items-center my-2">
         <span class="text-xl font-semibold">Solution #{model.scoped_id}</span>
     </div>
     
     <div class="flex flex-row justify-evenly">
+        <!-- Table Data Section -->
         <div class="flex flex-col overflow-scroll gap-4 no-scrollbar">
+            <table id="input-params" class="border border-gray-200 text-xs h-fit">
+                <tr class="border-b border-gray-200">
+                    <td class="p-2"><p class="font-bold">Input Parameters:</p></td>
+                </tr>
+                {#each Object.entries(model.parameters) as [param_name, value]}
+                <tr class="border-b border-gray-200">
+                    <td class="border-r border-gray-200 p-2 font-semibold text-wrap">{param_name}</td>
+                    <td class="p-2">{value} <code class="font-bold">{unit_map[param_name] || ""}</td>
+                </tr>
+                {/each}
+            </table>
+            <table id="output-params" class="border border-gray-200 text-xs h-fit">
+                <tr class="border-b border-gray-200">
+                    <td class="p-2"><p class="font-bold">Output Parameters:</p></td>
+                </tr>
+                {#each Object.entries(model.output_parameters) as [param_name, value]}
+                <tr class="border-b border-gray-200">
+                    <td class="border-r border-gray-200 p-2 font-semibold text-wrap">{param_name}</td>
+                    <td class="p-2">{value} <code class="font-bold">{unit_map[param_name] || ""}</code></td>
+                </tr>
+                {/each}
+            </table>
+            <table id="assets" class="border border-gray-200 text-xs h-fit">
+                <tr class="border-b border-gray-200">
+                    <td class="p-2"><p class="font-bold">Asset Links:</p></td>
+                </tr>
+                {#each model.files as asset}
+                <tr class="border-b border-gray-200">
+                    <td class="border-r border-gray-200 p-2 font-semibold">{asset.tag}</td>
+                    <td class="p-2"><a href={asset.file} target="_blank" class="link">Download</a></td>
+                </tr>
+                {/each}
+            </table>
+        </div>
+        <!-- End Table Data Section -->
+        <!-- Asset Section -->
+        <div class="flex flex-col overflow-scroll gap-4 no-scrollbar m-4">
             {#each allowed_tags as tag}
             {#if get_image_src_or_empty(model, tag) != ""}
-            <div class="flex flex-col items-end border-black border w-fit h-fit relative">
+            <div class="flex flex-col items-end px-2 py-4 border-gray-300 shadow-md border w-fit h-fit relative">
                 <p class="mr-auto p-2 font-bold">{tag}</p>
                 <a
-                    class="bg-blue-600 text-orange-200 hover:text-blue-600 hover:bg-orange-200 transition ease-in-out font-bold p-1 text-sm w-fit absolute top-0 right-0 rounded-sm rounded-e-none shadow-md"
+                    class="bg-white text-blue-500 hover:bg-blue-500 hover:text-white transition ease-in-out font-bold p-1 text-sm w-fit absolute top-0 right-0 rounded-es-md"
                     href={get_image_src_or_empty(model, tag)}
                     target="_blank">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 font-bold">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
                         </svg>
                     </a
                 >
-                <img
-                    class="m-1 w-80"
+                <LazyImagePlus
+                    placeholder="https://placehold.co/300/f8fafc/f8fafc"
+                    class="m-1 w-60"
                     src={get_image_src_or_empty(model, tag)}
                     alt={model.id}
                 />
@@ -85,47 +139,30 @@
             {/if}
             {/each}
         </div>
-        <div class="flex flex-col overflow-scroll gap-4 no-scrollbar">
-            <table class="border border-black text-xs h-fit">
-                <tr class="border-b border-black">
-                    <td class="p-2"><p class="font-bold">Input Parameters:</p></td>
-                </tr>
-                {#each Object.entries(model.parameters) as [param_name, value]}
-                <tr class="border-b border-black">
-                    <td class="border-r border-black p-2 font-semibold">{param_name} [{unit_map[param_name] || "unitless"}]</td>
-                    <td class="p-2">{value}</td>
-                </tr>
-                {/each}
-            </table>
-            <table class="border border-black text-xs h-fit">
-                <tr class="border-b border-black">
-                    <td class="p-2"><p class="font-bold">Output Parameters:</p></td>
-                </tr>
-                {#each Object.entries(model.output_parameters) as [param_name, value]}
-                <tr class="border-b border-black">
-                    <td class="border-r border-black p-2 font-semibold">{param_name} [{unit_map[param_name] || "unitless"}]</td>
-                    <td class="p-2">{value}</td>
-                </tr>
-                {/each}
-            </table>
-            <table class="border border-black text-xs h-fit">
-                <tr class="border-b border-black">
-                    <td class="p-2"><p class="font-bold">Asset Links:</p></td>
-                </tr>
-                {#each model.files as asset}
-                <tr class="border-b border-black">
-                    <td class="border-r border-black p-2 font-semibold">{asset.tag}</td>
-                    <td class="p-2"><a href={asset.file} target="_blank" class="font-bold text-blue-500">Download</a></td>
-                </tr>
-                {/each}
-            </table>
-            <span bind:this={end_anchor} id="end"/>
-        </div>
+        <!-- End Asset Section -->
     </div>
+
+    {#if utility_visible}
+    <div class="sticky w-fit ml-auto flex flex-row gap-1 py-1 shadow-md bg-black opacity-80 bottom-0 text-white" in:fade={{duration: 220}} out:fade>
+        <span class="cursor-pointer border-r border-white px-2 h-full" on:click={() => {$display_options.sidepane = !$display_options.sidepane}}>Close Detail Pane</span>
+        <a href="#input-params" class="cursor-pointer border-r border-white px-2 h-full ">i/p parameters</a>
+        <a href="#output-params" class="cursor-pointer border-r border-white px-2 h-full">o/p parameters</a>
+        <a href="#assets" class="cursor-pointer px-2 h-full">Assets</a>
+        <span></span>
+    </div>
+    {/if}
 </div>
 
-<style>
+<style type="postcss">
+    .link {
+        @apply underline underline-offset-1 decoration-blue-500 font-bold
+    }
+
     .no-scrollbar {
         scrollbar-width: none;
+    }
+
+    .scroll-smooth {
+        scroll-behavior: smooth;
     }
 </style>

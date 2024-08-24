@@ -1,12 +1,16 @@
-<script>
-    /** @type {parameters: string[]}*/
-    export let parameters;
+<script lang="ts">
+    import { get_filter_predicates, type ManualFilter, type ManualFilterOptype } from "$lib/context"
+    import { slide } from "svelte/transition";
 
-    /** @type {{lvalue: string, op: optype, rvalue: number | string}[]}*/
-    export let filters;
+    export let parameters: string[];
 
-    /** @enum {string} */
-    const optype = {
+    let filter_predicates = get_filter_predicates();
+
+    let filters: ManualFilter[] = $filter_predicates.filter_predicate;
+    $: $filter_predicates.filter_predicate = filters;
+
+
+    const optype: Record<string, ManualFilterOptype> = {
         ge: ">=",
         le: "<=",
         gt: ">",
@@ -26,29 +30,38 @@
     }
 </script>
 
-<div class="flex flex-col w-full border-t-[1px] border-gray-200 p-2 gap-2">
+<div class="flex flex-col w-full p-2 gap-2">
     {#each Object.entries(filters) as [index, field]}
-    <div class="flex flex-row items-center gap-2">
-        <select name={`lvalue-${index}`} bind:value={field.lvalue} class="border border-gray-200 bg-white p-2 rounded-md">
-            <option value="" disabled selected>parameter name...</option>
+    <div class="flex flex-row items-center text-sm w-fit shadow-sm" in:slide out:slide>
+        <!--Parameter Name Select -->
+        <select name={`lvalue-${index}`} bind:value={field.lvalue} class="h-full border border-gray-200 bg-white p-2">
+            <option value="" class="" disabled selected>parameter name...</option>
             {#each parameters as parameter}
-            <option value={parameter}>{parameter}</option>
+            <option class="text-black" value={parameter}>{parameter}</option>
             {/each}
         </select>
-        <select name={`op-${index}`} bind:value={field.op} class="border border-gray-200 bg-white p-2 rounded-md">
+        <!-- Operator Select -->
+        <select name={`op-${index}`} bind:value={field.op} class="h-full border-y border-gray-200 bg-gray-50 p-2 font-bold">
             {#each Object.values(optype) as op}
             <option value={op}>{op}</option>
             {/each}
         </select>
-        <input name={`rvalue-${index}`} bind:value={field.rvalue} class="border border-gray-200 p-2 rounded-md" placeholder="parameter value...">
         {#if index != filters.length - 1}
-        <button class="font-bold p-2" on:click={() => {
+
+        <!-- R-Value Input -->
+        <input name={`rvalue-${index}`} bind:value={field.rvalue} class="h-full border-l border-y border-gray-200 p-2" placeholder="parameter value...">
+        <!-- Delete Filter Button -->
+        <button class="h-full bg-gray-50 border border-gray-200 font-bold p-2" on:click={() => {
             filters = filters.filter((item, idx) => (idx == index) ? false: true);
         }}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-                <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                <path stroke-width="5px" fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
             </svg>
         </button>
+
+        {:else}
+        <!-- R-Value Input -->
+        <input name={`rvalue-${index}`} bind:value={field.rvalue} class="h-full border border-gray-200 p-2" placeholder="parameter value...">
         {/if}
     </div>
     {/each}
