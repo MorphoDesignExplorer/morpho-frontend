@@ -1,4 +1,6 @@
 <script>
+    import { base } from "$app/paths";
+
     /** @type {import('./$types').PageData} */
     export let data;
 
@@ -23,14 +25,14 @@
         <details>
             <summary class="text-3xl font-bold cursor-pointer">Projects</summary>
             <div class="flex flex-col gap-2 pt-2 pl-8">
-                <a href="{data.prefix}/GCGA_20" class="underline decoration-blue-500">GCGA_20</a>
-                <a href="{data.prefix}/GCGA_27" class="underline decoration-blue-500">GCGA_27</a>
-                <a href="{data.prefix}/GCGA_37" class="underline decoration-blue-500">GCGA_37</a>
-                <a href="{data.prefix}/GCGA_39" class="underline decoration-blue-500">GCGA_39</a>
+                <a href="{base}/GCGA_20" class="underline decoration-blue-500">GCGA_20</a>
+                <a href="{base}/GCGA_27" class="underline decoration-blue-500">GCGA_27</a>
+                <a href="{base}/GCGA_37" class="underline decoration-blue-500">GCGA_37</a>
+                <a href="{base}/GCGA_39" class="underline decoration-blue-500">GCGA_39</a>
             </div>
         </details>
-        <h3 class="text-3xl font-bold"><a href="{data.prefix}/research" class="underline decoration-blue-500">Research</a></h3>
-        <h3 class="text-3xl font-bold"><a href="{data.prefix}/learn" class="underline decoration-blue-500">Learn</a></h3>
+        <h3 class="text-3xl font-bold"><a href="{base}/research" class="underline decoration-blue-500">Research</a></h3>
+        <h3 class="text-3xl font-bold"><a href="{base}/learn" class="underline decoration-blue-500">Learn</a></h3>
     </div>
 
 </div>

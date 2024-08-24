@@ -2,6 +2,7 @@
     import { enhance } from "$app/forms";
     import type { ActionData, PageData } from "./$types";
     import { page } from "$app/stores";
+    import { base } from "$app/paths";
 
     export let form: ActionData;
 
@@ -58,7 +59,7 @@
                 </div>
             </div>
             <!-- End Form Group -->
-            <a href="/auth/forgot_password" class="text-blue-500 hover:text-blue-600">Forgot Password?</a>
+            <a href="{base}/auth/forgot_password" class="text-blue-500 hover:text-blue-600">Forgot Password?</a>
             {/if}
 
             {#if form?.status == "verify"}
