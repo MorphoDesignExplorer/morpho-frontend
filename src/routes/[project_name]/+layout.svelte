@@ -3,7 +3,6 @@
     import { goto, invalidateAll } from "$app/navigation";
     import { base } from "$app/paths";
     import { page } from "$app/stores";
-    import Icon from '$lib/assets/morpho.png';
     import { set_display_options, set_filter_predicates, type FilterPredicates } from "$lib/context.js";
     import { type DisplayOptions } from "$lib/types";
     import { writable } from "svelte/store";
@@ -16,7 +15,7 @@
             graph: false,
             sidepane: false
         }
-        await goto(`/${sub_url}`, {invalidateAll: true});
+        await goto(`${base}/${sub_url}`, {invalidateAll: true});
         await invalidateAll();
     }
 
@@ -40,7 +39,7 @@
     <!-- Navbar -->
     <div id="navbar" class="p-4 flex items-center text-lg font-extrabold gap-3 bg-blue-500 text-white">
         <a href="{base}/" class="flex flex-row items-center gap-3">
-            <img src={Icon} class="w-28 backdrop-blur-lg" alt="icon">
+            <img src="https://morpho-images.nyc3.cdn.digitaloceanspaces.com/morpho-images/media/assets/morpho.png" class="w-28 backdrop-blur-lg" alt="icon">
             <h2 class="select-none">Morpho Design Explorer</h2>
         </a>
         <span>/</span>
