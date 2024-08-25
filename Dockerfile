@@ -18,4 +18,4 @@ RUN npm run build
 
 EXPOSE 3000
 
-CMD ["ORIGIN=http://159.65.240.8/", "node", "build"]
+CMD ["ORIGIN=http://159.65.240.8/", "PROTOCOL_HEADER=x-forwarded-proto", "HOST_HEADER=x-forwarded-host", "node", "build"]
