@@ -14,8 +14,8 @@ COPY . .
 
 RUN npm i
 
-RUN ORIGIN=http://159.65.240.8/ npm run build
+RUN npm run build
 
 EXPOSE 3000
 
-CMD ["node", "build"]
+CMD ["ORIGIN=http://159.65.240.8/", "node", "build"]
