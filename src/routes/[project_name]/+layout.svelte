@@ -47,7 +47,7 @@
             await navigate_to_page(event.target?.value);
         }}>
         {#each data.projects as project}
-            <option class="text-black" value={project.project_name}>{project.project_name}</option>
+            <option class="text-black" value={project.project_name}>{project.metadata.human_name}</option>
         {/each}
         </select>
 

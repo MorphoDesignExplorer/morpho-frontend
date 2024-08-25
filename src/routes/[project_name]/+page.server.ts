@@ -1,15 +1,8 @@
 import { error, type Actions } from '@sveltejs/kit';
-import { createClient } from 'redis';
 import type { PageServerLoad } from './$types';
+import { setup_redis_client } from '$lib/cache';
 
 let SERVER_URL = "http://backend:8000" + process.env.API_PREFIX;
-
-async function setup_redis_client() {
-    const client = createClient({ url: "redis://redis:6379" });
-    client.on('error', err => console.error('[REDIS]', err.message))
-    await client.connect();
-    return client;
-}
 
 export const actions = {
     logout: async ({cookies}) => {

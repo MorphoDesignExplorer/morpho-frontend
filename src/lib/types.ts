@@ -39,7 +39,8 @@ export interface Project {
     creation_date: string
     variable_metadata: Field[]
     output_metadata: Field[]
-    assets: Asset[]
+    assets: Asset[],
+    metadata: Metadata
 }
 
 export interface Metadata {

@@ -1,16 +1,9 @@
-import { createClient, type RedisClientType } from "redis";
 import type { PageServerLoad } from "../$types";
 import { isAuthenticated, type Authenticated } from "$lib/auth";
 import type { Metadata, Project } from "$lib/types";
+import { setup_redis_client } from "$lib/cache";
 
 const SERVER_URL = "http://backend:8000" + process.env.API_PREFIX;
-
-async function setup_redis_client() {
-    const client = createClient({ url: "redis://redis:6379" });
-    client.on('error', err => console.error('[REDIS]', err.message))
-    await client.connect();
-    return client;
-}
 
 export const load: PageServerLoad = async ({cookies, params}) => {
     const redis_client =  await setup_redis_client();

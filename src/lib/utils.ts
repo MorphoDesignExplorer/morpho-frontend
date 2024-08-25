@@ -1,5 +1,5 @@
 import type { Model } from "./types";
-import type { FilterPredicates, ManualFilter } from "./context";
+import type { ManualFilter } from "./context";
 
 /** @enum {string} */
 const optype = {
