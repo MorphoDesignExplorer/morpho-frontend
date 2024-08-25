@@ -49,7 +49,7 @@ export const actions = {
         const response_data: InitResponse = await response.json();
 
         if ("token" in response_data) {
-            cookies.set("jwt", response_data.token, {path: "/"});
+            cookies.set("jwt", response_data.token, {path: "/", secure: false, httpOnly: false});
             return {
                 status: "verify"
             }
@@ -77,7 +77,7 @@ export const actions = {
         const response_data: VerifyResponse = await response.json();
 
         if ("token" in response_data) {
-            cookies.set("jwt", response_data.token, {path: "/"});
+            cookies.set("jwt", response_data.token, {path: "/", secure: false, httpOnly: false});
             const redirect_uri: string = url.searchParams.get("redirect") || "/";
             return redirect(302, redirect_uri);
         } else {
