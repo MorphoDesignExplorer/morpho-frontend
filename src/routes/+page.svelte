@@ -4,13 +4,11 @@
     /** @type {import('./$types').PageData} */
     export let data;
 
-    import Icon from "$lib/assets/morpho.png";
-
 </script>
 
 <div id="main" class="h-screen w-screen p-12">
     <div id="a" class="flex flex-col gap-2 pr-4">
-        <h3 class="text-3xl font-bold flex flex-row items-center gap-2"><img src={Icon} class="w-28" alt="icon"> Morpho Design Explorer</h3>
+        <h3 class="text-3xl font-bold flex flex-row items-center gap-2"><img src="https://morpho-images.nyc3.cdn.digitaloceanspaces.com/morpho-images/media/assets/morpho.png" class="w-28" alt="icon"> Morpho Design Explorer</h3>
         <p>Morpho is a multi-objective design exploration tool aimed at aiding designers in making informed decisions during the early design stages. It employs the Non-Destructive Dynamic Population Genetic Algorithm (NDDP-GA), initially used in the ParaGen framework developed by Peter von Buelow <super class="align-super text-xs">[<a href="#ref-one" class="text-blue-500">1</a>]</super> and further explored by Anahita Khodadadi through her dissertation<super class="align-super text-xs">[<a href="#ref-one" class="text-blue-500">2</a>]</super>, <super class="align-super text-xs">[<a href="#ref-one" class="text-blue-500">3</a>]</super>, to search for suitable generative design solutions. Morpho is designed to assist designers in considering both performance-based quantitative design objectives and qualitative design goals, enabling a comprehensive exploration of the design space and facilitating well-rounded decision-making.</p>
         <p>The name "Morpho" is inspired by the Morpho butterfly species, which is renowned for its iridescent blue wings. These wings are not only visually striking but also structurally complex, featuring microscopic scales that reflect light in a unique and dynamic way. This remarkable characteristic of the Morpho butterfly mirrors the essence of the Morpho design tool. Just as the butterfly's wings display an intricate blend of beauty and functionality, the Morpho tool aims to generate design solutions that are both aesthetically pleasing and technically sound.</p>
         <p>Morpho continues to evolve into an open-access, comprehensive design-aid tool. It offers assistance in the configuration processing of spatial forms, supports the exploration of generative design solutions, and facilitates continuous interaction between the search engine and designers. Additionally, it aims to include as diverse a range of design objectives as possible. This holistic approach ensures that designers can explore a wide array of possibilities, much like the Morpho butterfly, which adapts and thrives in varied environments. By embodying the complexity and beauty of the Morpho butterfly, the Morpho design tool aspires to inspire and empower designers to create innovative and effective design solutions.</p>
