@@ -1,11 +1,20 @@
 import type { Caption } from "$lib/types";
 import { uncache_project_list } from "$lib/cache";
-import type { Actions } from "@sveltejs/kit";
+import { redirect, type Actions } from "@sveltejs/kit";
+import type { PageServerLoad } from "./$types";
+import { isAuthenticated } from "$lib/auth";
 
 const SERVER_URL = "http://backend:8000" + process.env.API_PREFIX;
 
+export const load: PageServerLoad = async ({cookies, params}) => {
+    const auth_status = await isAuthenticated(cookies);
+    if (auth_status.status !== "VERIFIED") {
+        redirect(302, `/${params.project_name}`)
+    }
+}
+
 export const actions = {
-    default: async ({request, cookies, params}) => {
+    configure: async ({request, cookies, params}) => {
         const form_data: {
             captions: Caption[],
             human_name: string,
@@ -70,5 +79,8 @@ export const actions = {
         } else {
             return {status: "nok", detail: "Update failed"}
         }
+    },
+    logout: ({cookies, params}) => {
+        cookies.delete("jwt", {path: "/"});
     }
 } satisfies Actions;

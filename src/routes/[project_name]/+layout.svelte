@@ -62,13 +62,13 @@
                 </svg>
                 Data
             </a>
-            <a href="{base}/{$page.params.project_name}/about" class="flex items-center gap-2 bg-white border border-gray-200 shadow-sm text-blue-500 px-3 py-1 hover:bg-blue-500 hover:text-white transition-colors ease-in-out font-normal" class:rounded-r-lg={data.authetication_status.status !== "VERIFIED"}>
+            <a href="{base}/{$page.params.project_name}/about" class="flex items-center gap-2 bg-white border border-gray-200 shadow-sm text-blue-500 px-3 py-1 hover:bg-blue-500 hover:text-white transition-colors ease-in-out font-normal" class:rounded-r-lg={data.authentication_status.status !== "VERIFIED"}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
                 </svg>
                 About
             </a>
-            {#if data.authetication_status.status === "VERIFIED"}
+            {#if data.authentication_status.status === "VERIFIED"}
             <a href="{base}/{$page.params.project_name}/configure" class="flex items-center gap-2 bg-white border border-gray-200 shadow-sm rounded-lg rounded-l-none text-blue-500 px-3 py-1 hover:bg-blue-500 hover:text-white transition-colors ease-in-out font-normal">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
                     <path d="M17.004 10.407c.138.435-.216.842-.672.842h-3.465a.75.75 0 0 1-.65-.375l-1.732-3c-.229-.396-.053-.907.393-1.004a5.252 5.252 0 0 1 6.126 3.537ZM8.12 8.464c.307-.338.838-.235 1.066.16l1.732 3a.75.75 0 0 1 0 .75l-1.732 3c-.229.397-.76.5-1.067.161A5.23 5.23 0 0 1 6.75 12a5.23 5.23 0 0 1 1.37-3.536ZM10.878 17.13c-.447-.098-.623-.608-.394-1.004l1.733-3.002a.75.75 0 0 1 .65-.375h3.465c.457 0 .81.407.672.842a5.252 5.252 0 0 1-6.126 3.539Z" />
@@ -81,8 +81,8 @@
         <!-- End Project Sections Navigation -->
 
         <div class="ml-auto mr-4 flex items-center gap-4 text-white text-lg font-normal">
-        {#if data.authetication_status.status == "VERIFIED"}
-            <p class="capitalize">Hello, {data.authetication_status.username}!</p>
+        {#if data.authentication_status.status == "VERIFIED"}
+            <p class="capitalize">Hello, {data.authentication_status.username}!</p>
             <form method="post" action="?/logout" use:enhance>
                 <button type="submit" class="bg-white border border-gray-200 shadow-sm rounded-lg text-blue-500 px-3 py-1 hover:bg-blue-500 hover:text-white transition-colors ease-in-out items-center">Logout</button>
             </form>

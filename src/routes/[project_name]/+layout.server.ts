@@ -8,10 +8,10 @@ const SERVER_URL = "http://backend:8000" + process.env.API_PREFIX;
 export const load: PageServerLoad = async ({cookies, params}) => {
     const redis_client =  await setup_redis_client();
 
-    let result: {projects: Project[], metadata: Metadata, authetication_status: Authenticated, prefix: string} = {
+    let result: {projects: Project[], metadata: Metadata, authentication_status: Authenticated, prefix: string} = {
         projects: [],
         metadata: await (await fetch(`${SERVER_URL}/project/${params.project_name}/metadata/`)).json(),
-        authetication_status: await isAuthenticated(cookies),
+        authentication_status: await isAuthenticated(cookies),
         prefix: process.env.SUBPATH_PREFIX || ""
     };
 

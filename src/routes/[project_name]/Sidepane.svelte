@@ -101,6 +101,7 @@
                 </tr>
                 {/each}
             </table>
+            <!--
             <table id="assets" class="border border-gray-200 text-xs h-fit">
                 <tr class="border-b border-gray-200">
                     <td class="p-2"><p class="font-bold">Asset Links:</p></td>
@@ -112,6 +113,7 @@
                 </tr>
                 {/each}
             </table>
+            -->
         </div>
         <!-- End Table Data Section -->
         <!-- Asset Section -->
@@ -147,7 +149,7 @@
         <span class="cursor-pointer border-r border-white px-2 h-full" on:click={() => {$display_options.sidepane = !$display_options.sidepane}}>Close Detail Pane</span>
         <a href="#input-params" class="cursor-pointer border-r border-white px-2 h-full ">i/p parameters</a>
         <a href="#output-params" class="cursor-pointer border-r border-white px-2 h-full">o/p parameters</a>
-        <a href="#assets" class="cursor-pointer px-2 h-full">Assets</a>
+        <!-- <a href="#assets" class="cursor-pointer px-2 h-full">Assets</a> -->
         <span></span>
     </div>
     {/if}

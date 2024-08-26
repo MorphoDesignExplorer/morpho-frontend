@@ -1,13 +1,12 @@
 import { error, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { setup_redis_client } from '$lib/cache';
+import { common_actions } from './common_actions';
 
 let SERVER_URL = "http://backend:8000" + process.env.API_PREFIX;
 
 export const actions = {
-    logout: async ({cookies}) => {
-        cookies.delete("jwt", {path: "/"});
-    }
+    ...common_actions,
 } satisfies Actions;
 
 export const load: PageServerLoad = async ({params, cookies, parent}) => {
@@ -45,7 +44,7 @@ export const load: PageServerLoad = async ({params, cookies, parent}) => {
         project: result.project_data,
         models: result.models,
         project_name: result.project_name,
-        authetication_status: parent_data.authetication_status,
+        authentication_status: parent_data.authentication_status,
         prefix: parent_data.prefix
     };
 };

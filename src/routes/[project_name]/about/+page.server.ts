@@ -1,7 +1,8 @@
 import type { PageServerLoad } from "./$types";
-import type { Metadata } from "$lib/types";
 import {Parser, HtmlRenderer} from "commonmark";
 import insane from "insane";
+import { common_actions } from "../common_actions";
+import { type Actions } from "@sveltejs/kit";
 
 const SERVER_URL = "http://backend:8000" + process.env.API_PREFIX;
 export const load: PageServerLoad = async ({params, parent}) => {
@@ -13,3 +14,7 @@ export const load: PageServerLoad = async ({params, parent}) => {
         html: insane( renderer.render(parser.parse(parent_data.metadata.description.text)) )
     };
 }
+
+export const actions = {
+    ...common_actions
+} as Actions;

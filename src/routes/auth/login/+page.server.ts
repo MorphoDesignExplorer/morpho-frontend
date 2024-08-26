@@ -64,8 +64,6 @@ export const actions = {
         const form = await request.formData();
         const otp = form.get("otp")?.toString();
 
-        console.log(cookies.getAll())
-
         const response = await fetch(`${SERVER_URL}/auth/verify`, {
             method: "POST",
             body: JSON.stringify({otp: otp}),

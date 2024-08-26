@@ -18,7 +18,7 @@ export type Caption = {
     display_name: string
 }
 
-interface Field {
+export interface ProjectField {
     field_name: string
     field_step: number
     field_type: string
@@ -27,7 +27,7 @@ interface Field {
     field_precision: number | null
 }
 
-interface Asset {
+export interface ProjectAsset {
     tag: string
     extension: string
     mime_type: string
@@ -37,9 +37,9 @@ interface Asset {
 export interface Project {
     project_name: string
     creation_date: string
-    variable_metadata: Field[]
-    output_metadata: Field[]
-    assets: Asset[],
+    variable_metadata: ProjectField[]
+    output_metadata: ProjectField[]
+    assets: ProjectAsset[],
     metadata: Metadata
 }
 

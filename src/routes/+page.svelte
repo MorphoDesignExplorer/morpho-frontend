@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
     import { base } from "$app/paths";
+    import type { PageData } from "./$types";
 
-    /** @type {import('./$types').PageData} */
-    export let data;
+    export let data: PageData;
 
 </script>
 
@@ -23,10 +23,9 @@
         <details>
             <summary class="text-3xl font-bold cursor-pointer">Projects</summary>
             <div class="flex flex-col gap-2 pt-2 pl-8">
-                <a href="{base}/GCGA_20" class="underline decoration-blue-500">GCGA_20</a>
-                <a href="{base}/GCGA_27" class="underline decoration-blue-500">GCGA_27</a>
-                <a href="{base}/GCGA_37" class="underline decoration-blue-500">GCGA_37</a>
-                <a href="{base}/GCGA_39" class="underline decoration-blue-500">GCGA_39</a>
+                {#each data.projects as project}
+                <a href="{base}/{project.project_name}" class="underline decoration-blue-500">{project.metadata.human_name}</a>
+                {/each}
             </div>
         </details>
         <h3 class="text-3xl font-bold"><a href="{base}/research" class="underline decoration-blue-500">Research</a></h3>

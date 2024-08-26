@@ -8,6 +8,7 @@
     import { Carta, MarkdownEditor } from 'carta-md';
     import insane from "insane";
     import 'carta-md/default.css';
+    import "./carta.scss";
     import HelpText from "../../HelpText.svelte";
 
     export let data;
@@ -89,7 +90,7 @@
 
 </script>
 
-<form id="edit-grid" method="post" on:submit|preventDefault={handle_submit} bind:this={form_element}>
+<form id="edit-grid" action="?/configure" method="post" on:submit|preventDefault={handle_submit} bind:this={form_element}>
     <!--
     <div id="save-section" class="flex justify-end items-center p-4">
         <button type="submit" class="h-fit py-1 px-3 rounded-lg flex items-center border border-blue-500 bg-white text-blue-500 hover:bg-blue-500 hover:text-white text-base transition ease-in-out">Save</button>
