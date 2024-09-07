@@ -15,15 +15,7 @@
 
     export let unit_map: Record<string, string>;
 
-    let utility_visible = false;
-    let sidepane_container: HTMLDivElement;
-    let close_button: HTMLButtonElement;
-
-    /**
-     * @param {Model[]} model 
-
-     * @param {string} tag 
-    */
+    // Utility Section
     function get_image_src_or_empty(model: Model, tag: string) {
         const file = model.files.filter(obj => obj.tag == tag)[0];
         if (file !== undefined) 
@@ -31,16 +23,13 @@
         else
             return ""
     }
+    // End Utility Section
 
-    let grid_position: string;
-    $: {
-        if ($display_options.graph) {
-            grid_position = "grid-column: 2 / 3; grid-row: 1 / 2;"
-        } else {
-            grid_position = "grid-column: 2 / 3; grid-row: 1 / 3;"
-        }
-    }
-
+    // Feature
+    // If close button goes out of sight, toggle an alternative "utility" menu towards the end of the sidepane.
+    let sidepane_container: HTMLDivElement;
+    let close_button: HTMLButtonElement;
+    let utility_visible = false;
     if (browser) {
         onMount(() => {
             let observer = new IntersectionObserver((entry) => {
@@ -52,6 +41,17 @@
             }, {root: sidepane_container, threshold: 1});
             observer.observe(close_button);
         })
+    }
+    // End Feature
+
+
+    let grid_position: string;
+    $: {
+        if ($display_options.graph) {
+            grid_position = "grid-column: 2 / 3; grid-row: 1 / 2;"
+        } else {
+            grid_position = "grid-column: 2 / 3; grid-row: 1 / 3;"
+        }
     }
 
 </script>

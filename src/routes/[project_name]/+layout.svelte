@@ -46,7 +46,17 @@
         <select class="bg-transparent" value={$page.params.project_name} on:change={ async event => {
             await navigate_to_page(event.target?.value);
         }}>
-        {#each data.projects as project}
+        {#each data.projects.sort((a, b) => {
+            const a_date = Date.parse(a.creation_date)
+            const b_date = Date.parse(b.creation_date)
+            if (a_date < b_date) {
+                return -1
+            } else if (a_date == b_date) {
+                return 0
+            } else {
+                return 1
+            }
+        }) as project}
             <option class="text-black" value={project.project_name}>{project.metadata.human_name}</option>
         {/each}
         </select>

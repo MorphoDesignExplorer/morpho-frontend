@@ -77,18 +77,16 @@
      * @param display_parameter_names {string[]} list of parameter names to be displayed
     */
     function swatch_caption(model: Model, caption_tags: Caption[]): {display_name: string, unit: string, value: string | number}[] {
-        const captions: {display_name: string, value: string | number}[] = [];
+        const captions: {display_name: string, unit: string, value: string | number}[] = [
+            {display_name: "Solution ID", unit: "", value: model["scoped_id"]}
+        ];
         for (let param_idx = 0; param_idx < caption_tags.length; param_idx ++) {
             const param = caption_tags[param_idx];
             let caption: {display_name: string, unit: string, value: string | number} = {display_name: param.display_name, unit: unit_map[param.tag_name], value: ""}
-            if (param.tag_name.indexOf("id") > 0) {
-                caption.value = model[param.tag_name];
+            if (param.tag_name in model.parameters) {
+                caption.value = model.parameters[param.tag_name];
             } else {
-                if (param.tag_name in model.parameters) {
-                    caption.value = model.parameters[param.tag_name];
-                } else {
-                    caption.value = model.output_parameters[param.tag_name];
-                }
+                caption.value = model.output_parameters[param.tag_name];
             }
             captions.push(caption)
         }
@@ -199,7 +197,9 @@
                             <span class="flex justify-between items-center gap-2">
                                 <span class="text-xs text-slate-500 font-semibold">
                                     {caption.display_name}
+                                    {#if caption.unit.length > 0}
                                     <span class="text-xs text-black font-bold">[{caption.unit}]</span>
+                                    {/if}
                                 </span>
                                 <span class="ml-auto text-sm text-black">{Intl.NumberFormat("en-us", {notation: "compact"}).format(caption.value)}</span>
                             </span>
