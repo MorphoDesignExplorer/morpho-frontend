@@ -56,8 +56,8 @@
             } else {
                 return 1
             }
-        }) as project}
-            <option class="text-black" value={project.project_name}>{project.metadata.human_name}</option>
+        }) as project, index}
+            <option class="text-black" value={project.project_name}>{index+1}. {project.metadata.human_name}</option>
         {/each}
         </select>
 
