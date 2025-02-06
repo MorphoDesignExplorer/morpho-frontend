@@ -187,7 +187,7 @@
                             )}
                             placeholder="https://placehold.co/300/f8fafc/f8fafc"
                             alt={model.files[0].tag}
-                            class="w-[9vw] rounded-sm"
+                            class="w-[9vw] h-[9vw] rounded-sm"
                         />
 
                         <!-- project-specific display tag for each swatch -->
