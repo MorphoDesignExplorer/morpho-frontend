@@ -289,7 +289,7 @@
         <div class="p-4" transition:slide={{duration: 100}}>
             {#if $current_display === "parallel"}
             <div class="mb-2 w-full flex gap-2 items-center">
-                <p class="font-bold">Visible Parameters</p>
+                <p class="font-bold">Search Variables:</p>
                 <input type="text" class="border border-gray-200 p-1" placeholder="Search parameters" bind:value={$chart_state.parallel_search}>
             </div>
             <div class="flex flex-wrap justify-start">

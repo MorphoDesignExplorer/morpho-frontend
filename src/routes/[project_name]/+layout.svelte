@@ -37,12 +37,12 @@
 
 <div class="main-grid font-sans">
     <!-- Navbar -->
-    <div id="navbar" class="p-4 flex items-center text-lg font-extrabold gap-3 bg-blue-500 text-white">
+    <div id="navbar" class="p-4 flex items-center text-lg text-black font-extrabold gap-3 border-b-[1px] border-b-slate-200">
         <a href="{base}/" class="flex flex-row items-center gap-3">
-            <img src="https://morpho-images.nyc3.cdn.digitaloceanspaces.com/morpho-images/media/assets/morpho.png" class="w-28 backdrop-blur-lg" alt="icon">
+            <img src="https://morpho-images.nyc3.cdn.digitaloceanspaces.com/morpho-images/media/assets/morpho.png" class="w-20 backdrop-blur-lg" alt="icon">
             <h2 class="select-none">Morpho Design Explorer</h2>
         </a>
-        <span>/</span>
+        <span class="bg-slate-200 w-[1px] h-1/2"></span>
         <select class="bg-transparent" value={$page.params.project_name} on:change={ async event => {
             await navigate_to_page(event.target?.value);
         }}>
@@ -56,8 +56,8 @@
             } else {
                 return 1
             }
-        }) as project, index}
-            <option class="text-black" value={project.project_name}>{index+1}. {project.metadata.human_name}</option>
+        }) as project}
+            <option class="text-black" value={project.project_name}>{project.metadata.human_name}</option>
         {/each}
         </select>
 
@@ -89,19 +89,8 @@
             {/if}
         </div>
         <!-- End Project Sections Navigation -->
-
-        <div class="ml-auto mr-4 flex items-center gap-4 text-white text-lg font-normal">
-        {#if data.authentication_status.status == "VERIFIED"}
-            <p class="capitalize">Hello, {data.authentication_status.username}!</p>
-            <form method="post" action="?/logout" use:enhance>
-                <button type="submit" class="bg-white border border-gray-200 shadow-sm rounded-lg text-blue-500 px-3 py-1 hover:bg-blue-500 hover:text-white transition-colors ease-in-out items-center">Logout</button>
-            </form>
-        {:else}
-            <a href="{base}/auth/login/?redirect={$page.url.pathname}" class="bg-white border border-gray-200 shadow-sm rounded-lg text-blue-500 px-3 py-1 hover:bg-blue-500 hover:text-white transition-colors ease-in-out items-center">Login</a>
-        {/if}
     </div>
-</div>
-<!-- Navbar End -->
+    <!-- Navbar End -->
     <slot/>
 </div>
 

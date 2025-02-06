@@ -1,8 +1,8 @@
 import { error, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { setup_redis_client } from '$lib/cache';
 import { common_actions } from './common_actions';
 
+// TODO switch localhost to backend
 let SERVER_URL = "http://backend:8000" + process.env.API_PREFIX;
 
 export const actions = {
@@ -11,7 +11,6 @@ export const actions = {
 
 export const load: PageServerLoad = async ({params, cookies, parent}) => {
     const parent_data = await parent();
-    const redis_client = await setup_redis_client();
 
     let result = {
         project_name: params.project_name,
@@ -20,20 +19,11 @@ export const load: PageServerLoad = async ({params, cookies, parent}) => {
         all_project_names: parent_data.projects.map(item => item.project_name)
     }
 
-    let cached_project_data = await redis_client.get(params.project_name);
-    if (cached_project_data != null) {
-        console.log(`returning cached ${params.project_name}`);
-        let cached_result: typeof result = JSON.parse(cached_project_data);
-        result.models = cached_result.models;
-    } else {
-        try {
-            result.models = await (await fetch(`${SERVER_URL}/project/${params.project_name}/model/?format=json`)).json();
-            await redis_client.set(params.project_name, JSON.stringify(result));
-            console.log(`cached ${params.project_name}`);
-        } catch (e) {
-            console.log(e);
-            error(404, "Project not found.");
-        }
+    try {
+        result.models = await (await fetch(`${SERVER_URL}/project/${params.project_name}/model/`)).json();
+    } catch (e) {
+        console.log(e);
+        error(404, "Project not found.");
     }
 
     result.project_data.assets = result.project_data.assets

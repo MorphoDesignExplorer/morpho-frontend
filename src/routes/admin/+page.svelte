@@ -28,7 +28,6 @@
 <div id="configuration" class="p-4 w-full h-full flex flex-col">
     <p class="text-2xl font-bold">Create Project</p>
     <form action="?/create-project" method="post" class="flex flex-col w-full h-full" use:enhance>
-
     </form>
 </div>
 

@@ -6,7 +6,6 @@
     import type { Writable } from "svelte/store";
     import LazyImagePlus from "./LazyImagePlus.svelte";
     import { get_filter_predicates } from "../../lib/context";
-    import { interpolateGreens } from "d3";
 
     export let allowed_tags: string[];
 

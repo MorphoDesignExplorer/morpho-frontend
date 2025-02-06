@@ -33,8 +33,8 @@
 
     let caption_tags: Caption[];
     const default_caption_tags: Caption[] = [{tag_name: "scoped_id", display_name: "Solution ID"}]
-    $: caption_tags = data.metadata.captions
-    $: if (data.metadata.captions.length === 0) {
+    $: caption_tags = data.project.metadata.captions
+    $: if (data.project.metadata.captions.length === 0) {
         caption_tags = default_caption_tags;
     }
 
