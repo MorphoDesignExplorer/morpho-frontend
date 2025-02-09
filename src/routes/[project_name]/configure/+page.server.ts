@@ -1,5 +1,4 @@
 import type { Caption } from "$lib/types";
-import { uncache_project_list } from "$lib/cache";
 import { redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { isAuthenticated } from "$lib/auth";
@@ -70,9 +69,6 @@ export const actions = {
             }
         );
         is_ok = is_ok && description_response.status === 200;
-
-        // clearing the cached project list to load human names properly later on the navbar.
-        uncache_project_list()
 
         if (is_ok) {
             return {status: "ok"}
