@@ -90,7 +90,8 @@
         // the important part here is to ground these calculations with real values.
 
         const layoutStats = getLayoutStatistics();
-        let rowOffset = (grid_element.scrollTop - 15 ) / layoutStats.rowHeight; // 5 is a magic value accounting for padding on the top
+        let topPadding = parseInt(window.getComputedStyle(grid_element).paddingTop, 10);
+        let rowOffset = (grid_element.scrollTop - topPadding) / layoutStats.rowHeight;
         console.log("rows out of view:", rowOffset);
 
         const percentage = 100 * grid_element.scrollTop / (grid_element.scrollHeight - grid_element.clientHeight);
@@ -112,7 +113,7 @@
         ];
         for (let param_idx = 0; param_idx < caption_tags.length; param_idx ++) {
             const param = caption_tags[param_idx];
-            let caption: {display_name: string, unit: string, value: number} = {display_name: param.display_name, unit: unit_map[param.tag_name], value: ""}
+            let caption: {display_name: string, unit: string, value: number} = {display_name: param.display_name, unit: unit_map[param.tag_name], value: 0}
             if (param.tag_name in model.parameters) {
                 caption.value = model.parameters[param.tag_name] as number;
             } else {
