@@ -101,19 +101,6 @@
                 </tr>
                 {/each}
             </table>
-            <!--
-            <table id="assets" class="border border-gray-200 text-xs h-fit">
-                <tr class="border-b border-gray-200">
-                    <td class="p-2"><p class="font-bold">Asset Links:</p></td>
-                </tr>
-                {#each model.files as asset}
-                <tr class="border-b border-gray-200">
-                    <td class="border-r border-gray-200 p-2 font-semibold">{asset.tag}</td>
-                    <td class="p-2"><a href={asset.file} target="_blank" class="link">Download</a></td>
-                </tr>
-                {/each}
-            </table>
-            -->
         </div>
         <!-- End Table Data Section -->
         <!-- Asset Section -->
