@@ -46,7 +46,7 @@
     </div>
 </div>
 
-<div class="bg-[url(./splash.png)] h-60 bg-[50%_20%] sizer">
+<div class="bg-[url(https://morpho-images.s3.us-east-1.amazonaws.com/assets/splash.png)] h-60 bg-[50%_20%] sizer">
 </div>
 
 <div class="h-full flex justify-center m-8">
