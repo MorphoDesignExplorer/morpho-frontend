@@ -36,7 +36,7 @@
 </script>
 <div id="navbar" class="p-4 flex justify-evenly items-center text-lg text-black font-extrabold gap-3 border-b-[1px] border-b-slate-200">
     <a href="{base}/" class="flex flex-row items-center gap-3">
-        <img src="https://morpho-images.nyc3.cdn.digitaloceanspaces.com/morpho-images/media/assets/morpho.png" class="w-20 backdrop-blur-lg" alt="icon">
+        <img src="https://morpho-images.s3.us-east-1.amazonaws.com/assets/morpho.png" class="w-20 backdrop-blur-lg" alt="icon">
         <h2 class="select-none text-3xl">Morpho Design Explorer</h2>
     </a>
     <div class="flex gap-4">

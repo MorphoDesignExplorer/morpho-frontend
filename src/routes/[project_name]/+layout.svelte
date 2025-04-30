@@ -39,7 +39,7 @@
     <!-- Navbar -->
     <div id="navbar" class="p-4 flex items-center text-lg text-black font-extrabold gap-3 border-b-[1px] border-b-slate-200">
         <a href="{base}/" class="flex flex-row items-center gap-3">
-            <img src="https://morpho-images.nyc3.cdn.digitaloceanspaces.com/morpho-images/media/assets/morpho.png" class="w-20 backdrop-blur-lg" alt="icon">
+            <img src="https://morpho-images.s3.us-east-1.amazonaws.com/assets/morpho.png" class="w-20 backdrop-blur-lg" alt="icon">
             <h2 class="select-none">Morpho Design Explorer</h2>
         </a>
         <span class="bg-slate-200 w-[1px] h-1/2"></span>
