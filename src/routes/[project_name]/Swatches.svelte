@@ -70,8 +70,13 @@
         let gridHeight = grid_element.clientHeight;
         let columnCount = Math.floor(grid_element.clientWidth / 220);
         // to inspect row-count, we will need to check the actual size of the items within the container
-        let rowCount = Math.ceil(gridHeight / grid_element.children[0].clientHeight);
-        let rowHeight = grid_element.children[0].clientHeight;
+
+        let rowCount = 1;
+        let rowHeight = gridHeight;
+        if (grid_element.children.length > 0) {
+            rowCount = Math.ceil(gridHeight / grid_element.children[0].clientHeight);
+            rowHeight = grid_element.children[0].clientHeight;
+        }
 
         return {
             rowHeight: rowHeight,
