@@ -26,9 +26,9 @@ export const load: PageServerLoad = async ({params, cookies, parent}) => {
         error(404, "Project not found.");
     }
 
-    result.project_data.assets = result.project_data.assets
-                                    .filter(asset => asset.mime_type.indexOf("image") > -1)
-                                    .filter(asset => asset.mime_type.indexOf("jpeg") > -1)
+    const allowed_mimes = ["image/jpeg", "image/png"]
+
+    result.project_data.assets = result.project_data.assets.filter(asset => allowed_mimes.indexOf(asset.mime_type) > -1)
 
     return {
         project: result.project_data,
