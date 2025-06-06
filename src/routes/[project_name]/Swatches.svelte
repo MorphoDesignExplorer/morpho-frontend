@@ -29,7 +29,7 @@
 
     let filter_predicates = get_filter_predicates();
 
-    let image_tag: string;
+    let image_tag: string = allowed_tags[0]; // Thumbnail is set to show the first asset by default.
 
     let display_options: Writable<DisplayOptions> = getContext("display_options");
 
