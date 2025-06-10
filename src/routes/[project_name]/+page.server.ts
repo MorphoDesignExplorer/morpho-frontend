@@ -1,9 +1,10 @@
 import { error, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { common_actions } from './common_actions';
+import {BuildServerURL} from '$lib/common';
 
 // TODO switch localhost to backend
-let SERVER_URL = "http://backend:8000" + process.env.API_PREFIX;
+let SERVER_URL = BuildServerURL();
 
 export const actions = {
     ...common_actions,

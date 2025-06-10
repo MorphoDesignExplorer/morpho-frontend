@@ -1,12 +1,13 @@
 import { redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { isAuthenticated } from "$lib/auth";
+import { BuildServerURL } from "$lib/common";
 
 type ForgotPasswordResponse = {
     detail: string
 }
 
-let SERVER_URL = "http://backend:8000" + process.env.API_PREFIX;
+let SERVER_URL = BuildServerURL();
 
 
 export const load: PageServerLoad = async ({cookies}) => {

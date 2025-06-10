@@ -1,8 +1,9 @@
 import type { Project } from "$lib/types";
 import type { PageServerLoad } from "./$types"
+import { BuildServerURL } from "$lib/common";
 
 // TODO switch localhost to backend
-let SERVER_URL = "http://backend:8000" + process.env.API_PREFIX;
+let SERVER_URL = BuildServerURL();
 
 export const load: PageServerLoad = async () => {
     let result: {projects: Project[]} = {

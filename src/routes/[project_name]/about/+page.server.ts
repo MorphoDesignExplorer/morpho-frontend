@@ -4,9 +4,7 @@ import insane from "insane";
 import { common_actions } from "../common_actions";
 import { type Actions } from "@sveltejs/kit";
 
-// TODO change localhost to backend
-const SERVER_URL = "http://backend:8000" + process.env.API_PREFIX;
-export const load: PageServerLoad = async ({params, parent}) => {
+export const load: PageServerLoad = async ({parent}) => {
     const parent_data = await parent();
 
     const parser = new Parser();

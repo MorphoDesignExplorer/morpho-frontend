@@ -6,8 +6,6 @@
     import type { Writable } from "svelte/store";
     import LazyImagePlus from "./LazyImagePlus.svelte";
     import { get_filter_predicates } from "../../lib/context";
-    import { csvParseRows } from "d3";
-    import Layout from "../+layout.svelte";
 
     // props
 
@@ -31,6 +29,9 @@
 
     let image_tag: string = allowed_tags[0]; // Thumbnail is set to show the first asset by default.
 
+    let parameter_names: string[] = project_metadata.variable_metadata.map(field => field.field_name).concat(project_metadata.output_metadata.map(field => field.field_name)).concat(["scoped_id"]);
+    let sort_parameter_name = "scoped_id";
+
     let display_options: Writable<DisplayOptions> = getContext("display_options");
 
     // default argument for caption tag list
@@ -46,6 +47,19 @@
             return true;
         } else {
             return $filter_predicates.chart_predicate.indexOf(model.id) > -1
+        }
+    }).sort((a, b) => {
+        const relative = (a: any, b: any) => {
+            return a == b ? 0 : (a > b ? 1 : -1);
+        }
+        if (sort_parameter_name == "scoped_id") {
+            return relative(a[sort_parameter_name], b[sort_parameter_name])
+        } else if (Object.hasOwn(a.parameters, sort_parameter_name)) {
+            return relative(a.parameters[sort_parameter_name], b.parameters[sort_parameter_name])
+        } else if (Object.hasOwn(a.output_parameters, sort_parameter_name)) {
+            return relative(a.output_parameters[sort_parameter_name], b.output_parameters[sort_parameter_name])
+        } else {
+            return 0;
         }
     })
 
@@ -114,15 +128,16 @@
     */
     function swatch_caption(model: Model, caption_tags: Caption[]): {display_name: string, unit: string, value: number}[] {
         const captions: {display_name: string, unit: string, value: number}[] = [
-            {display_name: "Solution ID", unit: "", value: model["scoped_id"]}
         ];
         for (let param_idx = 0; param_idx < caption_tags.length; param_idx ++) {
             const param = caption_tags[param_idx];
-            let caption: {display_name: string, unit: string, value: number} = {display_name: param.display_name, unit: unit_map[param.tag_name], value: 0}
+            let caption: {display_name: string, unit: string, value: number} = {display_name: param.display_name, unit: unit_map[param.tag_name] || "", value: 0}
             if (param.tag_name in model.parameters) {
                 caption.value = model.parameters[param.tag_name] as number;
-            } else {
+            } else if (param.tag_name in model.output_parameters) {
                 caption.value = model.output_parameters[param.tag_name] as number;
+            } else if (param.tag_name == "scoped_id") {
+                caption.value = model.scoped_id;
             }
             captions.push(caption)
         }
@@ -162,6 +177,21 @@
                     {#each allowed_tags as tag}
                         <option value={tag}>{tag}</option
                         >
+                    {/each}
+                </select>
+            </div>
+            <div
+                class="flex select-none"
+            >
+                <!-- Select Sort Parameter -->
+                <label for="image-select" class="h-full p-1 flex items-center border-x border-t border-blue-500 bg-blue-500 text-white font-bold">Sort By</label>
+                <select id="image-select" class="h-full p-1 hover:bg-gray-200 border-t border-r border-blue-500 text-blue-500 font-bold transition-colors ease-linear cursor-pointer" bind:value={sort_parameter_name}>
+                    {#each parameter_names as param_name}
+                        {#if param_name == "scoped_id"}
+                        <option value={param_name}>Scoped ID</option>
+                        {:else}
+                        <option value={param_name}>{param_name}</option>
+                        {/if}
                     {/each}
                 </select>
             </div>

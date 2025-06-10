@@ -1,8 +1,9 @@
 import { isAuthenticated } from "$lib/auth";
 import { redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
+import { BuildServerURL } from "$lib/common";
 
-let SERVER_URL = "http://backend:8000" + process.env.API_PREFIX;
+let SERVER_URL = BuildServerURL();
 
 export const load: PageServerLoad = async ({ cookies, url }) => {
     const auth_status = await isAuthenticated(cookies);
