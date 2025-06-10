@@ -27,9 +27,11 @@
 
     let filter_predicates = get_filter_predicates();
 
-    let image_tag: string = allowed_tags[0]; // Thumbnail is set to show the first asset by default.
+    let image_tag: string;
+    $: image_tag = allowed_tags[0]; // Thumbnail is set to show the first asset by default.
 
-    let parameter_names: string[] = project_metadata.variable_metadata.map(field => field.field_name).concat(project_metadata.output_metadata.map(field => field.field_name)).concat(["scoped_id"]);
+    let parameter_names: string[];
+    $: parameter_names = project_metadata.variable_metadata.map(field => field.field_name).concat(project_metadata.output_metadata.map(field => field.field_name)).concat(["scoped_id"]);
     let sort_parameter_name = "scoped_id";
 
     let display_options: Writable<DisplayOptions> = getContext("display_options");
