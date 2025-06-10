@@ -27,12 +27,19 @@
 
     let filter_predicates = get_filter_predicates();
 
-    let image_tag: string;
-    $: image_tag = allowed_tags[0]; // Thumbnail is set to show the first asset by default.
+    let image_tag: string = allowed_tags[0];
+    $: if (allowed_tags.indexOf(image_tag) == -1) {
+        // code for project changes
+        image_tag = allowed_tags[0];
+    }
 
     let parameter_names: string[];
     $: parameter_names = project_metadata.variable_metadata.map(field => field.field_name).concat(project_metadata.output_metadata.map(field => field.field_name)).concat(["scoped_id"]);
     let sort_parameter_name = "scoped_id";
+    $: if (parameter_names.indexOf(sort_parameter_name) == -1) {
+        // code for project changes
+        sort_parameter_name = "scoped_id";
+    }
 
     let display_options: Writable<DisplayOptions> = getContext("display_options");
 
@@ -100,8 +107,6 @@
             columns: columnCount
         }
     }
-
-    let offset = 0;
 
     function get_percentage() {
         // workflow:
