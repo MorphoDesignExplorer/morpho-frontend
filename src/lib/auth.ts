@@ -69,11 +69,7 @@ export async function isAuthenticated(cookies: Cookies): Promise<boolean> {
 async function getParameter(name: string): Promise<string> {
     const ssm = new AWS.SSM({region: "us-east-1"});
     const result = await ssm.getParameter({Name: name, WithDecryption: false}).promise()
-    if (result.Parameter) {
-        return result.Parameter.Value as string;
-    } else {
-        return ""
-    }
+    return result.Parameter?.Value || "";
 }
 
 /*
@@ -91,7 +87,6 @@ export async function verifyToken(encodedToken: string): Promise<[Object, boolea
         } else if (process.env.ENVIRONMENT == "dev") {
             secret = process.env.SECRET_KEY || "";
         }
-        console.log(secret)
 
         const key = Buffer.from(secret)
         const decodedToken = Buffer.from(encodedToken, 'base64');
@@ -106,7 +101,6 @@ export async function verifyToken(encodedToken: string): Promise<[Object, boolea
 
         let decrypted = decipher.update(payload)
         decipher.final()
-        console.log([JSON.parse(decrypted.toString()), true])
         return [JSON.parse(decrypted.toString()), true]
     } catch(e) {
         console.log(e)
