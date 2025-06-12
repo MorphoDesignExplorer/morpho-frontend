@@ -1,6 +1,7 @@
 import type { Cookies } from "@sveltejs/kit";
 import * as jose from "jose";
 import crypto from "node:crypto";
+import AWS from "aws-sdk";
 
 export type Authenticated = {
     status: "VERIFIED",
@@ -16,7 +17,7 @@ export async function verifyJWT(jwt: string | undefined): Promise<boolean> {
     if (jwt) {
         const secret = new TextEncoder().encode(process.env.SECRET_KEY);
         try {
-            const result = await jose.jwtVerify(jwt, secret);
+            await jose.jwtVerify(jwt, secret);
             return true;
         } catch (e) {
             ;
@@ -65,6 +66,16 @@ export async function isAuthenticated(cookies: Cookies): Promise<boolean> {
 }
 */
 
+async function getParameter(name: string): Promise<string> {
+    const ssm = new AWS.SSM();
+    const result = await ssm.getParameter({Name: name, WithDecryption: false}).promise()
+    if (result.Parameter) {
+        return result.Parameter.Value as string;
+    } else {
+        return ""
+    }
+}
+
 /*
  * Takes a encrypted token, decrypts it and authenticates it.
  *
@@ -72,9 +83,14 @@ export async function isAuthenticated(cookies: Cookies): Promise<boolean> {
  *
  * Return nothing and false if the decryption fails.
  */
-export function verifyToken(encodedToken: string): [Object, boolean] {
+export async function verifyToken(encodedToken: string): Promise<[Object, boolean]> {
     try {
-        const secret = process.env.SECRET_KEY || ""; // TODO get this from S3 parameter store
+        let secret = "";
+        if (process.env.ENVIRONMENT == "prod") {
+            secret = await getParameter("ENC_SECRET");
+        } else if (process.env.ENVIRONMENT == "dev") {
+            secret = process.env.SECRET_KEY || "";
+        }
 
         const key = Buffer.from(secret)
         const decodedToken = Buffer.from(encodedToken, 'base64');

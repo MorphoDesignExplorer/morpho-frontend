@@ -6,7 +6,7 @@ import { verifyToken } from '$lib/auth';
 import { redirect } from "@sveltejs/kit";
 
 export const load: PageServerLoad = async ({cookies}) => {
-    let [_, ok] = verifyToken(cookies.get("jwt") || "");
+    let [_, ok] = await verifyToken(cookies.get("jwt") || "");
     if (!ok) {
         return redirect(301, "/")
     }

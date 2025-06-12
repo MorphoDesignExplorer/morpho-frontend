@@ -11,7 +11,7 @@ type FormResponse = {
 let SERVER_URL = BuildServerURL();
 
 export const load: PageServerLoad = async ({cookies}) => {
-    let [_, ok] = verifyToken(cookies.get("jwt") || "")
+    let [_, ok] = await verifyToken(cookies.get("jwt") || "")
     // redirect the user out of this page if they are verified (i.e. logged in).
     if (ok) {
         return redirect(302, "/auth/admin")

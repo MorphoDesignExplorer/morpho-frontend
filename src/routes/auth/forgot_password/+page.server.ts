@@ -11,7 +11,7 @@ let SERVER_URL = BuildServerURL();
 
 
 export const load: PageServerLoad = async ({cookies}) => {
-    const [_, ok] = verifyToken(cookies.get("jwt") | "");
+    const [_, ok] = await verifyToken(cookies.get("jwt") | "");
     // redirect the user out of this page if they are verified (i.e. logged in).
     if (ok) {
         return redirect(302, "/")
