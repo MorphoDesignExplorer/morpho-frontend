@@ -1,5 +1,6 @@
 import type { Cookies } from "@sveltejs/kit";
 import * as jose from "jose";
+import crypto from "node:crypto";
 
 export type Authenticated = {
     status: "VERIFIED",
@@ -53,3 +54,44 @@ export async function clearUserSession(cookies: Cookies) {
         cookies.delete("jwt", {path: "/"});
     }
 }
+
+/*
+ *  Checks cookies to verify that the client holds a token.
+ *  If the cookies hold a token equivalent to an admin, it is considered authenticated.
+ *  Else, it is not.
+ *
+ *  Return true if authenticated, false otherwise.
+export async function isAuthenticated(cookies: Cookies): Promise<boolean> {
+}
+*/
+
+/*
+ * Takes a encrypted token, decrypts it and authenticates it.
+ *
+ * Return the decrypted token and true if the decryption succeeds.
+ *
+ * Return nothing and false if the decryption fails.
+ */
+export function verifyToken(encodedToken: string): [Object, boolean] {
+    try {
+        const secret = process.env.SECRET_KEY || ""; // TODO get this from S3 parameter store
+
+        const key = Buffer.from(secret)
+        const decodedToken = Buffer.from(encodedToken, 'base64');
+        const byteLength = decodedToken.subarray(0,4).readInt32BE();
+        const iv = decodedToken.subarray(4).subarray(0,12);
+        const payloadWithTag = decodedToken.subarray(4).subarray(0, byteLength).subarray(12);
+        const authTag = payloadWithTag.subarray(payloadWithTag.length - 16) // Auth tag. Go appends this after the encrypted payload. Source: https://cs.opensource.google/go/go/+/refs/tags/go1.24.4:src/crypto/cipher/gcm.go;l=20
+        const payload = payloadWithTag.subarray(0, payloadWithTag.length - 16)
+
+        const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
+        decipher.setAuthTag(authTag);
+
+        let decrypted = decipher.update(payload)
+        decipher.final()
+        return [JSON.parse(decrypted.toString()), true]
+    } catch(e) {
+        return [{}, false]
+    }
+}
+

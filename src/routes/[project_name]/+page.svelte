@@ -57,8 +57,6 @@
         model_in_focus = model;
         $display_options.sidepane = true;
     }
-
-    console.log(data.project) // debugging information
 </script>
 
 <!-- Main Data Display -->

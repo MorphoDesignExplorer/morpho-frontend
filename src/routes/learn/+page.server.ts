@@ -8,7 +8,7 @@ let SERVER_URL = BuildServerURL();
 export const load: PageServerLoad = async () => {
     let result: {projects: Project[], document: string} = {
         projects: [],
-        document: await GetDocument("Front Matter"),
+        document: await GetDocument("Learn"),
     };
 
     result.projects = await (

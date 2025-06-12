@@ -51,3 +51,15 @@ export interface Metadata {
     }
     human_name: string
 }
+
+export interface Document {
+    id:     string
+    slug:   string
+    text:   string
+}
+
+export type AdminForm =
+    { type: "document", form: { text: string, id: string } } |
+    { type: "project", form: { project_name: string, human_name: string, captions: Caption[], vmetadata: ProjectField[], ometadata: ProjectField[], ametadata: ProjectAsset[], description: string } } |
+    {type: "none"};
+

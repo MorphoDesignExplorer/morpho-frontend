@@ -3,14 +3,13 @@ import type { PageServerLoad } from './$types';
 import { common_actions } from './common_actions';
 import {BuildServerURL} from '$lib/common';
 
-// TODO switch localhost to backend
 let SERVER_URL = BuildServerURL();
 
 export const actions = {
     ...common_actions,
 } satisfies Actions;
 
-export const load: PageServerLoad = async ({params, cookies, parent}) => {
+export const load: PageServerLoad = async ({params, parent}) => {
     const parent_data = await parent();
 
     let result = {

@@ -1,88 +1,60 @@
 import { redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { isAuthenticated } from "$lib/auth";
-
-type InitResponse = {
-    token: string,
-    secret: string
-} | {
-    detail: string
-}
-
-type VerifyResponse = {
-    token: string
-} | {
-    detail: string
-}
+import {BuildServerURL} from "$lib/common";
+import { verifyToken } from "../../../lib/auth";
 
 type FormResponse = {
-    status: "verify",
-    message?: string
-} | {
-    status: "init",
     message: string
 }
 
-let SERVER_URL = "http://backend:8000" + process.env.API_PREFIX;
+let SERVER_URL = BuildServerURL();
 
 export const load: PageServerLoad = async ({cookies}) => {
-    const auth_state = await isAuthenticated(cookies);
+    let [_, ok] = verifyToken(cookies.get("jwt") || "")
     // redirect the user out of this page if they are verified (i.e. logged in).
-    if (auth_state.status == "VERIFIED") {
-        return redirect(302, "/")
+    if (ok) {
+        return redirect(302, "/auth/admin")
     }
 }
 
 export const actions = {
-    init: async ({request, cookies}): Promise<FormResponse> => {
+    login: async ({request, cookies}): Promise<FormResponse> => {
         const form = await request.formData();
-        const uname = form.get("uname")?.toString();
-        const pwd = form.get("pwd")?.toString();
+        const email = form.get("uname")?.toString();
+        const password = form.get("pwd")?.toString();
 
-        const response = await fetch(`${SERVER_URL}/auth/init`, {
-            method: "POST",
-            body: JSON.stringify({username: uname, password: pwd}),
-            headers: {
-                "Content-Type": "application/json"
-            }
-        } satisfies RequestInit);
-        const response_data: InitResponse = await response.json();
+        if (email && password) {
+            const response = await fetch(`${SERVER_URL}/auth/login/`, {
+                method: "POST",
+                body: new URLSearchParams({
+                    email: email,
+                    password: password
+                }),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            } satisfies RequestInit);
+            const response_data = await response.text();
 
-        if ("token" in response_data) {
-            cookies.set("jwt", response_data.token, {path: "/", secure: false, httpOnly: false});
-            return {
-                status: "verify"
+            try {
+                if (JSON.parse(response_data)) {
+                    return {
+                        message: JSON.parse(response_data)["message"]
+                    }
+                }
+            } catch (e) {
+                if (response_data.length > 0) {
+                    cookies.set("jwt", response_data, {path: "/", secure: true, httpOnly: true})
+                }
             }
+
+            return redirect(303, "/auth/admin/")
+
         } else {
             return {
-                status: "init",
-                message: response_data.detail
+                message: "Email or Password was not filled in."
             }
         }
     },
-    verify: async ({request, cookies, url}): Promise<FormResponse> => {
-        const form = await request.formData();
-        const otp = form.get("otp")?.toString();
-
-        const response = await fetch(`${SERVER_URL}/auth/verify`, {
-            method: "POST",
-            body: JSON.stringify({otp: otp}),
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${cookies.get("jwt")}`
-            }
-        } satisfies RequestInit);
-        const response_data: VerifyResponse = await response.json();
-
-        if ("token" in response_data) {
-            cookies.set("jwt", response_data.token, {path: "/", secure: false, httpOnly: false});
-            const redirect_uri: string = url.searchParams.get("redirect") || "/";
-            return redirect(302, redirect_uri);
-        } else {
-            return {
-                status: "verify",
-                message: response_data.detail
-            }
-        }
-    }
 } satisfies Actions

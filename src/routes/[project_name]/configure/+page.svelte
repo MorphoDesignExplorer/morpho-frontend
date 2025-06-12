@@ -83,7 +83,6 @@
         timeout_object = setTimeout(() => {
             if (form_element) {
                 form_element.requestSubmit();
-                console.log("submitted!")
             }
         }, 1 * 1000)
     })

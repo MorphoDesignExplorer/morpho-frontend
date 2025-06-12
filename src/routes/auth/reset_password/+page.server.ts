@@ -1,6 +1,6 @@
 import { redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { verifyJWT } from "$lib/auth";
+import {BuildServerURL} from "$lib/common";
 
 type ResetPasswordResponse = {
     status: string
@@ -10,15 +10,17 @@ type ResetPasswordResponse = {
 }
 
 
-let SERVER_URL = "http://backend:8000" + process.env.API_PREFIX;
+let SERVER_URL = BuildServerURL();
 
 export const load: PageServerLoad = async ({url}) => {
+    /*
     const jwt_session = url.searchParams.get("session");
     if (jwt_session) {
         if (await verifyJWT(jwt_session)) {
             return {session: jwt_session};
         }
-    } 
+    }
+    */
     return redirect(303, "/");
 }
 

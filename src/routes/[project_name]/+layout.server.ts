@@ -18,8 +18,6 @@ export const load: PageServerLoad = async ({cookies, params}) => {
         (await fetch(`${SERVER_URL}/project/`)).json()
     )
 
-    console.log(result.projects)
-
     result.metadata = result.projects.filter(item => item.project_name == params.project_name)[0].metadata
 
     return result;

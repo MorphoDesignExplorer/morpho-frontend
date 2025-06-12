@@ -118,7 +118,7 @@
         const layoutStats = getLayoutStatistics();
         let topPadding = parseInt(window.getComputedStyle(grid_element).paddingTop, 10);
         let rowOffset = (grid_element.scrollTop - topPadding) / layoutStats.rowHeight;
-        console.log("rows out of view:", rowOffset);
+        // console.log("rows out of view:", rowOffset);
 
         const percentage = 100 * grid_element.scrollTop / (grid_element.scrollHeight - grid_element.clientHeight);
 
