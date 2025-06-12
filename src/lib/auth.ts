@@ -67,7 +67,7 @@ export async function isAuthenticated(cookies: Cookies): Promise<boolean> {
 */
 
 async function getParameter(name: string): Promise<string> {
-    const ssm = new AWS.SSM();
+    const ssm = new AWS.SSM({region: "us-east-1"});
     const result = await ssm.getParameter({Name: name, WithDecryption: false}).promise()
     if (result.Parameter) {
         return result.Parameter.Value as string;
