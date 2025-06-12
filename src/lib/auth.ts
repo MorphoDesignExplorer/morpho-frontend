@@ -88,6 +88,7 @@ export async function verifyToken(encodedToken: string): Promise<[Object, boolea
         let secret = "";
         if (process.env.ENVIRONMENT == "prod") {
             secret = await getParameter("ENC_SECRET");
+            console.log(secret)
         } else if (process.env.ENVIRONMENT == "dev") {
             secret = process.env.SECRET_KEY || "";
         }
@@ -105,6 +106,7 @@ export async function verifyToken(encodedToken: string): Promise<[Object, boolea
 
         let decrypted = decipher.update(payload)
         decipher.final()
+        console.log([JSON.parse(decrypted.toString()), true])
         return [JSON.parse(decrypted.toString()), true]
     } catch(e) {
         return [{}, false]
