@@ -86,12 +86,12 @@ async function getParameter(name: string): Promise<string> {
 export async function verifyToken(encodedToken: string): Promise<[Object, boolean]> {
     try {
         let secret = "";
-        if (process.env.ENVIRONMENT == "prod") {
+        if (process.env.ENVIRONMENT == 'prod') {
             secret = await getParameter("ENC_SECRET");
-            console.log(secret)
         } else if (process.env.ENVIRONMENT == "dev") {
             secret = process.env.SECRET_KEY || "";
         }
+        console.log(secret)
 
         const key = Buffer.from(secret)
         const decodedToken = Buffer.from(encodedToken, 'base64');
@@ -109,6 +109,7 @@ export async function verifyToken(encodedToken: string): Promise<[Object, boolea
         console.log([JSON.parse(decrypted.toString()), true])
         return [JSON.parse(decrypted.toString()), true]
     } catch(e) {
+        console.log(e)
         return [{}, false]
     }
 }
