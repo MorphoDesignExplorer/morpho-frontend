@@ -1,7 +1,6 @@
 import { type Document } from "./types";
 import { BuildServerURL } from "./common";
 import { Parser, HtmlRenderer } from "commonmark";
-import insane from "insane";
 
 export async function GetDocument(idOrSlug: string): Promise<string> {
     const response = await fetch(`${BuildServerURL()}/document/${idOrSlug}/`);
@@ -13,8 +12,7 @@ export async function GetDocument(idOrSlug: string): Promise<string> {
         const parser = new Parser();
         const renderer = new HtmlRenderer();
 
-        const html = insane(renderer.render(parser.parse(body.text)))
-        return html
+        return renderer.render(parser.parse(body.text))
     }
 }
 

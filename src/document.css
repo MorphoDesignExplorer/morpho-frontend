@@ -1,0 +1,26 @@
+.description {
+    background: white;
+    width: 50%;
+    height: 100%;
+    padding: calc(0.25rem * 2);
+    margin: calc(0.25rem * 1);
+    display: flex;
+    flex-direction: column;
+    gap: calc(0.25rem * 4);
+}
+
+.description :global(h1) {
+    font-size: var(--text-xl) !important;
+    color: var(--color-blue-600) !important;
+    font-weight: bold !important;
+}
+
+.description :global(h3) {
+    color: var(--color-blue-800) !important;
+    font-weight: bold !important;
+}
+
+.grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}

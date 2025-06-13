@@ -6,7 +6,6 @@
     import { invalidateAll } from "$app/navigation";
     import type { ActionResult } from "@sveltejs/kit";
     import { Carta, MarkdownEditor } from 'carta-md';
-    import insane from "insane";
     import 'carta-md/default.css';
     import "./carta.scss";
     import HelpText from "../../HelpText.svelte";
@@ -69,9 +68,7 @@
     }
 
     // Editor Setup
-    const carta = new Carta({
-       sanitizer: insane,
-    })
+    const carta = new Carta()
     // End Editor Setup
 
     let timeout_object: ReturnType<typeof setTimeout> | null = null;
