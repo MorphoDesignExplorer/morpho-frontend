@@ -8,7 +8,7 @@ import { redirect } from "@sveltejs/kit";
 export const load: PageServerLoad = async ({cookies}) => {
     let [_, ok] = await verifyToken(cookies.get("jwt") || "");
     if (!ok) {
-        return redirect(301, "/")
+        return redirect(301, "/auth/login/")
     }
 
     let projectData: Project[] = await (await fetch(`${BuildServerURL()}/project/`)).json()
@@ -23,7 +23,7 @@ export const load: PageServerLoad = async ({cookies}) => {
 export const actions = {
     logout: async({cookies}) => {
         cookies.delete("jwt", {path: "/"})
-        return redirect(301, "/")
+        return redirect(301, "/auth/login")
     },
     update: async({cookies, request}) => {
         let [_, ok] = await verifyToken(cookies.get("jwt") || "");
