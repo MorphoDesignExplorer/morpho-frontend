@@ -66,10 +66,10 @@ export async function isAuthenticated(cookies: Cookies): Promise<boolean> {
 }
 */
 
-async function getParameter(name: string): Promise<string> {
-    const ssm = new AWS.SSM({region: "us-east-1"});
-    const result = await ssm.getParameter({Name: name, WithDecryption: false}).promise()
-    return result.Parameter?.Value || "";
+async function getEncryptionSecret(): Promise<string> {
+    const client = new AWS.SSM({region: 'us-east-1'});
+    const response = await client.getParameter({Name: 'ENC_SECRET', WithDecryption: false}).promise();
+    return response.Parameter?.Value || "";
 }
 
 /*
@@ -82,8 +82,8 @@ async function getParameter(name: string): Promise<string> {
 export async function verifyToken(encodedToken: string): Promise<[Object, boolean]> {
     try {
         let secret = "";
-        if (process.env.ENVIRONMENT == 'prod') {
-            secret = await getParameter("ENC_SECRET");
+        if (process.env.ENVIRONMENT == "prod") {
+            secret = await getEncryptionSecret();
         } else if (process.env.ENVIRONMENT == "dev") {
             secret = process.env.SECRET_KEY || "";
         }
