@@ -2,6 +2,8 @@
     export let data;
 </script>
 
+<link href='/document.css' rel="stylesheet"/>
+
 <div class="grid parent">
     <div class="description">
         {@html data.html}
@@ -10,14 +12,12 @@
 
 <style lang="postcss">
     .parent {
-        display: grid;
-        grid-area: content;
-        grid-template-columns: 1fr 2fr 1fr;
-        grid-template-areas: "left description right";
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
     .description {
-        grid-area: description;
         @apply m-10 flex flex-col gap-4;
     }
 

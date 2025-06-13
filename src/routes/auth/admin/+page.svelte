@@ -54,6 +54,7 @@
 </script>
 
 <link rel="stylesheet" href="/app.css"/>
+<link href='/document.css' rel="stylesheet"/>
 
 <div class="relative flex min-h-screen bg-amber-50">
   <div class="flex flex-col bg-blue-50 w-1/5 min-h-full pt-10 mr-10 gap-5 border-r-2 border-r-blue-500 pl-4">

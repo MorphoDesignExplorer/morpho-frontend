@@ -1,7 +1,6 @@
 <script lang="ts">
     import { type AdminForm, type Project } from '$lib/types';
     import { Parser, HtmlRenderer } from "commonmark"
-    import insane from "insane";
 
     export let project: Project;
     export let form: Extract<AdminForm, {type: "project"}>;
@@ -21,7 +20,10 @@
 
     const parser = new Parser();
     const renderer = new HtmlRenderer();
+
+    $: console.log(renderer.render(parser.parse(form.form.description)))
 </script>
+
 
 <div class="flex items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm">
   <span class="w-1/4 self-start p-1 font-bold text-black flex flex-col text-xs">
@@ -104,7 +106,7 @@
   <div class="flex w-full">
     <textarea class="w-1/2 bg-white min-h-content p-2 m-1" rows="50" bind:value={form.form.description}></textarea>
     <div class="description">
-        {@html insane(renderer.render(parser.parse(form.form.description)))}
+        {@html renderer.render(parser.parse(form.form.description))}
     </div>
   </div>
 </div>
@@ -120,6 +122,10 @@
 
     .description :global(h3) {
         @apply text-blue-800 font-bold !important
+    }
+
+    .grid-4 {
+        @apply grid grid-cols-4
     }
 </style>
 

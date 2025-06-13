@@ -1,6 +1,5 @@
 import type { PageServerLoad } from "./$types";
 import {Parser, HtmlRenderer} from "commonmark";
-import insane from "insane";
 import { common_actions } from "../common_actions";
 import { type Actions } from "@sveltejs/kit";
 
@@ -10,7 +9,7 @@ export const load: PageServerLoad = async ({parent}) => {
     const parser = new Parser();
     const renderer = new HtmlRenderer();
     return {
-        html: insane( renderer.render(parser.parse(parent_data.metadata.description.text)) )
+        html: renderer.render(parser.parse(parent_data.metadata.description.text))
     };
 }
 

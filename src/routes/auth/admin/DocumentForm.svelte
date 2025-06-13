@@ -1,7 +1,6 @@
 <script lang="ts">
     import {type AdminForm} from '$lib/types';
     import { Parser, HtmlRenderer } from "commonmark"
-    import insane from "insane";
 
     export let form: Extract<AdminForm, {type: "document"}>;
 
@@ -18,26 +17,8 @@
   <div class="flex w-full">
     <textarea class="w-1/2 bg-white min-h-content p-2 m-1" rows="50" bind:value={form.form.text}></textarea>
     <div class="description">
-        {@html insane(renderer.render(parser.parse(form.form.text)))}
+        {@html renderer.render(parser.parse(form.form.text))}
     </div>
   </div>
 </div>
-
-<style lang="postcss">
-    .description {
-        @apply bg-white w-1/2 h-full p-2 m-1 flex flex-col gap-4;
-    }
-
-    .description :global(h1) {
-        @apply text-2xl text-blue-600 font-bold !important
-    }
-
-    .description :global(h3) {
-        @apply text-blue-800 font-bold !important
-    }
-
-    .description :globa(a) {
-        @apply font-bold text-blue-700 underline decoration-blue-700 !important
-    }
-</style>
 
