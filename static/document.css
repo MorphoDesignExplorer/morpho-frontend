@@ -40,6 +40,10 @@
     width: 100%;
 }
 
+.description > * > a {
+    color: rgb(37 99 235) !important
+}
+
 .description > a {
     color: rgb(37 99 235) !important
 }
