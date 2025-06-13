@@ -26,7 +26,7 @@ export const actions = {
         return redirect(301, "/")
     },
     update: async({cookies, request}) => {
-        let [_, ok] = verifyToken(cookies.get("jwt") || "");
+        let [_, ok] = await verifyToken(cookies.get("jwt") || "");
         if (!ok) {
             return redirect(301, "/")
         }
