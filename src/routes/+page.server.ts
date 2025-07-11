@@ -1,14 +1,15 @@
 import type { Project } from "$lib/types";
 import type { PageServerLoad } from "./$types"
 import { BuildServerURL } from "$lib/common";
-import { GetDocument } from "$lib/document";
+import { GetDocumentTree } from "$lib/document";
+import type { Document } from "$lib/types";
 
 let SERVER_URL = BuildServerURL();
 
 export const load: PageServerLoad = async () => {
-    let result: {projects: Project[], document: string} = {
+    let result: {projects: Project[], documents: {[k:string]: Document[]}} = {
         projects: [],
-        document: await GetDocument("Front Matter"),
+        documents: await GetDocumentTree()
     };
 
     result.projects = await (

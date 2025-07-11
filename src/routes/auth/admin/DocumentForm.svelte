@@ -1,6 +1,7 @@
 <script lang="ts">
     import {type AdminForm} from '$lib/types';
     import { Parser, HtmlRenderer } from "commonmark"
+    import ProseMirror from "./ProseMirror.svelte"
 
     export let form: Extract<AdminForm, {type: "document"}>;
 
@@ -15,7 +16,8 @@
     <span class="text-gray-500 font-normal">Edit the content on the about page.</span>
   </span>
   <div class="flex w-full">
-    <textarea class="w-1/2 bg-white min-h-content p-2 m-1" rows="50" bind:value={form.form.text}></textarea>
+    <ProseMirror/>
+    <!--<textarea class="w-1/2 bg-white min-h-content p-2 m-1" rows="50" bind:value={form.form.text}></textarea>-->
     <div class="description">
         {@html renderer.render(parser.parse(form.form.text))}
     </div>

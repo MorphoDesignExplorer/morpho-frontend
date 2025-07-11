@@ -9,10 +9,6 @@ const config = {
     preprocess: vitePreprocess(),
 };
 
-if (process.env.BASEPATH_PREFIX) {
-    config.kit.paths = { base: "SVELTE_BASE", assets: "SVELTE_ASSETS" }
-} else {
-    config.kit.paths = { base: "", assets: "" }
-}
+config.kit.paths = { base: "", assets: "" }
 
 export default config;

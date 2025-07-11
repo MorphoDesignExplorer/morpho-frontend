@@ -1,6 +1,5 @@
 import { redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { isAuthenticated } from "$lib/auth";
 import {BuildServerURL} from "$lib/common";
 import { verifyToken } from "../../../lib/auth";
 
@@ -45,7 +44,8 @@ export const actions = {
                 }
             } catch (e) {
                 if (response_data.length > 0) {
-                    cookies.set("jwt", response_data, {path: "/", secure: true, httpOnly: true})
+                    // stay logged in for a month
+                    cookies.set("jwt", response_data, {path: "/", secure: true, httpOnly: true, maxAge: 60 * 60 * 24 * 30})
                 }
             }
 

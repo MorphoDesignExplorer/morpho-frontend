@@ -88,6 +88,10 @@ export async function verifyToken(encodedToken: string): Promise<[Object, boolea
             secret = process.env.SECRET_KEY || "";
         }
 
+        if (encodedToken.length == 0) {
+            return [{}, false]
+        }
+
         const key = Buffer.from(secret)
         const decodedToken = Buffer.from(encodedToken, 'base64');
         const byteLength = decodedToken.subarray(0,4).readInt32BE();
@@ -103,7 +107,6 @@ export async function verifyToken(encodedToken: string): Promise<[Object, boolea
         decipher.final()
         return [JSON.parse(decrypted.toString()), true]
     } catch(e) {
-        console.log(e)
         return [{}, false]
     }
 }
