@@ -1,50 +1,14 @@
 import { verifyToken } from "$lib/auth"
 import { redirect, type Actions } from "@sveltejs/kit";
-import { BuildServerURL } from "$lib/common";
-import type { AdminForm, Project } from "$lib/types";
-import type { PageServerLoad } from "./$types";
-
-export const load: PageServerLoad = async ({cookies, params}) => {
-    const projects: Project[] = await (await fetch(`${BuildServerURL()}/project/${params.id}/`)).json()
-
-    const data: {project: Project} = {
-        project: projects[0]
-    }
-
-    return data
-}
 
 export const actions = {
-    update: async({cookies, request}) => {
+    create: async({cookies, request}) => {
         let [_, ok] = await verifyToken(cookies.get("jwt") || "");
         if (!ok) {
             return redirect(301, "/")
         }
 
-        const form: Extract<AdminForm, {type: "project"}> = JSON.parse(await request.text());
-        const updateRequest = {
-            "project_name": form.form.project_name,
-            "variable_metadata_units": form.form.vmetadata.reduce((acc, item) => {acc[item.field_name] = item.field_unit; return acc;}, {} as Record<string, string>),
-            "output_metadata_units": form.form.ometadata.reduce((acc, item) => {acc[item.field_name] = item.field_unit; return acc;}, {} as Record<string, string>),
-            "asset_descriptions": form.form.ametadata.reduce((acc, item) => {acc[item.tag] = item.description; return acc;}, {} as Record<string, string>),
-            "project_description": form.form.description,
-            "captions": form.form.captions,
-            "human_name": form.form.human_name,
-        }
-
-        // TODO replace bearer token with one from the cookie 
-        const result = await fetch(`${BuildServerURL()}/project/`, {
-            method: "PUT",
-            body: JSON.stringify(updateRequest),
-            headers: {
-                "Authorization": `Bearer ${cookies.get("jwt") || ''}`
-            }
-        });
-
-        if (result.ok) {
-            return {status: "success"}
-        } else {
-            return {status: "failure"}
-        }
+        const form = await request.formData()
+        console.log(form.get("zipfile"))
     }
 } satisfies Actions;
