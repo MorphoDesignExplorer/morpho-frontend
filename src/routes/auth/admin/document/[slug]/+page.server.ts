@@ -4,64 +4,84 @@ import type { AdminForm, Document } from "$lib/types";
 import { redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = async ({params}) => {
-    const documents: Document[] = await (await fetch(`${BuildServerURL()}/document/`)).json()
+export const load: PageServerLoad = async ({ params }) => {
+    const documents: Document[] = await (
+        await fetch(`${BuildServerURL()}/document/`)
+    ).json();
 
-    const data: {document: Document, documents: Document[]} = {
-        document: documents.filter(doc => doc.slug == params.slug)[0],
+    const data: { document: Document; documents: Document[] } = {
+        document: documents.filter((doc) => doc.slug == params.slug)[0],
         documents: documents,
-    }
+    };
 
-    return data
-}
+    return data;
+};
 
 export const actions = {
-    update: async({cookies, request}) => {
+    update: async ({ cookies, request }) => {
         let [_, ok] = await verifyToken(cookies.get("jwt") || "");
         if (!ok) {
-            return redirect(301, "/")
+            return redirect(301, "/");
         }
 
-        const form: Extract<AdminForm, {type: "document"}> = JSON.parse(await request.text());
+        const form: Extract<AdminForm, { type: "document" }> = JSON.parse(
+            await request.text(),
+        );
         const updateRequest = {
             title: form.form.title,
             text: form.form.text,
             parent: form.form.parent,
-        }
+        };
 
-        let result = await fetch(`${BuildServerURL()}/document/${form.form.id}/`, {
-            method: "PUT",
-            body: JSON.stringify(updateRequest),
-            headers: {
-                "Authorization": `Bearer ${cookies.get("jwt") || ''}`
-            }
-        })
+        let response = await fetch(
+            `${BuildServerURL()}/document/${form.form.id}/`,
+            {
+                method: "PUT",
+                body: JSON.stringify(updateRequest),
+                headers: {
+                    Authorization: `Bearer ${cookies.get("jwt") || ""}`,
+                },
+            },
+        );
 
-        if (result.ok) {
-            return {status: "success"}
+        const responseJson = (await response.json()) as {
+            code: string | null;
+            message: string;
+        };
+
+        if (response.ok) {
+            return { status: "success", ...responseJson };
         } else {
-            return {status: "failure"}
+            return { status: "failure", ...responseJson };
         }
     },
-    delete: async({cookies, request}) => {
+    delete: async ({ cookies, request }) => {
         let [_, ok] = await verifyToken(cookies.get("jwt") || "");
         if (!ok) {
-            return redirect(301, "/")
+            return redirect(301, "/");
         }
 
-        const deleteRequest = await request.json() as {idOrSlug: string}
+        const deleteRequest = (await request.json()) as { idOrSlug: string };
 
-        let result = await fetch(`${BuildServerURL()}/document/${deleteRequest.idOrSlug}/`, {
-            method: "DELETE",
-            headers: {
-                "Authorization": `Bearer ${cookies.get("jwt") || ''}`
+        let response = await fetch(
+            `${BuildServerURL()}/document/${deleteRequest.idOrSlug}/`,
+            {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${cookies.get("jwt") || ""}`,
+                },
             },
-        })
+        );
 
-        if (result.ok) {
-            return {status: "success"}
+        const responseJson = (await response.json()) as {
+            code: string | null;
+            message: string;
+        };
+
+        if (response.ok) {
+            return { status: "success", ...responseJson };
         } else {
-            return {status: "failure"}
+            return { status: "failure", ...responseJson };
         }
-    }
+    },
 } satisfies Actions;
