@@ -34,7 +34,9 @@
             <ol class="list-dashed-arrows ml-8">
                 {#each data.projects as project}
                     <li class="text-blue-600">
-                        <a href="/auth/admin/project/{project.project_name}/"
+                        <a
+                            target="_self"
+                            href="/auth/admin/project/{project.project_name}/"
                             >{project.metadata.human_name} ({project.project_name})</a
                         >
                     </li>
