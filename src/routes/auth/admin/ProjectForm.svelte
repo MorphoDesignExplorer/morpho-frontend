@@ -1,6 +1,7 @@
 <script lang="ts">
     import { type AdminForm, type Project } from "$lib/types";
     import { Parser, HtmlRenderer } from "commonmark";
+    import ProseMirror from "./ProseMirror.svelte";
 
     export let project: Project;
     export let form: Extract<AdminForm, { type: "project" }>;
@@ -181,14 +182,12 @@
         >
     </span>
     <div class="flex w-full">
-        <textarea
-            class="w-1/2 bg-white min-h-content p-2 m-1"
-            rows="50"
-            bind:value={form.form.description}
-        ></textarea>
+        <ProseMirror bind:text={form.form.description} />
+        <!--
         <div class="description">
             {@html renderer.render(parser.parse(form.form.description))}
         </div>
+        -->
     </div>
 </div>
 
