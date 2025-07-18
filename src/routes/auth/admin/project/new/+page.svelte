@@ -31,7 +31,22 @@
     <h1 class="text-3xl font-extrabold">
         <span class="text-blue-900">Admin</span> > Create Project
     </h1>
-    <input type="file" name="upload" id="zipfile" />
+
+    <div
+        class="flex items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm mr-[-40%] mb-20"
+    >
+        <span
+            class="w-1/4 self-start p-1 font-bold text-black flex flex-col text-xs"
+        >
+            <span class="text-sm">Zipo Archive</span>
+            <span class="text-gray-500 font-normal"
+                >Upload a compressed zip folder of the project here.</span
+            >
+        </span>
+        <div class="flex w-full">
+            <input type="file" name="upload" id="zipfile" />
+        </div>
+    </div>
     <input
         type="submit"
         value="Submit"

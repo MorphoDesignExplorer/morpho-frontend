@@ -105,7 +105,7 @@
             type="submit">Save</button
         >
         <button
-            class="self-start bg-green-700 font-bold text-white text-sm px-3 py-1"
+            class="self-start bg-red-700 font-bold text-white text-sm px-3 py-1"
             type="button"
             on:click={handleDelete}>Delete</button
         >

@@ -26,7 +26,7 @@
                 <h1 class="text-xl font-extrabold px-3">Projects</h1>
                 <a
                     href="/auth/admin/project/new"
-                    class="bg-green-800 text-white font-bold py-1 px-2 text-sm"
+                    class="bg-green-700 text-white font-bold py-1 px-2 text-sm"
                     >Add +</a
                 >
             </span>
@@ -49,7 +49,7 @@
                 <h1 class="text-xl font-extrabold px-3">Documents</h1>
                 <a
                     href="/auth/admin/document/new"
-                    class="bg-green-800 text-white font-bold py-1 px-2 text-sm"
+                    class="bg-green-700 text-white font-bold py-1 px-2 text-sm"
                     >Add +</a
                 >
             </span>
