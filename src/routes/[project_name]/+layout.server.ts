@@ -6,7 +6,7 @@ import { BuildServerURL } from "$lib/common";
 // TODO switch localhost to backend
 const SERVER_URL = BuildServerURL();
 
-export const load: PageServerLoad = async ({ cookies, params }) => {
+export const load: PageServerLoad = async ({ params }) => {
     let result: {
         projects: Project[];
         metadata: Metadata;
@@ -14,7 +14,11 @@ export const load: PageServerLoad = async ({ cookies, params }) => {
         prefix: string;
     } = {
         projects: [],
-        metadata: {},
+        metadata: {
+            captions: [],
+            human_name: "",
+            description: { slug: "", text: "" },
+        },
         authentication_status: { status: "ANONYMOUS" },
         prefix: process.env.SUBPATH_PREFIX || "",
     };

@@ -21,30 +21,34 @@ export function predicate_equal(predicates: ManualFilter[]) {
                     return true;
                 }
 
-                const rvalue = parseFloat(predicate.rvalue);
+                const rvalue = parseFloat(predicate.rvalue.toString());
                 let value_to_check: string | number;
                 if (predicate.lvalue in model.parameters) {
                     value_to_check = model.parameters[predicate.lvalue];
                 } else if (predicate.lvalue in model.output_parameters) {
                     value_to_check = model.output_parameters[predicate.lvalue];
+                } else {
+                    value_to_check = 0;
                 }
 
-                switch (predicate.op) {
-                    case optype.ge:
-                        return value_to_check >= rvalue;
-                    case optype.le:
-                        return value_to_check <= rvalue;
-                    case optype.gt:
-                        return value_to_check > rvalue;
-                    case optype.lt:
-                        return value_to_check < rvalue;
-                    case optype.eq:
-                        return value_to_check == rvalue;
-                    case optype.ne:
-                        return value_to_check != rvalue;
+                if (typeof value_to_check === "number") {
+                    switch (predicate.op) {
+                        case optype.ge:
+                            return value_to_check >= rvalue;
+                        case optype.le:
+                            return value_to_check <= rvalue;
+                        case optype.gt:
+                            return value_to_check > rvalue;
+                        case optype.lt:
+                            return value_to_check < rvalue;
+                        case optype.eq:
+                            return value_to_check == rvalue;
+                        case optype.ne:
+                            return value_to_check != rvalue;
+                    }
+                } else {
+                    return value_to_check === rvalue.toString();
                 }
-
-                return true;
             })
             .reduce((prev, curr) => prev && curr, true);
     };

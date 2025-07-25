@@ -58,7 +58,7 @@
             class="bg-transparent"
             value={$page.params.project_name}
             on:change={async (event) => {
-                await navigate_to_page(event.target?.value);
+                await navigate_to_page(event.currentTarget?.value);
             }}
         >
             {#each data.projects.sort((a, b) => {

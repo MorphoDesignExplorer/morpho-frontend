@@ -4,14 +4,16 @@
     import type { ActionData } from "./$types";
     import { applyAction, deserialize, enhance } from "$app/forms";
     import type { ActionResult } from "@sveltejs/kit";
+    import { XHRFetch } from "./xhrfetch";
 
     export let form: ActionData;
 
     let submitDisabled = false;
     let progress = 0;
+    let zipfield: HTMLInputElement;
 
     async function handleSubmit(
-        event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement },
+        event: SubmitEvent & { target: EventTarget & HTMLFormElement },
     ) {
         event.preventDefault();
 
@@ -25,32 +27,30 @@
         submitDisabled = true;
         form = null;
 
-        //
-        // Start uploading the file
-        //
-
-        const data = new FormData(event.currentTarget);
-        const xhr = new XMLHttpRequest();
-        xhr.upload.addEventListener(
-            "progress",
-            (event) => {
+        try {
+            const zipfile = zipfield.files?.item(0);
+            if (zipfile == null) {
+                throw new Error("No file was chosen.");
+            }
+            const uploadedFilename = await XHRFetch(zipfile, (event) => {
                 if (event.lengthComputable) {
                     const percentage = Math.round(
                         (event.loaded * 100) / event.total,
                     );
                     progress = percentage;
                 }
-            },
-            false,
-        );
-
-        xhr.addEventListener(
-            "load",
-            (event: ProgressEvent<XMLHttpRequestEventTarget>) => {
-                progress = 100;
-                const result: ActionResult = deserialize(
-                    (event.currentTarget as XMLHttpRequest).responseText,
-                );
+            });
+            const finalResponse = await fetch(event.target.action, {
+                method: "POST",
+                body: JSON.stringify({
+                    s3uri: uploadedFilename,
+                }),
+            });
+            // enable form again after upload is done
+            if (finalResponse.ok) {
+                const responseText = await finalResponse.text();
+                console.log(responseText);
+                const result: ActionResult = deserialize(responseText);
 
                 //
                 // Release the form lock
@@ -69,12 +69,21 @@
 
                 applyAction(result);
                 submitDisabled = false;
-            },
-            false,
-        );
-
-        xhr.open("POST", event.currentTarget.action, true);
-        xhr.send(data);
+            }
+        } catch (err) {
+            if (err instanceof Error) {
+                form = {
+                    code: "400",
+                    message: err.message,
+                };
+            } else {
+                console.error(err);
+                form = {
+                    code: "400",
+                    message: "unknown error",
+                };
+            }
+        }
     }
 </script>
 
@@ -107,7 +116,7 @@
         <span
             class="w-1/4 self-start p-1 font-bold text-black flex flex-col text-xs"
         >
-            <span class="text-sm">Zipo Archive</span>
+            <span class="text-sm">Zip Archive</span>
             <span class="text-gray-500 font-normal"
                 >Upload a compressed zip folder of the project here.</span
             >
@@ -118,6 +127,7 @@
                 name="upload"
                 id="zipfile"
                 disabled={submitDisabled}
+                bind:this={zipfield}
             />
         </div>
     </div>
