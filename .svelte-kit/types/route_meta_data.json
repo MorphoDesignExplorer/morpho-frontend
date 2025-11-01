@@ -1,0 +1,56 @@
+{
+	"/": [
+		"src/routes/+page.server.ts"
+	],
+	"/auth/admin": [
+		"src/routes/auth/admin/+page.server.ts",
+		"src/routes/auth/admin/+layout.server.ts",
+		"src/routes/auth/admin/+layout.server.ts"
+	],
+	"/auth/admin/document/new": [
+		"src/routes/auth/admin/document/new/+page.server.ts",
+		"src/routes/auth/admin/+layout.server.ts"
+	],
+	"/auth/admin/document/[slug]": [
+		"src/routes/auth/admin/document/[slug]/+page.server.ts",
+		"src/routes/auth/admin/+layout.server.ts"
+	],
+	"/auth/admin/images": [
+		"src/routes/auth/admin/images/+server.ts"
+	],
+	"/auth/admin/project/new": [
+		"src/routes/auth/admin/project/new/+page.server.ts",
+		"src/routes/auth/admin/+layout.server.ts"
+	],
+	"/auth/admin/project/new/presign": [
+		"src/routes/auth/admin/project/new/presign/+server.ts"
+	],
+	"/auth/admin/project/[id]": [
+		"src/routes/auth/admin/project/[id]/+page.server.ts",
+		"src/routes/auth/admin/+layout.server.ts"
+	],
+	"/auth/forgot_password": [
+		"src/routes/auth/forgot_password/+page.server.ts"
+	],
+	"/auth/login": [
+		"src/routes/auth/login/+page.server.ts"
+	],
+	"/auth/logout": [
+		"src/routes/auth/logout/+page.server.ts"
+	],
+	"/auth/reset_password": [
+		"src/routes/auth/reset_password/+page.server.ts"
+	],
+	"/material/[slug]": [
+		"src/routes/material/[slug]/+page.server.ts"
+	],
+	"/[project_name]": [
+		"src/routes/[project_name]/+page.server.ts",
+		"src/routes/[project_name]/+layout.server.ts",
+		"src/routes/[project_name]/+layout.server.ts"
+	],
+	"/[project_name]/about": [
+		"src/routes/[project_name]/about/+page.server.ts",
+		"src/routes/[project_name]/+layout.server.ts"
+	]
+}

@@ -1,0 +1,1 @@
+export { default as component } from "../../../../src/routes/auth/reset_password/+page.svelte";
