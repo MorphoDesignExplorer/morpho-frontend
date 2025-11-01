@@ -1,44 +1,46 @@
 import { redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { BuildServerURL } from "$lib/common";
-import { verifyToken } from "../../../lib/auth";
+import { generateResetToken, generateToken, getPassSecret, verifyResetToken, verifyToken } from "$lib/auth";
+import { GetDatabase } from "$lib/database";
+import { reportSQLError } from "$lib/error";
 
-type ForgotPasswordResponse = {
-    detail: string
-}
-
-let SERVER_URL = BuildServerURL();
-
-
-export const load: PageServerLoad = async ({cookies}) => {
-    const [_, ok] = await verifyToken(cookies.get("jwt") || "");
+export const load: PageServerLoad = async ({cookies, url}) => {
+    let [_, ok] = await verifyToken(cookies.get("jwt") || "")
     // redirect the user out of this page if they are verified (i.e. logged in).
     if (ok) {
-        return redirect(302, "/")
+        return redirect(302, "/auth/admin")
     }
 }
 
-
 export const actions = {
-    default: async({request}) => {
+    submit: async ({request, cookies}): Promise<{message: string}> => {
         const form = await request.formData();
         const email = form.get("email")?.toString();
-        
-        try {
-            const response = await fetch(`${SERVER_URL}/auth/reset_password_init?` + new URLSearchParams({ident: email}).toString(), {
-                method: "GET",
-            })
-            const response_data: ForgotPasswordResponse = await response.json();
-            if (response_data.detail) {
-                return {
-                    "message": "A password reset link was sent to your email. Cheers!"
+        const db = await GetDatabase();
+
+        if (email) {
+            try {
+                let mail_match = undefined; 
+
+                try {
+                    mail_match = await db.get("select email from user where email = ?", email);
+                } catch (err) {
+                    reportSQLError(err as Error)
                 }
+
+                if (mail_match) {
+                    const token = await generateResetToken(email);
+                    if (typeof token === "string") {
+                        console.log("mailing", token);
+                    }
+                }
+            } catch (err) {
+                reportSQLError(err as Error)
             }
-        } catch (e) {
-            console.log(e)
-            return {
-                "message": 'We are facing an internal issue. Please try again later.'
-            }
+        }
+
+        return {
+            message: `An email was sent to ${email}.`
         }
     },
 } satisfies Actions

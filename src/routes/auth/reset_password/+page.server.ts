@@ -1,65 +1,45 @@
 import { redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import {BuildServerURL} from "$lib/common";
+import { GetResetTokenMetadata, ResetPassword, verifyResetToken, verifyToken } from "$lib/auth";
+import { GetDatabase } from "$lib/database";
 
-type ResetPasswordResponse = {
-    status: string
-} | {
-    detail: string,
-    code: string
-}
-
-
-let SERVER_URL = BuildServerURL();
-
-export const load: PageServerLoad = async ({url}) => {
-    /*
-    const jwt_session = url.searchParams.get("session");
-    if (jwt_session) {
-        if (await verifyJWT(jwt_session)) {
-            return {session: jwt_session};
-        }
+export const load: PageServerLoad = async ({cookies, url}) => {
+    let [_, ok] = await verifyToken(cookies.get("jwt") || "")
+    // redirect the user out of this page if they are verified (i.e. logged in).
+    if (ok) {
+        return redirect(302, "/auth/admin")
     }
-    */
-    return redirect(303, "/");
+
+    let token = url.searchParams.get("token") || ""
+    let valid_token = await verifyResetToken(token);
+    if (valid_token) {
+        return {validity: true, token: token}
+    } else {
+        return {validity: false}
+    }
 }
 
 export const actions = {
-    reset: async({request, url}) => {
+    submit: async ({request, cookies}): Promise<{message: string, code: "OK" | "INVALID" | "NOK"}> => {
         const form = await request.formData();
-        const pwd1 = form.get("pwd1")?.toString();
-        const pwd2 = form.get("pwd2")?.toString();
+        const pwd = form.get("pwd")?.toString();
+        const confirm = form.get("confirm")?.toString();
+        const token = form.get("token")?.toString();
 
-        if (pwd1 != pwd2) {
-            return {
-                message: "passwords do not match."
+        if (pwd && confirm && token && pwd == confirm) {
+            if (await ResetPassword(token, pwd)) {
+                cookies.set("pending_message", "Password Reset was Successful!", {maxAge: 60, path: "/"})
+                return redirect(302, "/auth/login/")
+            } else {
+                return {
+                    message: "Invalid reset session. Redirecting...",
+                    code: "INVALID"
+                }
             }
         } else {
-            const response = await fetch(`${SERVER_URL}/auth/reset_password`, {
-                method: "POST",
-                body: JSON.stringify({
-                    session: url.searchParams.get("session"),
-                    replacement_password: pwd1
-                }),
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-            const response_data: ResetPasswordResponse = await response.json();
-
-            if ("code" in response_data) {
-                if (response_data.code == "reset_password_too_similar") {
-                    return {
-                        message: response_data.detail
-                    }
-                } else {
-                    return {
-                        code: "expired",
-                        message: response_data.detail
-                    }
-                }
-            } else {
-                return redirect(303, "/");
+            return {
+                message: "Passwords do not match.",
+                code: "NOK"
             }
         }
     },

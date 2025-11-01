@@ -1,8 +1,8 @@
 import type { LayoutServerLoad } from "./$types";
-import { BuildServerURL } from '$lib/common';
 import { type Project, type Document } from '$lib/types';
 import { verifyToken } from '$lib/auth';
 import { redirect } from "@sveltejs/kit";
+import { GetDocuments, GetProjects } from "$lib/database";
 
 export const load: LayoutServerLoad = async ({cookies, setHeaders}) => {
     setHeaders({
@@ -14,8 +14,8 @@ export const load: LayoutServerLoad = async ({cookies, setHeaders}) => {
         return redirect(301, "/auth/login/")
     }
 
-    let projectData: Project[] = await (await fetch(`${BuildServerURL()}/project/`)).json()
-    let documentData: Document[] = await (await fetch(`${BuildServerURL()}/document/`)).json()
+    let projectData: Project[] = await GetProjects({_tag: "None"});
+    let documentData: Document[] = await GetDocuments();
 
     return {
         projects: projectData,

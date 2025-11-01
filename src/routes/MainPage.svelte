@@ -1,10 +1,11 @@
 <script lang="ts">
     import { base } from "$app/paths";
-    import type { PageData } from "./$types";
-    import {RenderDocument} from '$lib/document';
+    import { RenderDocument } from '$lib/document';
+    import type {Document, Project} from "$lib/types";
+    import type {PageData} from "./$types";
 
     export let data: PageData;
-    
+
     let dropdownElement: HTMLDivElement;
     let anchorPixel: HTMLSpanElement;
     let hover = false;

@@ -1,5 +1,5 @@
 export interface Model {
-    id: number,
+    id: string,
     scoped_id: number,
     parameters: Record<string, string|number>,
     output_parameters: Record<string, string|number>,
@@ -66,3 +66,26 @@ export type AdminForm =
     { type: "project", form: { project_name: string, human_name: string, captions: Caption[], vmetadata: ProjectField[], ometadata: ProjectField[], ametadata: ProjectAsset[], description: string } } |
     {type: "none"};
 
+
+// generic types
+
+export type Some<T> = {
+    _tag: "Some",
+    value: T
+}
+
+export type None = {
+    _tag: "None"
+}
+
+export type Option<T> = Some<T> | None;
+
+export enum MorphoErrorCode {
+    EMAIL_DOES_NOT_EXIST,
+    DB_ERROR
+}
+
+export interface MorphoError {
+    code: MorphoErrorCode
+    message: string
+}

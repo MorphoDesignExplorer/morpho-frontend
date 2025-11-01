@@ -2,6 +2,7 @@ import type { PageServerLoad } from "../$types";
 import { type Authenticated } from "$lib/auth";
 import type { Metadata, Project } from "$lib/types";
 import { BuildServerURL } from "$lib/common";
+import { GetProjects } from "$lib/database";
 
 // TODO switch localhost to backend
 const SERVER_URL = BuildServerURL();
@@ -23,7 +24,7 @@ export const load: PageServerLoad = async ({ params }) => {
         prefix: process.env.SUBPATH_PREFIX || "",
     };
 
-    result.projects = await (await fetch(`${SERVER_URL}/project/`)).json();
+    result.projects = await GetProjects({_tag: "None"});
 
     result.metadata = result.projects.filter(
         (item) => item.project_name == params.project_name,

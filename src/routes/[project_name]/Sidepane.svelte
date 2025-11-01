@@ -7,6 +7,8 @@
     import LazyImagePlus from "./LazyImagePlus.svelte";
     import { get_display_options } from "$lib/context";
 
+    import { PUBLIC_S3_URI } from "$env/static/public"
+
     let display_options: Writable<DisplayOptions> = get_display_options();
 
     export let model: Model;
@@ -110,8 +112,10 @@
             <div class="flex flex-col items-end px-2 py-4 border-gray-300 shadow-md border w-fit h-fit relative">
                 <p class="mr-auto p-2 font-bold">{tag}</p>
                 <a
+                    role="button"
+                    tabindex="0"
                     class="bg-white text-blue-500 hover:bg-blue-500 hover:text-white transition ease-in-out font-bold p-1 text-sm w-fit absolute top-0 right-0 rounded-es-md"
-                    href={get_image_src_or_empty(model, tag)}
+                    href={PUBLIC_S3_URI + get_image_src_or_empty(model, tag)}
                     target="_blank">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 font-bold">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
@@ -121,7 +125,7 @@
                 <LazyImagePlus
                     placeholder="https://placehold.co/300/f8fafc/f8fafc"
                     class="m-1 w-60"
-                    src={get_image_src_or_empty(model, tag)}
+                    src={PUBLIC_S3_URI + get_image_src_or_empty(model, tag)}
                     alt={model.id}
                 />
             </div>
@@ -133,7 +137,7 @@
 
     {#if utility_visible}
     <div class="sticky w-fit ml-auto flex flex-row gap-1 py-1 shadow-md bg-black opacity-80 bottom-0 text-white" in:fade={{duration: 220}} out:fade>
-        <span class="cursor-pointer border-r border-white px-2 h-full" on:click={() => {$display_options.sidepane = !$display_options.sidepane}}>Close Detail Pane</span>
+        <span class="cursor-pointer border-r border-white px-2 h-full" role="button" on:click={() => {$display_options.sidepane = !$display_options.sidepane}}>Close Detail Pane</span>
         <a href="#input-params" class="cursor-pointer border-r border-white px-2 h-full ">i/p parameters</a>
         <a href="#output-params" class="cursor-pointer border-r border-white px-2 h-full">o/p parameters</a>
         <!-- <a href="#assets" class="cursor-pointer px-2 h-full">Assets</a> -->
@@ -143,10 +147,6 @@
 </div>
 
 <style type="postcss">
-    .link {
-        @apply underline underline-offset-1 decoration-blue-500 font-bold
-    }
-
     .no-scrollbar {
         scrollbar-width: none;
     }

@@ -3,11 +3,10 @@ import { BuildServerURL } from "$lib/common";
 import type { AdminForm, Document } from "$lib/types";
 import { redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
+import { GetDocuments } from "$lib/database";
 
 export const load: PageServerLoad = async ({ params }) => {
-    const documents: Document[] = await (
-        await fetch(`${BuildServerURL()}/document/`)
-    ).json();
+    const documents: Document[] = await GetDocuments();
 
     const data: { document: Document; documents: Document[] } = {
         document: documents.filter((doc) => doc.slug == params.slug)[0],

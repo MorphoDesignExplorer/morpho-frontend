@@ -23,8 +23,6 @@
 
     const parser = new Parser();
     const renderer = new HtmlRenderer();
-
-    $: console.log(renderer.render(parser.parse(form.form.description)));
 </script>
 
 <div

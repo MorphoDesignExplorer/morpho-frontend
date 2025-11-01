@@ -6,6 +6,7 @@
     import type { Writable } from "svelte/store";
     import LazyImagePlus from "./LazyImagePlus.svelte";
     import { get_filter_predicates } from "../../lib/context";
+    import { PUBLIC_S3_URI } from "$env/static/public"
 
     // props
 
@@ -22,6 +23,8 @@
     export let caption_tags: Caption[];
 
     export let filtered_models: Model[];
+
+    // console.log(models)
 
     // component state
 
@@ -340,7 +343,7 @@
                         title="Click to show details"
                     >
                         <LazyImagePlus
-                            src={get_image_src_or_empty(model, image_tag)}
+                            src={PUBLIC_S3_URI + get_image_src_or_empty(model, image_tag)}
                             placeholder="https://placehold.co/300/f8fafc/f8fafc"
                             alt={model.files[0].tag}
                             class="w-[9vw] rounded-sm"

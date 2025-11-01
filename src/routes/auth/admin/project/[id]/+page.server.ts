@@ -3,11 +3,10 @@ import { redirect, type Actions } from "@sveltejs/kit";
 import { BuildServerURL } from "$lib/common";
 import type { AdminForm, Project } from "$lib/types";
 import type { PageServerLoad } from "./$types";
+import { GetProjects } from "$lib/database";
 
 export const load: PageServerLoad = async ({ cookies, params }) => {
-    const projects: Project[] = await (
-        await fetch(`${BuildServerURL()}/project/${params.id}/`)
-    ).json();
+    const projects: Project[] = await GetProjects({_tag: "None"});
 
     const data: { project: Project } = {
         project: projects[0],

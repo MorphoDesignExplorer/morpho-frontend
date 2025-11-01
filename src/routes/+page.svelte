@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import MainPage from "./MainPage.svelte";
     export let data;
 </script>

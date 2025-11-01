@@ -1,6 +1,6 @@
 import type { PageServerLoad } from "./$types"
 import { type Document } from "$lib/types";
-import { GetDocumentTree } from "$lib/document";
+import { GetDocumentTree } from "$lib/database";
 import { labelTree } from './navigator'
 import { RenderDocument } from "$lib/document";
 

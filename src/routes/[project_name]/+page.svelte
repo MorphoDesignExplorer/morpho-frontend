@@ -100,10 +100,6 @@
 <!-- End of Main Data Display -->
 
 <style>
-    #navbar {
-        grid-area: navbar;
-    }
-
     #content {
         grid-area: content;
         display: grid;

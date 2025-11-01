@@ -1,10 +1,10 @@
 import type { PageServerLoad } from "./$types";
-import { BuildServerURL } from '$lib/common';
 import { type Project, type Document } from '$lib/types';
+import { GetDocuments, GetProjects } from "$lib/database";
 
-export const load: PageServerLoad = async ({cookies}) => {
-    let projectData: Project[] = await (await fetch(`${BuildServerURL()}/project/`)).json()
-    let documentData: Document[] = await (await fetch(`${BuildServerURL()}/document/`)).json()
+export const load: PageServerLoad = async () => {
+    let projectData: Project[] = await GetProjects({_tag: "None"});
+    let documentData: Document[] = await GetDocuments();
 
     return {
         projects: projectData,

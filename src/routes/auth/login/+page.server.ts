@@ -1,13 +1,13 @@
 import { redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import {BuildServerURL} from "$lib/common";
-import { verifyToken } from "../../../lib/auth";
+import { generateToken, getEncryptionSecret, getPassSecret, verifyToken } from "$lib/auth";
+import crypto from "node:crypto";
+import { GetDatabase } from "$lib/database";
 
 type FormResponse = {
     message: string
 }
-
-let SERVER_URL = BuildServerURL();
 
 export const load: PageServerLoad = async ({cookies}) => {
     let [_, ok] = await verifyToken(cookies.get("jwt") || "")
@@ -22,30 +22,31 @@ export const actions = {
         const form = await request.formData();
         const email = form.get("uname")?.toString();
         const password = form.get("pwd")?.toString();
+        const db = await GetDatabase();
 
         if (email && password) {
-            const response = await fetch(`${SERVER_URL}/auth/login/`, {
-                method: "POST",
-                body: new URLSearchParams({
-                    email: email,
-                    password: password
-                }),
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            } satisfies RequestInit);
-            const response_data = await response.text();
+            const hashedPassword = crypto.createHash("sha512").update(password + await getPassSecret()).digest("base64");
+            let hashInDB: {password_hash: string} | undefined = undefined;
 
             try {
-                if (JSON.parse(response_data)) {
+                hashInDB = await db.get("select password_hash from user where email = ?", email);
+            } catch (err) {
+                reportSQLError(err);
+            }
+
+            if (hashInDB) {
+                if (hashInDB.password_hash === hashedPassword) {
+                    const token = await generateToken(email);
+                    // stay logged in for a month
+                    cookies.set("jwt", token, {path: "/", secure: true, httpOnly: true, maxAge: 60 * 60 * 24 * 30});
+                } else {
                     return {
-                        message: JSON.parse(response_data)["message"]
+                        message: "Invalid credentials."
                     }
                 }
-            } catch (e) {
-                if (response_data.length > 0) {
-                    // stay logged in for a month
-                    cookies.set("jwt", response_data, {path: "/", secure: true, httpOnly: true, maxAge: 60 * 60 * 24 * 30})
+            } else {
+                return {
+                    message: "Invalid credentials."
                 }
             }
 

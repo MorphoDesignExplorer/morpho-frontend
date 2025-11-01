@@ -30,7 +30,6 @@
             body: JSON.stringify($formData),
         });
         const result: ActionResult = deserialize(await response.text());
-        console.log(result);
         if (result.type == "success") {
             if (result.data?.status == "success") {
                 await invalidateAll();
@@ -65,7 +64,6 @@
                     body: JSON.stringify({ idOrSlug: data.document.slug }),
                 });
                 const result: ActionResult = deserialize(await response.text());
-                console.log(result);
                 if (result.type == "success") {
                     if (result.data?.status == "success") {
                         window.alert("Deleted " + data.document.slug + ".");
