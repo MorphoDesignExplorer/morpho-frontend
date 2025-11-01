@@ -5,6 +5,7 @@ import {BuildServerURL} from "$lib/common";
 import { generateToken, getEncryptionSecret, getPassSecret, verifyToken } from "$lib/auth";
 import crypto from "node:crypto";
 import { GetDatabase } from "$lib/database";
+import { reportSQLError } from "../../../lib/error";
 
 type FormResponse = {
     message: string
@@ -32,7 +33,7 @@ export const actions = {
             try {
                 hashInDB = await db.get("select password_hash from user where email = ?", email);
             } catch (err) {
-                reportSQLError(err);
+                reportSQLError(err as Error);
             }
 
             if (hashInDB) {
