@@ -1,7 +1,6 @@
 import sqlite3 from "sqlite3"
 import { open, type ISqlite } from "sqlite"
-import * as E from "fp-ts/Either"
-import * as O from "fp-ts/Option"
+import { Option as O, Either as E } from "effect";
 import type { Project, Document, Model } from "./types"
 import { Parser, HtmlRenderer } from "commonmark";
 
@@ -10,7 +9,7 @@ import { reportSQLError } from "./error";
 
 const db = await open({ filename: DB_FILE_PATH, driver: sqlite3.Database });
 
-export async function DbExec(query: string, ...params: any[]): Promise<E.Either<Error, ISqlite.RunResult>> {
+export async function DbExec(query: string, ...params: any[]): Promise<E.Either<ISqlite.RunResult, Error>> {
     try {
         const response = await db.run(query, params);
         return E.right(response);
@@ -23,13 +22,13 @@ export async function DbExec(query: string, ...params: any[]): Promise<E.Either<
     }
 }
 
-export async function DbQueryOne<T>(query: string, ...params: any[]): Promise<E.Either<Error, O.Option<T>>> {
+export async function DbQueryOne<T>(query: string, ...params: any[]): Promise<E.Either<O.Option<T>, Error>> {
     try {
         const response = await db.get(query, params);
         if (response) {
             return E.right(O.some(response));
         } else {
-            return E.right(O.none);
+            return E.right(O.none());
         }
     } catch (err) {
         if (!(err instanceof Error)) {
@@ -41,7 +40,7 @@ export async function DbQueryOne<T>(query: string, ...params: any[]): Promise<E.
 }
 
 
-export async function DbQueryAll<T>(query: string, ...params: any[]): Promise<E.Either<Error, T>> {
+export async function DbQueryAll<T>(query: string, ...params: any[]): Promise<E.Either<T, Error>> {
     try {
         return E.right(await db.all(query, params));
     } catch (err) {
@@ -58,9 +57,16 @@ export async function GetProjects(projectName: O.Option<string>): Promise<Projec
     type RowType = { creation_date: string, project_name: string, variable_metadata: string, output_metadata: string, assets: string, deleted: string, captions: string, slug: string, markdown: string, human_name: string };
 
     const rows = await O.match(
-        async () => await DbQueryAll<RowType[]>("select creation_date, project.project_name, variable_metadata, output_metadata, assets, deleted, metadata.captions, metadata.slug, metadata.markdown, metadata.human_name FROM project, metadata where project.project_name = metadata.project_name;"),
-        async (name) => await DbQueryAll<RowType[]>("select creation_date, project.project_name, variable_metadata, output_metadata, assets, deleted, metadata.captions, metadata.slug, metadata.markdown, metadata.human_name FROM project, metadata WHERE project.project_name = metadata.project_name AND project.project_name = ?;", name),
-    )(projectName)
+        projectName,
+        {
+            async onNone() {
+                return await DbQueryAll<RowType[]>("select creation_date, project.project_name, variable_metadata, output_metadata, assets, deleted, metadata.captions, metadata.slug, metadata.markdown, metadata.human_name FROM project, metadata where project.project_name = metadata.project_name;")
+            },
+            async onSome(name) {
+                return await DbQueryAll<RowType[]>("select creation_date, project.project_name, variable_metadata, output_metadata, assets, deleted, metadata.captions, metadata.slug, metadata.markdown, metadata.human_name FROM project, metadata WHERE project.project_name = metadata.project_name AND project.project_name = ?;", name)
+            }
+        }
+    )
 
     const result = E.map((rows: RowType[]) => {
         return rows.map(item => {
@@ -82,30 +88,31 @@ export async function GetProjects(projectName: O.Option<string>): Promise<Projec
         });
     })(rows)
 
-    return E.match<Error, Project[], Project[]>(
-        (err) => {
-            reportSQLError(err)
-            return []
-        },
-        (projects) => {
-            return projects
+    return E.match(
+        result,
+        {
+            onLeft: (err: Error) => {
+                reportSQLError(err)
+                return []
+            },
+            onRight: (projects: Project[]) => projects
         }
-    )(result)
+    )
 }
 
 export async function GetDocuments(): Promise<Document[]> {
-
     const documents = await DbQueryAll<Document[]>("select id, slug, text, title, parent, timestamp FROM document");
 
-    return E.match<Error, Document[], Document[]>(
-        (err) => {
-            reportSQLError(err);
-            return [];
-        },
-        (documents) => {
-            return documents
+    return E.match(
+        documents,
+        {
+            onLeft: (err) => {
+                reportSQLError(err);
+                return [];
+            },
+            onRight: documents => documents
         }
-    )(documents);
+    )
 }
 
 export async function GetDocument(idOrSlug: string): Promise<string> {
@@ -196,15 +203,17 @@ export async function CachePut(key: string, value: string): Promise<void> {
 export async function CacheGet(key: string): Promise<O.Option<string>> {
     const row = await DbQueryOne<{ value: string }>("SELECT value FROM cache WHERE key = ? AND created > (unixepoch('now') - 86400);", key);
 
-    return E.match<Error, O.Option<{ value: string }>, O.Option<string>>(
-        (err) => {
+    return E.match(
+        row, {
+        onLeft(err) {
             reportSQLError(err);
-            return O.none
+            return O.none()
         },
-        (row) => {
+        onRight(row) {
             return O.map<{ value: string }, string>(
                 tuple => tuple.value
             )(row)
-        }
-    )(row)
+        },
+    }
+    )
 }

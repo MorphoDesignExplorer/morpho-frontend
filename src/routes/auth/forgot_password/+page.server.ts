@@ -2,7 +2,7 @@ import { redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { generateResetToken, verifyToken } from "$lib/auth";
 import { reportSQLError } from "$lib/error";
-import * as O from "fp-ts/Option"
+import { Option as O } from "effect";
 import { SES } from "@aws-sdk/client-ses";
 import { ENVIRONMENT } from "$env/static/private";
 

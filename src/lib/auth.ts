@@ -1,8 +1,7 @@
 import crypto from "node:crypto";
 import AWS from "aws-sdk";
 import { ENC_SECRET, ENVIRONMENT, PASS_SECRET } from "$env/static/private"
-import * as E from "fp-ts/Either";
-import * as O from "fp-ts/Option";
+import { Either as E, Option as O } from "effect";
 import { DbExec, DbQueryOne } from "./database";
 import { reportSQLError } from "./error";
 
@@ -144,7 +143,7 @@ export async function generateResetToken(email: string): Promise<O.Option<string
             return O.some(token)
         }
     } else {
-        return O.none
+        return O.none()
     }
 
 }

@@ -1,5 +1,5 @@
 import { DbExec } from "./database";
-import * as E from "fp-ts/Either";
+import { Either as E } from "effect";
 import { reportSQLError } from "./error";
 import type { ISqlite } from "sqlite";
 import type { Caption } from "./types";
@@ -18,24 +18,25 @@ export async function DeleteDocument(idOrSlug: string): Promise<DeleteDocumentRe
             message: "Cannot delete front matter."
         }
     } else {
-        E.match<Error, {}, DeleteDocumentResponse>(
-            error => {
-                reportSQLError(error);
-                return {
-                    status: "failure",
-                    message: error.message
+        return E.match(
+            await DbExec("DELETE FROM document WHERE id = ? OR slug = ?"),
+            {
+                onLeft(error) {
+                    reportSQLError(error)
+                    return {
+                        status: "failure",
+                        message: error.message
+                    }
+                },
+                onRight({ }) {
+                    return {
+                        status: "success",
+                        message: "Document deleted successfully."
+                    }
                 }
-            },
-            ({ }) => ({
-                status: "success",
-                message: "Document deleted successfully."
-            })
+            }
         )
     }
-
-    DbExec("DELETE FROM document WHERE id = ? OR slug = ?");
-
-    return { status: "success", message: "Document deleted successfully." }
 }
 
 type UpdateDocumentResponse = {
@@ -44,28 +45,29 @@ type UpdateDocumentResponse = {
 }
 
 export async function UpdateDocument(id: string, text: string, title: string, parent: string): Promise<UpdateDocumentResponse> {
-    return E.match<Error, ISqlite.RunResult, UpdateDocumentResponse>(
-        error => {
-            return {
-                status: "failure",
-                message: error.message
-            }
-        },
-        result => {
-            if (result.changes == 0) {
+    return E.match(
+        await DbExec("UPDATE document SET text = ?, title = ?, parent = ? WHERE id = ?", text, title, parent, id),
+        {
+            onLeft(error) {
                 return {
                     status: "failure",
-                    message: `Could not find the document ${id}`
+                    message: error.message
                 }
-            } else {
-                return {
-                    status: "success",
-                    message: "Updated document successfully."
+            },
+            onRight(result) {
+                if (result.changes == 0) {
+                    return {
+                        status: "failure",
+                        message: `Could not find the document ${id}`
+                    }
+                } else {
+                    return {
+                        status: "success",
+                        message: "Updated document successfully."
+                    }
                 }
-            }
+            },
         }
-    )(
-        await DbExec("UPDATE document SET text = ?, title = ?, parent = ? WHERE id = ?", text, title, parent, id)
     )
 }
 

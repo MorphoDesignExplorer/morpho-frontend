@@ -3,8 +3,7 @@ import type { PageServerLoad } from "./$types";
 import { generateToken, getPassSecret, verifyToken } from "$lib/auth";
 import crypto from "node:crypto";
 import { DbQueryOne } from "$lib/database";
-import * as E from "fp-ts/Either";
-import * as O from "fp-ts/Option";
+import { Option as O, Either as E } from "effect";
 import { reportSQLError } from "$lib/error";
 
 type FormResponse = {
