@@ -1,8 +1,6 @@
 <script lang="ts">
-    import { base } from "$app/paths";
     import { RenderDocument } from '$lib/document';
-    import type {Document, Project} from "$lib/types";
-    import type {PageData} from "./$types";
+    import type { PageData } from "./$types";
 
     export let data: PageData;
 
@@ -55,12 +53,12 @@
 <link rel="preload" href="https://morpho-images.s3.us-east-1.amazonaws.com/assets/splash.png" as="image" type="image/png"/>
 
 <div id="navbar" class="p-4 flex justify-evenly items-center text-lg text-black font-extrabold gap-3 border-b-[1px] border-b-slate-200">
-    <a href="{base}/" class="flex flex-row items-center gap-3">
+    <a href="/" class="flex flex-row items-center gap-3">
         <img src="https://morpho-images.s3.us-east-1.amazonaws.com/assets/morpho.png" class="w-20 backdrop-blur-lg" alt="icon">
         <h2 class="select-none text-3xl">Morpho Design Explorer</h2>
     </a>
     <div class="flex gap-4">
-        <h3 class="text-3xl font-bold"><a href="{base}/{sortedProjects[0].project_name}" class="underline decoration-blue-500" on:mouseover={enableDropdown} on:focus={()=>{}}>Projects</a></h3>
+        <h3 class="text-3xl font-bold"><a href="/{sortedProjects[0].project_name}" class="underline decoration-blue-500" on:mouseover={enableDropdown} on:focus={()=>{}}>Projects</a></h3>
         {#each topLevelDocuments as tld}
         <h3 class="text-3xl font-bold"><a href="material/{tld.slug}" class="underline decoration-blue-500">{tld.title}</a></h3>
         {/each}
@@ -79,7 +77,7 @@
 <div class="absolute bg-white rounded-md border-[1px] border-slate-200 flex flex-col gap-2 p-2" class:hidden={!hover} on:blur={disableDropdown} use:initDropdown>
     <span use:initAnchorPixel on:blur={disableDropdown}></span>
     {#each sortedProjects as project}
-        <h3 class="text-xl font-bold"><a href="{base}/{project.project_name}" class="underline decoration-blue-500">{project.metadata.human_name}</a></h3>
+        <h3 class="text-xl font-bold"><a href="/{project.project_name}" class="underline decoration-blue-500">{project.metadata.human_name}</a></h3>
     {/each}
 </div>
 

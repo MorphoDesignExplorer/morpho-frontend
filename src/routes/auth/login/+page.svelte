@@ -70,7 +70,7 @@
             </div>
             <!-- End Form Group -->
             <a
-              href="{base}/auth/forgot_password"
+              href="/auth/forgot_password"
               class="text-blue-500 hover:text-blue-600">Forgot Password?</a
             >
 

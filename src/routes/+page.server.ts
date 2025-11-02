@@ -1,24 +1,15 @@
 import type { Project } from "$lib/types";
 import type { PageServerLoad } from "./$types"
-import { BuildServerURL } from "$lib/common";
-import {GetProjects, GetDocumentTree} from "$lib/database"
+import { GetProjects, GetDocumentTree } from "$lib/database"
 import type { Document } from "$lib/types";
 
-let SERVER_URL = BuildServerURL();
-
 export const load: PageServerLoad = async () => {
-    let result: {projects: Project[], documents: {[k:string]: Document[]}} = {
+    let result: { projects: Project[], documents: { [k: string]: Document[] } } = {
         projects: [],
         documents: await GetDocumentTree()
     };
 
-    result.projects = await GetProjects({_tag: "None"});
-
-    /*
-    result.projects = await (
-        (await fetch(`${SERVER_URL}/project/`)).json()
-    )
-    */
+    result.projects = await GetProjects({ _tag: "None" });
 
     return {
         ...result,

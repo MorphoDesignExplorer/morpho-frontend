@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { type Document, type Project, type AdminForm } from "$lib/types";
+    import { type Document, type Project } from "$lib/types";
 
     export let data: { projects: Project[]; documents: Document[] };
 </script>
@@ -7,9 +7,9 @@
 <link rel="stylesheet" href="/app.css" />
 <link href="/document.css" rel="stylesheet" />
 
-<div class="relative flex min-h-screen bg-amber-50">
+<div class="relative flex min-h-screen bg-slate-50">
     <div
-        class="flex flex-col bg-blue-50 w-1/4 min-h-full pt-10 mr-10 gap-5 border-r-2 border-r-blue-500 pl-4"
+        class="flex flex-col bg-blue-50 w-1/4 min-h-full pt-10 mr-10 gap-5 border-r-2 border-r-blue-500 pl-4 rounded-r-lg"
     >
         <span class="flex flex-col items-start px-3">
             <h1 class="text-3xl font-extrabold">Welcome</h1>

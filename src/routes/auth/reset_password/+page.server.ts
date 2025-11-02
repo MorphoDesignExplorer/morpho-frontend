@@ -1,9 +1,8 @@
 import { redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { GetResetTokenMetadata, ResetPassword, verifyResetToken, verifyToken } from "$lib/auth";
-import { GetDatabase } from "$lib/database";
+import { ResetPassword, verifyResetToken, verifyToken } from "$lib/auth";
 
-export const load: PageServerLoad = async ({cookies, url}) => {
+export const load: PageServerLoad = async ({ cookies, url }) => {
     let [_, ok] = await verifyToken(cookies.get("jwt") || "")
     // redirect the user out of this page if they are verified (i.e. logged in).
     if (ok) {
@@ -13,14 +12,14 @@ export const load: PageServerLoad = async ({cookies, url}) => {
     let token = url.searchParams.get("token") || ""
     let valid_token = await verifyResetToken(token);
     if (valid_token) {
-        return {validity: true, token: token}
+        return { validity: true, token: token }
     } else {
-        return {validity: false}
+        return { validity: false }
     }
 }
 
 export const actions = {
-    submit: async ({request, cookies}): Promise<{message: string, code: "OK" | "INVALID" | "NOK"}> => {
+    submit: async ({ request, cookies }): Promise<{ message: string, code: "OK" | "INVALID" | "NOK" }> => {
         const form = await request.formData();
         const pwd = form.get("pwd")?.toString();
         const confirm = form.get("confirm")?.toString();
@@ -28,7 +27,7 @@ export const actions = {
 
         if (pwd && confirm && token && pwd == confirm) {
             if (await ResetPassword(token, pwd)) {
-                cookies.set("pending_message", "Password Reset was Successful!", {maxAge: 60, path: "/"})
+                cookies.set("pending_message", "Password Reset was Successful!", { maxAge: 60, path: "/" })
                 return redirect(302, "/auth/login/")
             } else {
                 return {
