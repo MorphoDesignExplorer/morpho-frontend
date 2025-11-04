@@ -1,11 +1,13 @@
 import { verifyToken } from "$lib/auth";
 import { BuildServerURL } from "$lib/common";
+import { GetDocuments } from "$lib/database_get";
+import { CreateDocument } from "$lib/database_create";
 import type { AdminForm, Document } from "$lib/types";
 import { redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({cookies}) => {
-    const documents: Document[] = await (await fetch(`${BuildServerURL()}/document/`)).json()
+    const documents: Document[] = await GetDocuments();
 
     const data: {documents: Document[]} = {
         documents: documents,
@@ -22,23 +24,11 @@ export const actions = {
         }
 
         const form: Extract<AdminForm, {type: "document"}> = JSON.parse(await request.text());
-        const createRequest = {
-            slug: form.form.title,
-            title: form.form.title,
-            text: form.form.text,
-            parent: form.form.parent,
-        }
+        
+        let result = await CreateDocument(form);
 
-        let result = await fetch(`${BuildServerURL()}/document/`, {
-            method: "POST",
-            body: JSON.stringify(createRequest),
-            headers: {
-                "Authorization": `Bearer ${cookies.get("jwt") || ''}`
-            }
-        })
-
-        if (result.ok) {
-            return redirect(301, `/auth/admin/document/${createRequest.slug}`)
+        if (result.status == "success") {
+            return redirect(301, `/auth/admin/document/${form.form.title.toLowerCase().split(' ').join('_')}`)
         } else {
             return {status: "failure"}
         }

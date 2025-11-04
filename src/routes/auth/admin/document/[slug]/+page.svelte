@@ -6,7 +6,7 @@
     import { applyAction, deserialize } from "$app/forms";
     import { goto, invalidateAll } from "$app/navigation";
     import { onMount } from "svelte";
-    import Modal from "./Modal.svelte";
+    import Modal from "$lib/components/Modal.svelte";
     import type { ActionData } from "./$types";
 
     export let data: { document: Document; documents: Document[] };
@@ -82,7 +82,7 @@
 <Modal bind:this={modal} />
 
 <form
-    class="flex min-h-full w-1/2 flex-col gap-3 pt-10"
+    class="flex min-h-full w-[90%] flex-col gap-3 pt-10"
     on:submit={handleSubmit}
     action="?/update"
     method="POST"

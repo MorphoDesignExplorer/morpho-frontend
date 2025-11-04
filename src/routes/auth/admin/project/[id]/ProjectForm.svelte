@@ -22,7 +22,7 @@
 </script>
 
 <div
-    class="flex items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm rounded-lg"
+    class="form-group"
 >
     <span
         class="w-1/4 self-start p-1 font-bold text-black flex flex-col text-xs"
@@ -39,7 +39,7 @@
     />
 </div>
 <div
-    class="flex items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm rounded-lg"
+    class="form-group"
 >
     <span
         class="w-1/4 self-start p-1 font-bold text-black flex flex-col text-xs"
@@ -52,7 +52,7 @@
     <label class="flex items-center gap-4 select-none"><input type="checkbox" bind:checked={form.form.is_public}> {#if form.form.is_public} Yes {:else} No {/if} </label>
 </div>
 <div
-    class="flex items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm"
+    class="form-group"
 >
     <span
         class="w-1/4 self-start p-1 font-bold text-black flex flex-col text-xs"
@@ -103,7 +103,7 @@
     </div>
 </div>
 <div
-    class="flex items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm rounded-lg"
+    class="form-group"
 >
     <span
         class="w-1/4 self-start p-1 font-bold text-black flex flex-col text-xs"
@@ -135,7 +135,7 @@
     </div>
 </div>
 <div
-    class="flex items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm rounded-lg"
+    class="form-group"
 >
     <span
         class="w-1/4 self-start p-1 font-bold text-black flex flex-col text-xs"
@@ -167,7 +167,7 @@
     </div>
 </div>
 <div
-    class="flex items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm rounded-lg"
+    class="form-group"
 >
     <span
         class="w-1/4 self-start p-1 font-bold text-black flex flex-col text-xs"
@@ -187,7 +187,7 @@
                     placeholder="Description"
                     bind:value={asset.description}
                 />
-                <label class="flex w-full gap-5 items-center">
+                <label class="flex w-full gap-5 items-center justify-center select-none">
                     Visible to the public?
                     <input
                         type="checkbox"
@@ -199,7 +199,7 @@
     </div>
 </div>
 <div
-    class="flex flex-col w-full items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm mr-[-40%] mb-20"
+    class="form-group"
 >
     <span
         class="w-1/4 self-start p-1 font-bold text-black flex flex-col text-xs"

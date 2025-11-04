@@ -1,4 +1,5 @@
 <script lang="ts">
+    import "$lib/css/form.css";
     import { type Document, type Project } from "$lib/types";
     import { fade } from "svelte/transition";
     import { page } from "$app/stores";
@@ -24,9 +25,9 @@
 <link rel="stylesheet" href="/app.css" />
 <link href="/document.css" rel="stylesheet" />
 
-<div class="relative flex min-h-screen bg-slate-50">
+<div class="relative flex min-h-screen bg-sky-50">
     <div
-        class="flex flex-col bg-blue-50 w-1/4 min-h-full pt-10 mr-10 gap-5 border-r-2 border-r-blue-500 pl-4 rounded-r-lg"
+        class="flex flex-col bg-blue-100 w-1/4 min-h-full pt-10 mr-10 gap-5 border-r-2 border-r-blue-500 pl-4 rounded-r-lg shadow-lg"
     >
         <span class="flex flex-col items-start">
             <h1 class="text-3xl font-extrabold">Welcome</h1>
@@ -38,6 +39,14 @@
             <br />
             <p class="text-blue-600"><a href="/auth/logout/">Logout</a></p>
         </span>
+        {#if true} <!--// TODO this needs to be filtered via the MID matrix-->
+        <a
+            href="/auth/admin/user_mgmt"
+            class="font-normal text-blue-600 text-xl"
+        >
+            Collaborator Mangement
+        </a>
+        {/if}
         <button class="flex flex-col gap-2" on:click={flip_projects}>
             <span class="flex justify-between items-center pr-8">
                 <h1 class="text-xl font-extrabold">Projects</h1>
@@ -46,7 +55,7 @@
                </span>
                 <a
                     href="/auth/admin/project/new"
-                    class="bg-green-700 text-white font-bold py-1 px-2 text-sm"
+                    class="good-button"
                     >Add +</a
                 >
             </span>
@@ -74,7 +83,7 @@
             </span>
             <a
                 href="/auth/admin/document/new"
-                class="bg-green-700 text-white font-bold py-1 px-2 text-sm"
+                class="good-button"
                 >Add +</a
             >
         </button>

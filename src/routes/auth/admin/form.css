@@ -1,0 +1,23 @@
+.form-group {
+  @apply flex items-center gap-2 border-l-4 border-blue-500 bg-gray-50 p-2 text-sm rounded-lg w-[90%] shadow
+}
+
+.form-group input[type="text"] {
+  @apply rounded-lg border border-gray-300 active:border-blue-500 transition-colors p-2 ease-in
+}
+
+.form-group:last-child {
+  @apply mb-4
+}
+
+.form-group select {
+  @apply rounded-lg border border-gray-300 p-2
+}
+
+.good-button {
+  @apply px-4 py-2 bg-green-700 text-white shadow-lg font-bold text-sm self-start rounded-lg active:shadow-none active:brightness-105 transition-colors ease-in
+}
+
+.bad-button {
+  @apply px-4 py-2 bg-red-700 text-white shadow-lg font-bold text-sm self-start rounded-lg active:shadow-none active:brightness-105 transition-colors ease-in
+}

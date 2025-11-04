@@ -4,6 +4,7 @@ import type { AdminForm, Document } from "$lib/types";
 import { redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { GetDocuments } from "$lib/database_get";
+import { DeleteDocument, UpdateDocument } from "$lib/database_update";
 
 export const load: PageServerLoad = async ({ params }) => {
     const documents: Document[] = await GetDocuments();
@@ -26,33 +27,9 @@ export const actions = {
         const form: Extract<AdminForm, { type: "document" }> = JSON.parse(
             await request.text(),
         );
-        const updateRequest = {
-            title: form.form.title,
-            text: form.form.text,
-            parent: form.form.parent,
-        };
 
-        let response = await fetch(
-            `${BuildServerURL()}/document/${form.form.id}/`,
-            {
-                method: "PUT",
-                body: JSON.stringify(updateRequest),
-                headers: {
-                    Authorization: `Bearer ${cookies.get("jwt") || ""}`,
-                },
-            },
-        );
-
-        const responseJson = (await response.json()) as {
-            code: string | null;
-            message: string;
-        };
-
-        if (response.ok) {
-            return { status: "success", ...responseJson };
-        } else {
-            return { status: "failure", ...responseJson };
-        }
+        let response = await UpdateDocument(form.form.id, form.form.slug, form.form.text, form.form.title, form.form.parent);
+        return response;
     },
     delete: async ({ cookies, request }) => {
         let [_, ok] = await verifyToken(cookies.get("jwt") || "");
@@ -60,27 +37,10 @@ export const actions = {
             return redirect(301, "/");
         }
 
+
         const deleteRequest = (await request.json()) as { idOrSlug: string };
-
-        let response = await fetch(
-            `${BuildServerURL()}/document/${deleteRequest.idOrSlug}/`,
-            {
-                method: "DELETE",
-                headers: {
-                    Authorization: `Bearer ${cookies.get("jwt") || ""}`,
-                },
-            },
-        );
-
-        const responseJson = (await response.json()) as {
-            code: string | null;
-            message: string;
-        };
-
-        if (response.ok) {
-            return { status: "success", ...responseJson };
-        } else {
-            return { status: "failure", ...responseJson };
-        }
+        console.log(deleteRequest)
+        let response = await DeleteDocument(deleteRequest.idOrSlug);
+        return response
     },
 } satisfies Actions;

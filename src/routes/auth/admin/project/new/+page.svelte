@@ -106,7 +106,7 @@
     </h1>
 
     <div
-        class="flex items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm mr-[-40%] mb-20"
+        class="form-group"
     >
         {#if progress > 0}
             <span>{progress}% uploaded.</span>
@@ -132,7 +132,7 @@
     <input
         type="submit"
         value="Submit"
-        class="self-start bg-green-700 font-bold text-white text-sm px-3 py-1"
+        class="good-button"
         disabled={submitDisabled}
     />
 </form>

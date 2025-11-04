@@ -7,7 +7,7 @@
     import { goto, invalidateAll } from "$app/navigation";
     import { onMount } from "svelte";
     import type { ActionData } from "./$types";
-    import Modal from "../../document/[slug]/Modal.svelte";
+    import Modal from "$lib/components/Modal.svelte";
 
     export let data: { project: Project };
     export let form: ActionData;
@@ -121,11 +121,11 @@
     <hr class="border-2 border-blue-500" />
     <div class="flex gap-2">
         <button
-            class="self-start bg-green-700 font-bold text-white text-sm px-3 py-1"
+            class="good-button"
             type="submit">Save</button
         >
         <button
-            class="self-start bg-red-700 font-bold text-white text-sm px-3 py-1"
+            class="bad-button"
             type="button"
             on:click={handleDelete}>Delete</button
         >
@@ -136,10 +136,30 @@
             {form.message}
         </span>
     {:else if form}
-        <span class="border-l-green-800 border-l-[6px] bg-green-200 w-1/2 p-2">
+        <span class="border-l-green-800 border-l-[6px] bg-green-200 w-1/2 p-2 flash">
             {form.message}
         </span>
     {/if}
 
     <ProjectForm form={$formData} {project} />
 </form>
+
+<style>
+    .flash {
+        animation: pulse 0.25s linear;
+    }
+
+    @keyframes pulse {
+        0% {
+         filter: brightness(100%);
+        }
+
+        50% {
+         filter: brightness(110%);
+        }
+
+        100% {
+         filter: brightness(100%);
+        }
+    }
+</style>

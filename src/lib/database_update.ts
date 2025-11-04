@@ -19,7 +19,7 @@ export async function DeleteDocument(idOrSlug: string): Promise<DeleteDocumentRe
         }
     } else {
         return E.match(
-            await DbExec("DELETE FROM document WHERE id = ? OR slug = ?"),
+            await DbExec("DELETE FROM document WHERE id = ? OR slug = ?", idOrSlug, idOrSlug),
             {
                 onLeft(error) {
                     reportError({idOrSlug})(error)
@@ -28,7 +28,13 @@ export async function DeleteDocument(idOrSlug: string): Promise<DeleteDocumentRe
                         message: error.message
                     }
                 },
-                onRight({ }) {
+                onRight(stats) {
+                    if (stats.changes === 0) {
+                        return {
+                            status: "failure",
+                            message: "Could not delete the document"
+                        }
+                    }
                     return {
                         status: "success",
                         message: "Document deleted successfully."
@@ -44,9 +50,9 @@ type UpdateDocumentResponse = {
     message: string
 }
 
-export async function UpdateDocument(id: string, text: string, title: string, parent: string): Promise<UpdateDocumentResponse> {
+export async function UpdateDocument(id: string, slug: string, text: string, title: string, parent: string): Promise<UpdateDocumentResponse> {
     return E.match(
-        await DbExec("UPDATE document SET text = ?, title = ?, parent = ? WHERE id = ?", text, title, parent, id),
+        await DbExec("UPDATE document SET text = ?, title = ?, parent = ? WHERE id = ? OR slug = ?", text, title, parent, id, slug),
         {
             onLeft(error) {
                 return {

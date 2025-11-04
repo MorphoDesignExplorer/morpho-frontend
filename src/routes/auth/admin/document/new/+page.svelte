@@ -50,7 +50,7 @@
     }
 </script>
 
-<form class="flex min-h-full w-1/2 flex-col gap-3 pt-10" on:submit={handleSubmit} action="?/create" method="POST" bind:this={formElement}>
+<form class="flex min-h-full w-[90%] flex-col gap-3 pt-10" on:submit={handleSubmit} action="?/create" method="POST" bind:this={formElement}>
     <h1 class="text-3xl font-extrabold">
         <span class="text-blue-900">Admin</span> > Create Document
     </h1>
