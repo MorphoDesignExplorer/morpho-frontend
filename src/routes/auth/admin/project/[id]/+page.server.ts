@@ -7,10 +7,10 @@ import { UpdateProjectOptions } from "$lib/database_update";
 import { Option as O } from "effect";
 
 export const load: PageServerLoad = async ({ cookies, params }) => {
-    const projects: Project[] = await GetProjects(O.none(), false);
+    const projects: Project[] = await GetProjects(O.some(params.id), false);
 
     const data: { project: Project } = {
-        project: projects[0],
+        project: projects[0]
     };
 
     return data;
@@ -36,8 +36,8 @@ export const actions = {
         }
 
         /// TODO implement project deletion
-        
-        const resultJson = {code: "NOT_IMPLEMENTED", message: "Not Implemented."};
+
+        const resultJson = { code: "NOT_IMPLEMENTED", message: "Not Implemented." };
 
         return { status: "failure", ...resultJson }
     },

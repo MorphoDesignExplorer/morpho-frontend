@@ -308,6 +308,9 @@
             >
                 No. of Solutions:<b>{filtered_models.length}</b>
             </span>
+            <span class="bg-blue-500 border border-blue-500 p-1 px-3 select-none flex flex-row items-center gap-2 text-white font-bold">
+                <a href="https://morpho-images.s3.us-east-1.amazonaws.com/assets/{project_metadata.project_name}/archive.zip">Download Data Zip</a>
+            </span>
         </div>
         {#if $display_options.filter}
             <!-- accordion-style filter menu -->

@@ -40,15 +40,10 @@
 
     let filtered_models: Model[];
 
-    let unit_map: Record<string, string> = {}
-    $: {
-        data.project.variable_metadata.forEach(meta => {
-            unit_map[meta["field_name"]] = meta["field_unit"]
-        });
-        data.project.output_metadata.forEach(meta => {
-            unit_map[meta["field_name"]] = meta["field_unit"]
-        });
-    }
+    let unit_map = [...data.project.options.output_metadata_options, ...data.project.options.variable_metadata_options].reduce((prev: Record<string, string>, field) => {
+        prev[field.field_name] = field.field_unit
+        return prev
+    }, {})
 
     let model_in_focus: Model;
 
@@ -57,6 +52,9 @@
         model_in_focus = model;
         $display_options.sidepane = true;
     }
+
+    /** Asset tags that are made public to view for this particular project */
+    $: allowed_tags = data.project.options.asset_options.filter(aopt => aopt.is_public).map(aopt => aopt.tag);
 </script>
 
 <!-- Main Data Display -->
@@ -79,7 +77,7 @@
 
     <!-- Item Select area -->
     <Swatches
-        allowed_tags={data.project.assets.map(asset => asset.tag)}
+        {allowed_tags}
         models={data.models}
         project_metadata={data.project}
         set_project={set_project}
@@ -92,8 +90,7 @@
     <!-- Sidepane Block -->
     <Sidepane
         bind:model={model_in_focus}
-        allowed_tags={data.project.assets.filter(asset => data.project.options.nonpublic_assets.indexOf(asset.tag) == -1).map(asset => asset.tag)}
-        unit_map={unit_map}
+        options={data.project.options}
     />
     {/if}
 </div>

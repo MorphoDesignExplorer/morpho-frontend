@@ -2,7 +2,7 @@ import { DbExec } from "./database";
 import { Either as E } from "effect";
 import { reportSQLError } from "./error";
 import type { ISqlite } from "sqlite";
-import type { Caption, AdminForm } from "./types";
+import type { Caption, AdminForm, ProjectOptions } from "./types";
 
 // id text primary key, slug text NOT NULL, text text NOT NULL, title text NOT NULL default '', parent text, timestamp date
 
@@ -78,11 +78,11 @@ type UpdateProjectOptionsResponse = {
     message: string
 }
 
-export async function UpdateProjectOptions(request: UpdateProjectMetadataRequest, project_name: string): Promise<UpdateProjectMetadataResponse> {
+export async function UpdateProjectOptions(request: UpdateProjectOptionsRequest, project_name: string): Promise<UpdateProjectOptionsResponse> {
     // TODO transcript the admin form to options here
-    console.log(project_name)
+    let transformed_request: ProjectOptions = { ...request.form, display_name: request.form.human_name };
     return E.match(
-        await DbExec("UPDATE project_options SET options = ? WHERE project_name = ?", JSON.stringify(request), project_name),
+        await DbExec("UPDATE project_options SET options = ? WHERE project_name = ?", JSON.stringify(transformed_request), project_name),
         {
             onLeft() {
                 return { status: "failure", message: "Not implemented Left", code: "NOT_IMPLEMENTED" }

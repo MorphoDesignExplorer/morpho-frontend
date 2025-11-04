@@ -115,7 +115,7 @@
         >
     </span>
     <div class="flex w-full flex-col gap-1">
-        {#each form.form.vmetadata as meta}
+        {#each form.form.variable_metadata_options as meta}
             <span class="flex items-center gap-1">
                 <span class="w-full">{meta.field_name}</span>
                 <input
@@ -147,7 +147,7 @@
         >
     </span>
     <div class="flex w-full flex-col gap-1">
-        {#each form.form.ometadata as meta}
+        {#each form.form.output_metadata_options as meta}
             <span class="flex items-center gap-1">
                 <span class="w-full">{meta.field_name}</span>
                 <input
@@ -178,7 +178,7 @@
         >
     </span>
     <div class="flex w-full flex-col gap-1">
-        {#each form.form.ametadata as asset}
+        {#each form.form.asset_options as asset}
             <span class="flex items-center gap-1">
                 <span class="w-full">{asset.tag}</span>
                 <input

@@ -6,16 +6,20 @@
     import { fade } from "svelte/transition";
     import LazyImagePlus from "./LazyImagePlus.svelte";
     import { get_display_options } from "$lib/context";
-
+    import type {ProjectOptions} from "$lib/types";
     import { PUBLIC_S3_URI } from "$env/static/public"
 
     let display_options: Writable<DisplayOptions> = get_display_options();
 
+    export let options: ProjectOptions;
     export let model: Model;
 
-    export let allowed_tags: string[];
+    let allowed_tags: string[] = options.asset_options.filter(aopt => aopt.is_public).map(aopt => aopt.tag);
 
-    export let unit_map: Record<string, string>;
+    let unit_map: Record<string, string> = [...options.output_metadata_options, ...options.variable_metadata_options].reduce((prev: Record<string, string>, field) => {
+        prev[field.field_name] = field.field_unit
+        return prev
+    }, {})
 
     // Utility Section
     function get_image_src_or_empty(model: Model, tag: string) {
@@ -85,10 +89,10 @@
                 <tr class="border-b border-gray-200">
                     <td class="p-2"><p class="font-bold">Input Parameters:</p></td>
                 </tr>
-                {#each Object.entries(model.parameters) as [param_name, value]}
+                {#each options.variable_metadata_options as vopt}
                 <tr class="border-b border-gray-200">
-                    <td class="border-r border-gray-200 p-2 font-semibold text-wrap">{param_name}</td>
-                    <td class="p-2">{value} <code class="font-bold">{unit_map[param_name] || ""}</td>
+                    <td class="border-r border-gray-200 p-2 font-semibold text-wrap">{vopt.display_name}</td>
+                    <td class="p-2">{model.parameters[vopt.field_name]} <code class="font-bold">{unit_map[vopt.field_name] || ""}</td>
                 </tr>
                 {/each}
             </table>

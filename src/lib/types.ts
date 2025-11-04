@@ -1,8 +1,8 @@
 export interface Model {
     id: string,
     scoped_id: number,
-    parameters: Record<string, string|number>,
-    output_parameters: Record<string, string|number>,
+    parameters: Record<string, string | number>,
+    output_parameters: Record<string, string | number>,
     files: Record<string, string>[]
 }
 
@@ -54,36 +54,36 @@ export interface Metadata {
 }
 
 export interface Document {
-    id:         string
-    slug:       string
-    text:       string
-    title:      string
-    parent:     string
-    timestamp:  string
+    id: string
+    slug: string
+    text: string
+    title: string
+    parent: string
+    timestamp: string
 }
 
 export type AdminForm =
     {
-      type: "document",
-      form: {
-        text: string,
-        id: string,
-        title: string,
-        parent: string
-      }
+        type: "document",
+        form: {
+            text: string,
+            id: string,
+            title: string,
+            parent: string
+        }
     } |
     {
-      type: "project",
-      form: {
-        project_name: string,
-        is_public: boolean,
-        human_name: string,
-        captions: Caption[],
-        vmetadata: {field_name: string, field_unit: string, display_name: string}[],
-        ometadata: {field_name: string, field_unit: string, display_name: string}[],
-        ametadata: {tag: string, description: string, is_public: boolean}[],
-        description: string
-      }
+        type: "project",
+        form: {
+            project_name: string,
+            is_public: boolean,
+            human_name: string,
+            captions: Caption[],
+            variable_metadata_options: { field_name: string, field_unit: string, display_name: string }[],
+            output_metadata_options: { field_name: string, field_unit: string, display_name: string }[],
+            asset_options: { tag: string, description: string, is_public: boolean }[],
+            description: string
+        }
     } |
     { type: "none" };
 
@@ -100,11 +100,11 @@ export interface ProjectOptions {
     /** Variables to display under a swatch in the design explorer. */
     captions: Caption[]
     /** List of options for each input variable. */
-    variable_metadata_options: {field_name: string, field_unit: string, display_name: string }[]
+    variable_metadata_options: { field_name: string, field_unit: string, display_name: string }[]
     /** List of options for each output variable. */
-    output_metadata_options: {field_name: string, field_unit: string, display_name: string }[]
+    output_metadata_options: { field_name: string, field_unit: string, display_name: string }[]
     /** List of options for each asset. */
-    asset_options: {tag: string, description: string, is_public: boolean}[]
+    asset_options: { tag: string, description: string, is_public: boolean }[]
     /** Is this project publicly visible? */
     is_public: boolean,
 }
@@ -119,5 +119,5 @@ const EmptyOptions: ProjectOptions = {
 }
 
 export function mergeDefaultOptions(input: Partial<ProjectOptions>): ProjectOptions {
-    return Object.assign(input, EmptyOptions);
+    return Object.assign(JSON.parse(JSON.stringify(EmptyOptions)), input);
 }

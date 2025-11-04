@@ -14,7 +14,7 @@
 
     const { project } = data;
 
-    
+    console.log(project.options)
 
     let formData: Writable<Extract<AdminForm, { type: "project" }>> = writable({
         type: "project",
@@ -23,27 +23,24 @@
             is_public: project.options.is_public,
             human_name: project.metadata.human_name,
             captions: project.metadata.captions,
-            vmetadata: project.variable_metadata.map((field, idx) => ({
-                ...project.options.variable_metadata_options.at(idx) || {},
+            variable_metadata_options: project.variable_metadata.map((field, idx) => Object.assign({
                 // following are default values
                 field_name: field.field_name,
                 field_unit: field.field_unit,
                 display_name: field.field_name
-            })),
-            ometadata: project.output_metadata.map((field, idx) => ({
-                ...project.options.output_metadata_options.at(idx) || {},
+            }, project.options.variable_metadata_options.at(idx) || {} )),
+            output_metadata_options: project.output_metadata.map((field, idx) => Object.assign({
                 // following are default values
                 field_name: field.field_name,
                 field_unit: field.field_unit,
                 display_name: field.field_name
-            })),
-            ametadata: project.assets.map((asset, idx) => ({
-                ...project.options.asset_options.at(idx) || {},
+            }, project.options.output_metadata_options.at(idx) || {})),
+            asset_options: project.assets.map((asset, idx) => Object.assign({
                 // following are default values
                 tag: asset.tag,
                 description: asset.description,
                 is_public: true
-            })),
+            }, project.options.asset_options.at(idx) || {})),
             description: project.metadata.description.text,
         },
     });
