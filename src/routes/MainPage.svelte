@@ -58,7 +58,7 @@
         <h2 class="select-none text-3xl">Morpho Design Explorer</h2>
     </a>
     <div class="flex gap-4">
-        <h3 class="text-3xl font-bold"><a href="/{sortedProjects[0].project_name}" class="underline decoration-blue-500" on:mouseover={enableDropdown} on:focus={()=>{}}>Projects</a></h3>
+        <h3 class="text-3xl font-bold"><a href="/{sortedProjects[0]?.project_name || '#'}" class="underline decoration-blue-500" on:mouseover={enableDropdown} on:focus={()=>{}}>Projects</a></h3>
         {#each topLevelDocuments as tld}
         <h3 class="text-3xl font-bold"><a href="material/{tld.slug}" class="underline decoration-blue-500">{tld.title}</a></h3>
         {/each}

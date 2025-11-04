@@ -14,16 +14,37 @@
 
     const { project } = data;
 
+    
+
     let formData: Writable<Extract<AdminForm, { type: "project" }>> = writable({
         type: "project",
         form: {
             project_name: project.project_name,
+            is_public: project.options.is_public,
             human_name: project.metadata.human_name,
             captions: project.metadata.captions,
+            vmetadata: project.variable_metadata.map((field, idx) => ({
+                ...project.options.variable_metadata_options.at(idx) || {},
+                // following are default values
+                field_name: field.field_name,
+                field_unit: field.field_unit,
+                display_name: field.field_name
+            })),
+            ometadata: project.output_metadata.map((field, idx) => ({
+                ...project.options.output_metadata_options.at(idx) || {},
+                // following are default values
+                field_name: field.field_name,
+                field_unit: field.field_unit,
+                display_name: field.field_name
+            })),
+            ametadata: project.assets.map((asset, idx) => ({
+                ...project.options.asset_options.at(idx) || {},
+                // following are default values
+                tag: asset.tag,
+                description: asset.description,
+                is_public: true
+            })),
             description: project.metadata.description.text,
-            vmetadata: project.variable_metadata,
-            ometadata: project.output_metadata,
-            ametadata: project.assets,
         },
     });
 
@@ -90,7 +111,7 @@
 <Modal bind:this={modal} />
 
 <form
-    class="flex min-h-full w-1/2 flex-col gap-3 pt-10"
+    class="flex min-h-full w-[90%] flex-col gap-3 pt-10"
     on:submit={handleSubmit}
     action="?/update"
     method="POST"

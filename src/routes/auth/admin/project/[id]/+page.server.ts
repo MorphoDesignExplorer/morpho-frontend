@@ -1,12 +1,13 @@
 import { verifyToken } from "$lib/auth";
 import { redirect, type Actions } from "@sveltejs/kit";
-import { BuildServerURL } from "$lib/common";
 import type { AdminForm, Project } from "$lib/types";
 import type { PageServerLoad } from "./$types";
 import { GetProjects } from "$lib/database";
+import { UpdateProjectOptions } from "$lib/database_update";
+import { Option as O } from "effect";
 
 export const load: PageServerLoad = async ({ cookies, params }) => {
-    const projects: Project[] = await GetProjects({_tag: "None"});
+    const projects: Project[] = await GetProjects(O.none(), false);
 
     const data: { project: Project } = {
         project: projects[0],
@@ -16,7 +17,7 @@ export const load: PageServerLoad = async ({ cookies, params }) => {
 };
 
 export const actions = {
-    update: async ({ cookies, request }) => {
+    update: async ({ cookies, request, params }) => {
         let [_, ok] = await verifyToken(cookies.get("jwt") || "");
         if (!ok) {
             return redirect(301, "/");
@@ -25,53 +26,8 @@ export const actions = {
         const form: Extract<AdminForm, { type: "project" }> = JSON.parse(
             await request.text(),
         );
-        const updateRequest = {
-            project_name: form.form.project_name,
-            variable_metadata_units: form.form.vmetadata.reduce(
-                (acc, item) => {
-                    acc[item.field_name] = item.field_unit;
-                    return acc;
-                },
-                {} as Record<string, string>,
-            ),
-            output_metadata_units: form.form.ometadata.reduce(
-                (acc, item) => {
-                    acc[item.field_name] = item.field_unit;
-                    return acc;
-                },
-                {} as Record<string, string>,
-            ),
-            asset_descriptions: form.form.ametadata.reduce(
-                (acc, item) => {
-                    acc[item.tag] = item.description;
-                    return acc;
-                },
-                {} as Record<string, string>,
-            ),
-            project_description: form.form.description,
-            captions: form.form.captions,
-            human_name: form.form.human_name,
-        };
 
-        // TODO replace bearer token with one from the cookie
-        const result = await fetch(`${BuildServerURL()}/project/`, {
-            method: "PUT",
-            body: JSON.stringify(updateRequest),
-            headers: {
-                Authorization: `Bearer ${cookies.get("jwt") || ""}`,
-            },
-        });
-
-        const resultJson = (await result.json()) as {
-            code: string | null;
-            message: string;
-        };
-
-        if (result.ok) {
-            return { status: "success", ...resultJson };
-        } else {
-            return { status: "failure", ...resultJson };
-        }
+        return await UpdateProjectOptions(form, params.id);
     },
     delete: async ({ cookies, params }) => {
         let [_, ok] = await verifyToken(cookies.get("jwt") || "");
@@ -79,21 +35,10 @@ export const actions = {
             return redirect(301, "/");
         }
 
-        const response = await fetch(
-            `${BuildServerURL()}/project/${params.id}/`,
-            {
-                method: "DELETE",
-                headers: {
-                    Authorization: `Bearer ${cookies.get("jwt") || ""}`,
-                },
-            },
-        );
-        const responseJson = await response.json();
+        /// TODO implement project deletion
+        
+        const resultJson = {code: "NOT_IMPLEMENTED", message: "Not Implemented."};
 
-        if (response.ok) {
-            return { status: "success", ...responseJson };
-        } else {
-            return { status: "failure", ...responseJson };
-        }
+        return { status: "failure", ...resultJson }
     },
 } satisfies Actions;

@@ -40,7 +40,8 @@ export interface Project {
     variable_metadata: ProjectField[]
     output_metadata: ProjectField[]
     assets: ProjectAsset[],
-    metadata: Metadata
+    metadata: Metadata,
+    options: ProjectOptions
 }
 
 export interface Metadata {
@@ -62,30 +63,61 @@ export interface Document {
 }
 
 export type AdminForm =
-    { type: "document", form: { text: string, id: string, title: string, parent: string } } |
-    { type: "project", form: { project_name: string, human_name: string, captions: Caption[], vmetadata: ProjectField[], ometadata: ProjectField[], ametadata: ProjectAsset[], description: string } } |
-    {type: "none"};
+    {
+      type: "document",
+      form: {
+        text: string,
+        id: string,
+        title: string,
+        parent: string
+      }
+    } |
+    {
+      type: "project",
+      form: {
+        project_name: string,
+        is_public: boolean,
+        human_name: string,
+        captions: Caption[],
+        vmetadata: {field_name: string, field_unit: string, display_name: string}[],
+        ometadata: {field_name: string, field_unit: string, display_name: string}[],
+        ametadata: {tag: string, description: string, is_public: boolean}[],
+        description: string
+      }
+    } |
+    { type: "none" };
 
 
-// generic types
+/**
+Options defined for a project at the server-level, by an admin or a collaborator.
 
-export type Some<T> = {
-    _tag: "Some",
-    value: T
+NOTE for maintainers: this is meant to be extended over time not fundamentally changed.
+Please test any changes in a dev environment before pushing it to production.
+*/
+export interface ProjectOptions {
+    /** Display name of the project.*/
+    display_name: string
+    /** Variables to display under a swatch in the design explorer. */
+    captions: Caption[]
+    /** List of options for each input variable. */
+    variable_metadata_options: {field_name: string, field_unit: string, display_name: string }[]
+    /** List of options for each output variable. */
+    output_metadata_options: {field_name: string, field_unit: string, display_name: string }[]
+    /** List of options for each asset. */
+    asset_options: {tag: string, description: string, is_public: boolean}[]
+    /** Is this project publicly visible? */
+    is_public: boolean,
 }
 
-export type None = {
-    _tag: "None"
+const EmptyOptions: ProjectOptions = {
+    display_name: "",
+    captions: [],
+    variable_metadata_options: [],
+    output_metadata_options: [],
+    asset_options: [],
+    is_public: false
 }
 
-export type Option<T> = Some<T> | None;
-
-export enum MorphoErrorCode {
-    EMAIL_DOES_NOT_EXIST,
-    DB_ERROR
-}
-
-export interface MorphoError {
-    code: MorphoErrorCode
-    message: string
+export function mergeDefaultOptions(input: Partial<ProjectOptions>): ProjectOptions {
+    return Object.assign(input, EmptyOptions);
 }

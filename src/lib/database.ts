@@ -1,13 +1,40 @@
 import sqlite3 from "sqlite3"
 import { open, type ISqlite } from "sqlite"
 import { Option as O, Either as E } from "effect";
-import type { Project, Document, Model } from "./types"
+import type { Project, Document, Model, ProjectOptions } from "./types"
+import { mergeDefaultOptions } from "./types";
 import { Parser, HtmlRenderer } from "commonmark";
 
 import { DB_FILE_PATH } from "$env/static/private";
 import { reportSQLError } from "./error";
 
 const db = await open({ filename: DB_FILE_PATH, driver: sqlite3.Database });
+
+/// TODO: Dummy queries. Replace these with ones that actually work.
+const PROJECT_SCHEMA = `SELECT 0;`;
+const MODEL_SCHEMA = `SELECT 0;`;
+const METADATA_SCHEMA = `SELECT 0;`;
+const SERVER_OPTIONS_SCHEMA = `CREATE TABLE IF NOT EXISTS project_options (options TEXT default '{}', project_name TEXT PRIMARY KEY, foreign key(project_name) references project(project_name))`;
+const AUTOFILL_OPTIONS = `INSERT OR IGNORE INTO project_options (project_name) SELECT project_name FROM project;`
+
+// makes the server crash. Meant to crash the server when the schema definition queries fail.
+const DDLValidate = (query: string) => ({
+    onLeft(error: Error) {
+        if (error) {
+            throw error
+        }
+    },
+    onRight(_: any) {
+        console.log(`Setup query ${query} successfully.`)
+    }
+});
+
+E.match(await DbExec(PROJECT_SCHEMA), DDLValidate(PROJECT_SCHEMA));
+E.match(await DbExec(MODEL_SCHEMA), DDLValidate(MODEL_SCHEMA));
+E.match(await DbExec(METADATA_SCHEMA), DDLValidate(METADATA_SCHEMA));
+E.match(await DbExec(SERVER_OPTIONS_SCHEMA), DDLValidate(SERVER_OPTIONS_SCHEMA));
+E.match(await DbExec(AUTOFILL_OPTIONS), DDLValidate(AUTOFILL_OPTIONS));
+console.log("Database setup complete.")
 
 export async function DbExec(query: string, ...params: any[]): Promise<E.Either<ISqlite.RunResult, Error>> {
     try {
@@ -52,18 +79,19 @@ export async function DbQueryAll<T>(query: string, ...params: any[]): Promise<E.
     }
 }
 
-export async function GetProjects(projectName: O.Option<string>): Promise<Project[]> {
+/// TODO add user matrix filtering
+export async function GetProjects(projectName: O.Option<string>, filtered_for_public: boolean = true): Promise<Project[]> {
 
-    type RowType = { creation_date: string, project_name: string, variable_metadata: string, output_metadata: string, assets: string, deleted: string, captions: string, slug: string, markdown: string, human_name: string };
+    type RowType = { creation_date: string, project_name: string, variable_metadata: string, output_metadata: string, assets: string, deleted: string, captions: string, slug: string, markdown: string, human_name: string, options: string };
 
     const rows = await O.match(
         projectName,
         {
             async onNone() {
-                return await DbQueryAll<RowType[]>("select creation_date, project.project_name, variable_metadata, output_metadata, assets, deleted, metadata.captions, metadata.slug, metadata.markdown, metadata.human_name FROM project, metadata where project.project_name = metadata.project_name;")
+                return await DbQueryAll<RowType[]>("select creation_date, project.project_name, variable_metadata, output_metadata, assets, deleted, metadata.captions, metadata.slug, metadata.markdown, metadata.human_name, project_options.options FROM project, metadata, project_options where project.project_name = metadata.project_name AND project.project_name = project_options.project_name;")
             },
             async onSome(name) {
-                return await DbQueryAll<RowType[]>("select creation_date, project.project_name, variable_metadata, output_metadata, assets, deleted, metadata.captions, metadata.slug, metadata.markdown, metadata.human_name FROM project, metadata WHERE project.project_name = metadata.project_name AND project.project_name = ?;", name)
+                return await DbQueryAll<RowType[]>("select creation_date, project.project_name, variable_metadata, output_metadata, assets, deleted, metadata.captions, metadata.slug, metadata.markdown, metadata.human_name, project_options.options FROM project, metadata, project_options WHERE project.project_name = metadata.project_name  AND project.project_name = project_options.project_name AND project.project_name = ?;", name)
             }
         }
     )
@@ -83,13 +111,18 @@ export async function GetProjects(projectName: O.Option<string>): Promise<Projec
                         text: item.markdown
                     },
                     human_name: item.human_name
-                }
+                },
+                options: mergeDefaultOptions(JSON.parse(item.options))
             } as Project
         });
     })(rows)
 
+    const filtered_result = E.map((projects: Project[]) => {
+        return filtered_for_public ? projects.filter(project => project.options.is_public) : projects;
+    })(result)
+
     return E.match(
-        result,
+        filtered_result,
         {
             onLeft: (err: Error) => {
                 reportSQLError(err)
@@ -180,6 +213,10 @@ export async function GetModels(projectName: string): Promise<Model[]> {
     await CachePut(`models_${projectName}`, JSON.stringify(models));
 
     return models;
+}
+
+export async function GetOptions(projectName: string): E.Either<E.Option<Object>, Error> {
+    DbQueryOne<Partial<ProjectOptions>>()
 }
 
 let CACHE_SCHEMA = `

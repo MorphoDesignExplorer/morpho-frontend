@@ -48,6 +48,19 @@
     <span
         class="w-1/4 self-start p-1 font-bold text-black flex flex-col text-xs"
     >
+        <span class="text-sm">Is Public</span>
+        <span class="text-gray-500 font-normal"
+            >Is this project visible to the public?</span
+        >
+    </span>
+    <label class="flex items-center gap-4 select-none"><input type="checkbox" bind:checked={form.form.is_public}> {#if form.form.is_public} Yes {:else} No {/if} </label>
+</div>
+<div
+    class="flex items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm"
+>
+    <span
+        class="w-1/4 self-start p-1 font-bold text-black flex flex-col text-xs"
+    >
         <span class="text-sm">Captions</span>
         <span class="text-gray-500 font-normal"
             >Set the captions to be displayed under a solution.</span
@@ -111,9 +124,15 @@
                 <span class="w-full">{meta.field_name}</span>
                 <input
                     type="text"
-                    class="w-full bg-gray-50 p-1"
+                    class="w-20 bg-gray-50 p-1"
                     bind:value={meta.field_unit}
                     placeholder="Unit"
+                />
+                <input
+                    type="text"
+                    class="w-full bg-gray-50 p-1"
+                    bind:value={meta.display_name}
+                    placeholder="Display Name"
                 />
             </span>
         {/each}
@@ -137,9 +156,15 @@
                 <span class="w-full">{meta.field_name}</span>
                 <input
                     type="text"
-                    class="w-full bg-gray-50 p-1"
+                    class="w-20 bg-gray-50 p-1"
                     bind:value={meta.field_unit}
                     placeholder="Unit"
+                />
+                <input
+                    type="text"
+                    class="w-full bg-gray-50 p-1"
+                    bind:value={meta.display_name}
+                    placeholder="Display Name"
                 />
             </span>
         {/each}
@@ -166,12 +191,19 @@
                     placeholder="Description"
                     bind:value={asset.description}
                 />
+                <label class="flex w-full gap-5 items-center">
+                    Visible to the public?
+                    <input
+                        type="checkbox"
+                        bind:checked={asset.is_public}
+                    />
+                </label>
             </span>
         {/each}
     </div>
 </div>
 <div
-    class="flex flex-col items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm mr-[-40%] mb-20"
+    class="flex flex-col w-full items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm mr-[-40%] mb-20"
 >
     <span
         class="w-1/4 self-start p-1 font-bold text-black flex flex-col text-xs"
@@ -181,14 +213,14 @@
             >Edit the content on the about page.</span
         >
     </span>
-    <div class="flex w-full">
+    <div class="flex">
         <ProseMirror bind:text={form.form.description} />
     </div>
 </div>
 
 <style lang="postcss">
     .description {
-        @apply bg-white w-1/2 h-full p-2 m-1 flex flex-col gap-4;
+        @apply bg-white h-full p-2 m-1 flex flex-col gap-4;
     }
 
     .description :global(h1) {

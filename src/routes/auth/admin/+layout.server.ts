@@ -3,6 +3,7 @@ import { type Project, type Document } from '$lib/types';
 import { verifyToken } from '$lib/auth';
 import { redirect } from "@sveltejs/kit";
 import { GetDocuments, GetProjects } from "$lib/database";
+import { Option as O } from "effect"
 
 export const load: LayoutServerLoad = async ({cookies, setHeaders}) => {
     setHeaders({
@@ -14,7 +15,7 @@ export const load: LayoutServerLoad = async ({cookies, setHeaders}) => {
         return redirect(301, "/auth/login/")
     }
 
-    let projectData: Project[] = await GetProjects({_tag: "None"});
+    let projectData: Project[] = await GetProjects(O.none(), false);
     let documentData: Document[] = await GetDocuments();
 
     return {

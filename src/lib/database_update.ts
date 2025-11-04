@@ -2,7 +2,7 @@ import { DbExec } from "./database";
 import { Either as E } from "effect";
 import { reportSQLError } from "./error";
 import type { ISqlite } from "sqlite";
-import type { Caption } from "./types";
+import type { Caption, AdminForm } from "./types";
 
 // id text primary key, slug text NOT NULL, text text NOT NULL, title text NOT NULL default '', parent text, timestamp date
 
@@ -71,22 +71,30 @@ export async function UpdateDocument(id: string, text: string, title: string, pa
     )
 }
 
-type UpdateProjectMetadataRequest = {
-    variable_metadata_units: Record<string, string>,
-    output_metadata_units: Record<string, string>,
-    asset_descriptions: Record<string, string>,
-    captions: Caption[],
-    project_description: string,
-    project_name: string,
-    human_name: string
-}
-
-type UpdateProjectMetadataResponse = {
+type UpdateProjectOptionsRequest = Extract<AdminForm, { type: "project" }>
+type UpdateProjectOptionsResponse = {
     status: "success" | "failure",
+    code?: string,
     message: string
 }
 
-export async function UpdateMetadata(request: UpdateProjectMetadataRequest): Promise<UpdateProjectMetadataResponse> {
-    return { status: "success", message: "" }
+export async function UpdateProjectOptions(request: UpdateProjectMetadataRequest, project_name: string): Promise<UpdateProjectMetadataResponse> {
+    // TODO transcript the admin form to options here
+    console.log(project_name)
+    return E.match(
+        await DbExec("UPDATE project_options SET options = ? WHERE project_name = ?", JSON.stringify(request), project_name),
+        {
+            onLeft() {
+                return { status: "failure", message: "Not implemented Left", code: "NOT_IMPLEMENTED" }
+            },
+            onRight(result) {
+                if (result.changes === 0) {
+                    return { status: "failure", message: "Project does not exist anymore.", code: "NONEXISTENT_PROJECT" }
+                } else {
+                    return { status: "success", message: "Project options have been saved successfully!" }
+                }
+            }
+        }
+    )
 }
 

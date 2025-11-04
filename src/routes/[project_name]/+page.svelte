@@ -92,7 +92,7 @@
     <!-- Sidepane Block -->
     <Sidepane
         bind:model={model_in_focus}
-        allowed_tags={data.project.assets.map(asset => asset.tag)}
+        allowed_tags={data.project.assets.filter(asset => data.project.options.nonpublic_assets.indexOf(asset.tag) == -1).map(asset => asset.tag)}
         unit_map={unit_map}
     />
     {/if}
