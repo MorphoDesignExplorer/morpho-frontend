@@ -2,7 +2,7 @@ import { Option as O, Either as E } from "effect";
 import { DbQueryAll, DbQueryOne, DbExec } from "./database";
 import type { Project, Document, Model } from "./types";
 import { mergeDefaultOptions } from "./types";
-import { reportSQLError } from "./error";
+import { reportError } from "./error";
 import { Parser, HtmlRenderer } from "commonmark";
 
 export async function GetProjects(projectName: O.Option<string>, filtered_for_public: boolean = true): Promise<Project[]> {
@@ -49,7 +49,7 @@ export async function GetProjects(projectName: O.Option<string>, filtered_for_pu
         filtered_result,
         {
             onLeft: (err: Error) => {
-                reportSQLError(err)
+                reportError({projectName, filtered_for_public})(err)
                 return []
             },
             onRight: (projects: Project[]) => projects
@@ -64,7 +64,7 @@ export async function GetDocuments(): Promise<Document[]> {
         documents,
         {
             onLeft: (err) => {
-                reportSQLError(err);
+                reportError({})(err);
                 return [];
             },
             onRight: documents => documents
@@ -111,13 +111,13 @@ export async function GetModels(projectName: string): Promise<Model[]> {
 
     const maybe_model_rows = await DbQueryAll<Record<string, string>[]>("SELECT id, scoped_id, parameters, output_parameters FROM solution WHERE project_name = ?", projectName)
     const model_rows = E.getOrElse<Error, Record<string, string>[]>(e => {
-        reportSQLError(e);
+        reportError({projectName})(e);
         return [];
     })(maybe_model_rows);
 
     const maybe_asset_rows = await DbQueryAll<{ tag: string, file: string, solution_id: string }[]>("SELECT asset.tag, asset.file, asset.solution_id FROM asset WHERE asset.solution_id in (SELECT id FROM solution WHERE project_name = ?)", projectName)
     const asset_rows = E.getOrElse<Error, { tag: string, file: string, solution_id: string }[]>(e => {
-        reportSQLError(e);
+        reportError({projectName})(e);
         return [];
     })(maybe_asset_rows);
 
@@ -137,16 +137,8 @@ export async function GetModels(projectName: string): Promise<Model[]> {
     return models;
 }
 
-let CACHE_SCHEMA = `
-    CREATE TABLE IF NOT EXISTS cache (key TEXT, value TEXT, expires_at INTEGER);
-    CREATE TRIGGER IF NOT EXISTS cache.cleanup AFTER INSERT ON cache BEGIN 
-        DELETE FROM cache cache WHERE expires < unixepoch('now');
-    END;
-`;
-
 export async function CachePut(key: string, value: string): Promise<void> {
-    E.mapLeft(reportSQLError)(await DbExec(CACHE_SCHEMA));
-    E.mapLeft(reportSQLError)(await DbExec("INSERT INTO cache VALUES (?, ?, unixepoch('now'));", key, value));
+    E.mapLeft(reportError({key, string}))(await DbExec("INSERT INTO cache VALUES (?, ?, unixepoch('now'));", key, value));
 }
 
 /**
@@ -161,7 +153,7 @@ export async function CacheGet(key: string): Promise<O.Option<string>> {
     return E.match(
         row, {
         onLeft(err) {
-            reportSQLError(err);
+            reportError({key})(err);
             return O.none()
         },
         onRight(row) {

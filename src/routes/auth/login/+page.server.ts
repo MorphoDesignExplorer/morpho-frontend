@@ -4,7 +4,7 @@ import { generateToken, getPassSecret, verifyToken } from "$lib/auth";
 import crypto from "node:crypto";
 import { DbQueryOne } from "$lib/database";
 import { Option as O, Either as E } from "effect";
-import { reportSQLError } from "$lib/error";
+import { reportError } from "$lib/error";
 
 type FormResponse = {
     message: string
@@ -28,7 +28,7 @@ export const actions = {
             const hashedPassword = crypto.createHash("sha512").update(password + await getPassSecret()).digest("base64");
             const hashInDB = await DbQueryOne<{ password_hash: string }>("select password_hash from user where email = ?", email);
 
-            E.mapLeft<Error, any>(reportSQLError)(hashInDB); // report any sql errors
+            E.mapLeft<Error, any>(reportError({email}))(hashInDB); // report any sql errors
 
             if (E.isRight(hashInDB) && O.isSome(hashInDB.right)) {
                 if (hashInDB.right.value.password_hash === hashedPassword) {

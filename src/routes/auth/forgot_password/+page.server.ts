@@ -1,7 +1,7 @@
 import { redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { generateResetToken, verifyToken } from "$lib/auth";
-import { reportSQLError } from "$lib/error";
+import { reportError } from "$lib/error";
 import { Option as O } from "effect";
 import { SES } from "@aws-sdk/client-ses";
 import { ENVIRONMENT } from "$env/static/private";
@@ -37,7 +37,7 @@ This is the link to reset your password for morpho-design-explorer.com: ${ENVIRO
                 }
             })
         } catch (error) {
-            reportSQLError(error as Error)
+            reportError({ENVIRONMENT})(error as Error)
         }
     } else if (ENVIRONMENT === "dev") {
         console.log(emailTemplate);

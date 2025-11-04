@@ -18,7 +18,7 @@ TODO include information here about how to use this in tandem with DB functions.
 
 The context can be anything pretty much, but the preferable argument is a stringified JSON object.
 */
-export function reportError(context: string): (error: Error) => {} {
+export function reportError(context: Record<string, string>): (error: Error) => {} {
     return (error: Error) => {
         // TODO send these error traces to an observability platform
     
@@ -30,17 +30,15 @@ Cause:
 ${error.cause}
 
 Context:
-${context}
+${JSON.stringify(context)}
 
 Stack:
 ${error.stack}
 `
-
         if (ENVIRONMENT === "prod") {
             const client = new CloudWatchLogsClient({});
-
             // doesn't need an await; this function failing means something even more sinister is going on.
-            client.send(new PutLogEventsCommand{
+            client.send(new PutLogEventsCommand({
                 logGroupName: "Server-Error-Logs",
                 logStreamName: "Morpho-Server-Logs",
                 logEvents: [
@@ -49,10 +47,8 @@ ${error.stack}
                         timestamp: Date.now()
                     }
                 ]
-            })
+            }))
         }
-
-        console.error(ERR_FORMAT)       
+        console.error(ERR_FORMAT)
     }
 }
-

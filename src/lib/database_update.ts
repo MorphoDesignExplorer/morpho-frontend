@@ -1,6 +1,6 @@
 import { DbExec } from "./database";
 import { Either as E } from "effect";
-import { reportSQLError } from "./error";
+import { reportError } from "./error";
 import type { ISqlite } from "sqlite";
 import type { Caption, AdminForm, ProjectOptions } from "./types";
 
@@ -22,7 +22,7 @@ export async function DeleteDocument(idOrSlug: string): Promise<DeleteDocumentRe
             await DbExec("DELETE FROM document WHERE id = ? OR slug = ?"),
             {
                 onLeft(error) {
-                    reportSQLError(error)
+                    reportError({idOrSlug})(error)
                     return {
                         status: "failure",
                         message: error.message
