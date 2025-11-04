@@ -1,6 +1,5 @@
 <script lang="ts">
     import { type AdminForm, type Project } from "$lib/types";
-    import { Parser, HtmlRenderer } from "commonmark";
     import ProseMirror from "../../ProseMirror.svelte";
 
     export let project: Project;
@@ -20,13 +19,10 @@
             });
         };
     }
-
-    const parser = new Parser();
-    const renderer = new HtmlRenderer();
 </script>
 
 <div
-    class="flex items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm"
+    class="flex items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm rounded-lg"
 >
     <span
         class="w-1/4 self-start p-1 font-bold text-black flex flex-col text-xs"
@@ -43,7 +39,7 @@
     />
 </div>
 <div
-    class="flex items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm"
+    class="flex items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm rounded-lg"
 >
     <span
         class="w-1/4 self-start p-1 font-bold text-black flex flex-col text-xs"
@@ -107,7 +103,7 @@
     </div>
 </div>
 <div
-    class="flex items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm"
+    class="flex items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm rounded-lg"
 >
     <span
         class="w-1/4 self-start p-1 font-bold text-black flex flex-col text-xs"
@@ -139,7 +135,7 @@
     </div>
 </div>
 <div
-    class="flex items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm"
+    class="flex items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm rounded-lg"
 >
     <span
         class="w-1/4 self-start p-1 font-bold text-black flex flex-col text-xs"
@@ -171,7 +167,7 @@
     </div>
 </div>
 <div
-    class="flex items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm"
+    class="flex items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm rounded-lg"
 >
     <span
         class="w-1/4 self-start p-1 font-bold text-black flex flex-col text-xs"

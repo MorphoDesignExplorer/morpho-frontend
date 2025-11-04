@@ -11,7 +11,7 @@
 
 </script>
 
-<div class="flex items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm">
+<div class="flex items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm rounded-lg">
   <span class="w-1/4 self-start p-1 font-bold text-black flex flex-col text-xs">
     <span class="text-sm">Document Title</span>
     <span class="text-gray-500 font-normal">Title of the Document</span>
@@ -19,7 +19,7 @@
   <input type="text" class="w-full bg-gray-50 p-1" bind:value={form.form.title} />
 </div>
 
-<div class="flex items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm">
+<div class="flex items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm rounded-lg">
   <span class="w-1/4 self-start p-1 font-bold text-black flex flex-col text-xs">
     <span class="text-sm">Document Parent</span>
     <span class="text-gray-500 font-normal">Parent that the document is nested under.</span>
@@ -32,7 +32,7 @@
   </select>
 </div>
 
-<div class="flex flex-col items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm mr-[-40%] mb-20">
+<div class="flex flex-col items-center gap-2 border-l-4 border-gray-500 bg-gray-100 p-2 text-sm mr-[-40%] mb-20 rounded-lg">
   <span class="w-1/4 self-start p-1 font-bold text-black flex flex-col text-xs">
     <span class="text-sm">Description</span>
     <span class="text-gray-500 font-normal">Edit the content on the about page.</span>
