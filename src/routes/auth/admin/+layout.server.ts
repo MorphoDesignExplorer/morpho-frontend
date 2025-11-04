@@ -2,10 +2,10 @@ import type { LayoutServerLoad } from "./$types";
 import { type Project, type Document } from '$lib/types';
 import { verifyToken } from '$lib/auth';
 import { redirect } from "@sveltejs/kit";
-import { GetDocuments, GetProjects } from "$lib/database";
+import { GetDocuments, GetProjects } from "$lib/database_get";
 import { Option as O } from "effect"
 
-export const load: LayoutServerLoad = async ({cookies, setHeaders}) => {
+export const load: LayoutServerLoad = async ({ cookies, setHeaders }) => {
     setHeaders({
         "cache-control": "no-cache"
     })

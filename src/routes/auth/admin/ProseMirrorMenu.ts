@@ -241,7 +241,6 @@ function insertImageItem(nodeType: NodeType, schema: Schema) {
                 async response => {
                     if (response.ok) {
                         let data = await response.json() as {imgurl: string}
-                        console.log(data)
                         view.dispatch(view.state.tr.replaceSelectionWith(schema.node("image", {src: `https://morpho-images.s3.us-east-1.amazonaws.com/${data.imgurl}`})))
                     } else {
                         console.log(await response.json())

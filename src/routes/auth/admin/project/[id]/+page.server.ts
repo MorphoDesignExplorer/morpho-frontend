@@ -2,7 +2,7 @@ import { verifyToken } from "$lib/auth";
 import { redirect, type Actions } from "@sveltejs/kit";
 import type { AdminForm, Project } from "$lib/types";
 import type { PageServerLoad } from "./$types";
-import { GetProjects } from "$lib/database";
+import { GetProjects } from "$lib/database_get";
 import { UpdateProjectOptions } from "$lib/database_update";
 import { Option as O } from "effect";
 

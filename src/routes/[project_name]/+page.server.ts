@@ -1,7 +1,7 @@
 import { error, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { common_actions } from "./common_actions";
-import { GetModels } from "$lib/database";
+import { GetModels } from "$lib/database_get";
 import type { Model } from "$lib/types";
 
 export const actions = {

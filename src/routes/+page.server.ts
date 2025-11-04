@@ -1,6 +1,6 @@
 import type { Project } from "$lib/types";
 import type { PageServerLoad } from "./$types"
-import { GetProjects, GetDocumentTree } from "$lib/database"
+import { GetProjects, GetDocumentTree } from "$lib/database_get"
 import type { Document } from "$lib/types";
 import { Option as O } from "effect";
 

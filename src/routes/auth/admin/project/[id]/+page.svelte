@@ -14,8 +14,6 @@
 
     const { project } = data;
 
-    console.log(project.options)
-
     let formData: Writable<Extract<AdminForm, { type: "project" }>> = writable({
         type: "project",
         form: {

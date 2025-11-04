@@ -3,7 +3,7 @@ import { BuildServerURL } from "$lib/common";
 import type { AdminForm, Document } from "$lib/types";
 import { redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { GetDocuments } from "$lib/database";
+import { GetDocuments } from "$lib/database_get";
 
 export const load: PageServerLoad = async ({ params }) => {
     const documents: Document[] = await GetDocuments();

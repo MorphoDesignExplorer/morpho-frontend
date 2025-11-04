@@ -26,7 +26,6 @@
             body: JSON.stringify($form),
         })
         const result: ActionResult = deserialize(await response.text())
-        console.log(result)
         if (result.type == "success") {
             if (result.data?.status == "success") {
                 window.alert("Saved successfully!")

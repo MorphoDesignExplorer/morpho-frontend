@@ -1,8 +1,7 @@
 <script lang="ts">
     import { goto, invalidateAll } from "$app/navigation";
-    import { onMount } from "svelte";
     import type { ActionData } from "./$types";
-    import { applyAction, deserialize, enhance } from "$app/forms";
+    import { applyAction, deserialize } from "$app/forms";
     import type { ActionResult } from "@sveltejs/kit";
     import { XHRFetch } from "./xhrfetch";
 
@@ -49,7 +48,6 @@
             // enable form again after upload is done
             if (finalResponse.ok) {
                 const responseText = await finalResponse.text();
-                console.log(responseText);
                 const result: ActionResult = deserialize(responseText);
 
                 //

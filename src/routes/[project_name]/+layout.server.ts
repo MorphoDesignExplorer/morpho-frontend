@@ -1,6 +1,6 @@
 import type { PageServerLoad } from "../$types";
 import type { Metadata, Project } from "$lib/types";
-import { GetProjects } from "$lib/database";
+import { GetProjects } from "$lib/database_get";
 import { Option as O } from "effect";
 
 export const load: PageServerLoad = async ({ params }) => {

@@ -19,7 +19,6 @@ export async function POST({request, cookies}) {
         const client = new S3Client({});
 
         const key = `user-upload/${crypto.randomUUID()}.${mime.getExtension(img.type)}`;
-        console.log(key)
         const command = new PutObjectCommand({
             Bucket: "morpho-images",
             Key: key,

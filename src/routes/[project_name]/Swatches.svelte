@@ -24,8 +24,6 @@
 
     export let filtered_models: Model[];
 
-    // console.log(models)
-
     // component state
 
     let filter_predicates = get_filter_predicates();

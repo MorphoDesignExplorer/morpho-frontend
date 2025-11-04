@@ -1,6 +1,7 @@
 /// Library for reporting errors.
 
-import { RUM } from "@aws-sdk/client-rum";
+import { CloudWatchLogsClient, PutLogEventsCommand } from "@aws-sdk/client-cloudwatch-logs"; // ES Modules import
+
 import { ENVIRONMENT } from "$env/static/private"
 
 export function reportMessage(message: string) {
@@ -8,12 +9,50 @@ export function reportMessage(message: string) {
     console.log(message)
 }
 
-export function reportSQLError(error: Error) {
-    // TODO send these error traces to an observability platform
+/**
+Returns a function that reports an error.
+On development environments, this sends the error to the console,
+while in production the error is sent to cloudwatch.
 
-    if (ENVIRONMENT === "prod") {
-        const client = new RUM({ region: "us-east-1" });
+TODO include information here about how to use this in tandem with DB functions.
+
+The context can be anything pretty much, but the preferable argument is a stringified JSON object.
+*/
+export function reportError(context: string): (error: Error) => {} {
+    return (error: Error) => {
+        // TODO send these error traces to an observability platform
+    
+        const ERR_FORMAT = `
+Message:
+${error.message}
+
+Cause:
+${error.cause}
+
+Context:
+${context}
+
+Stack:
+${error.stack}
+`
+
+        if (ENVIRONMENT === "prod") {
+            const client = new CloudWatchLogsClient({});
+
+            // doesn't need an await; this function failing means something even more sinister is going on.
+            client.send(new PutLogEventsCommand{
+                logGroupName: "Server-Error-Logs",
+                logStreamName: "Morpho-Server-Logs",
+                logEvents: [
+                    {
+                        message: ERR_FORMAT,
+                        timestamp: Date.now()
+                    }
+                ]
+            })
+        }
+
+        console.error(ERR_FORMAT)       
     }
-
-    console.error("[ERROR]", new Error(error))
 }
+
