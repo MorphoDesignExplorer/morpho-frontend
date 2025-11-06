@@ -138,7 +138,7 @@ export async function GetModels(projectName: string): Promise<Model[]> {
 }
 
 export async function CachePut(key: string, value: string): Promise<void> {
-    E.mapLeft(reportError({key, string}))(await DbExec("INSERT INTO cache VALUES (?, ?, unixepoch('now'));", key, value));
+    E.mapLeft(reportError({key, value}))(await DbExec("INSERT INTO cache VALUES (?, ?, unixepoch('now'));", key, value));
 }
 
 /**
@@ -164,3 +164,7 @@ export async function CacheGet(key: string): Promise<O.Option<string>> {
     }
     )
 }
+
+/**
+*/
+export async function GetUsers(): Promise

@@ -6,6 +6,8 @@ import { reportError } from "$lib/error";
 
 /// TODO: Dummy queries. Replace these with ones that actually work.
 export const init: ServerInit = async () => {
+    const PRAGMA_JOURNAL = `PRAGMA journal_mode = WAL`;
+    const PRAGMA_FOREIGN_KEY = `PRAGMA foreign_keys = ON`;
     const PROJECT_SCHEMA = `SELECT 0;`; // TODO fill this out
     const MODEL_SCHEMA = `SELECT 0;`; // TODO fill this out
     const METADATA_SCHEMA = `SELECT 0;`; // TODO fill this out
@@ -91,18 +93,27 @@ export const init: ServerInit = async () => {
             console.log(`Setup query ${query} successfully.`)
         }
     });
+
+    const statements = [
+        PRAGMA_JOURNAL,
+        PRAGMA_FOREIGN_KEY,
+        PROJECT_SCHEMA,
+        MODEL_SCHEMA,
+        METADATA_SCHEMA,
+        SERVER_OPTIONS_SCHEMA,
+        AUTOFILL_OPTIONS,
+        USER_SCHEMA,
+        ROLE_SCHEMA,
+        PERMISSION_MATRIX_SCHEMA,
+        AUTH_TOKEN_SCHEMA,
+        RESET_TOKEN_SCHEMA,
+        CACHE_SCHEMA
+    ]
+
+    for (let i = 0; i < statements.length; i ++) {
+        E.match(await DbExec(CACHE_SCHEMA), DDLValidate(CACHE_SCHEMA));
+    }
     
-    E.match(await DbExec(PROJECT_SCHEMA), DDLValidate(PROJECT_SCHEMA));
-    E.match(await DbExec(MODEL_SCHEMA), DDLValidate(MODEL_SCHEMA));
-    E.match(await DbExec(METADATA_SCHEMA), DDLValidate(METADATA_SCHEMA));
-    E.match(await DbExec(SERVER_OPTIONS_SCHEMA), DDLValidate(SERVER_OPTIONS_SCHEMA));
-    E.match(await DbExec(AUTOFILL_OPTIONS), DDLValidate(AUTOFILL_OPTIONS));
-    E.match(await DbExec(USER_SCHEMA), DDLValidate(USER_SCHEMA));
-    E.match(await DbExec(ROLE_SCHEMA), DDLValidate(ROLE_SCHEMA));
-    E.match(await DbExec(PERMISSION_MATRIX_SCHEMA), DDLValidate(PERMISSION_MATRIX_SCHEMA));
-    E.match(await DbExec(AUTH_TOKEN_SCHEMA), DDLValidate(AUTH_TOKEN_SCHEMA));
-    E.match(await DbExec(RESET_TOKEN_SCHEMA), DDLValidate(RESET_TOKEN_SCHEMA));
-    E.match(await DbExec(CACHE_SCHEMA), DDLValidate(CACHE_SCHEMA));
     console.log("Database setup complete.")
 
     // TODO Start Background jobs
