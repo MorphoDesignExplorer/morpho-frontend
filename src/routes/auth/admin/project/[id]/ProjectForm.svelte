@@ -90,15 +90,15 @@
                 />
                 <button
                     type="button"
-                    class="bg-gray-200 w-fit px-3"
-                    on:click={removeCaption(index)}>-</button
+                    class="neutral-button"
+                    on:click={removeCaption(index)}>Remove</button
                 >
             </span>
         {/each}
         <button
             type="button"
-            class="bg-gray-200 w-fit px-3"
-            on:click={addCaption}>+</button
+            class="neutral-button"
+            on:click={addCaption}>Add</button
         >
     </div>
 </div>

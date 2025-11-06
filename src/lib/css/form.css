@@ -15,9 +15,13 @@
 }
 
 .good-button {
-  @apply px-2 py-1 bg-white text-green-700 shadow font-bold self-start active:shadow-none transition-colors ease-in border border-black border-opacity-40 rounded-md
+  @apply px-2 py-1 bg-white text-green-700 shadow font-bold self-start active:shadow-none transition-colors ease-in border border-black border-opacity-40 rounded-md select-none
 }
 
 .bad-button {
-  @apply px-2 py-1 bg-white text-red-700 shadow font-bold self-start active:shadow-none transition-colors ease-in border border-black border-opacity-40 rounded-md
+  @apply px-2 py-1 bg-white text-red-700 shadow font-bold self-start active:shadow-none transition-colors ease-in border border-black border-opacity-40 rounded-md select-none
+}
+
+.neutral-button {
+  @apply px-2 py-1 bg-white shadow font-bold self-start active:shadow-none transition-colors ease-in border border-black border-opacity-40 rounded-md select-none
 }
