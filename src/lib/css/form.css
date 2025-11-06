@@ -15,9 +15,9 @@
 }
 
 .good-button {
-  @apply px-4 py-1 bg-green-700 text-white shadow font-bold self-start active:shadow-none active:brightness-105 transition-colors ease-in
+  @apply px-2 py-1 bg-white text-green-700 shadow font-bold self-start active:shadow-none transition-colors ease-in border border-black border-opacity-40 rounded-md
 }
 
 .bad-button {
-  @apply px-4 py-1 bg-red-700 text-white shadow font-bold self-start active:shadow-none active:brightness-105 transition-colors ease-in
+  @apply px-2 py-1 bg-white text-red-700 shadow font-bold self-start active:shadow-none transition-colors ease-in border border-black border-opacity-40 rounded-md
 }
