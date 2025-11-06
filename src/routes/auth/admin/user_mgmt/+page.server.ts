@@ -4,15 +4,31 @@ export const load: PageServerLoad = async () => {
     // TODO get MID matrix
     // TODO calculate unique users from matrix
     // TODO get All roles possible from the roles table
-    // TODO cluster matrix by user, and have options to add roles under each user instead of the current approach.
+
     return {
+        /// TODO add projects that they can control here
         role: "Admin",
-        roles: ["Admin", "Project Owner", "Collaborator", "Viewer"],
-        users: ["A@y.com", "B@x.com", "C@z.nz", "JM@umass.edu"],
+        roles: ["Admin", "Project Owner", "Collaborator", "Viewer"], /// TODO filter this based on user's current role
         matrix: [
-            { email: "A@y.com", role: "Project Owner", project: "GCGA_27" },
-            { email: "B@x.com", role: "Viewer", project: "GCGA_27" },
-            { email: "C@z.nz", role: "Collaborator", project: "GCGA_19" },
+            {
+                user: "A@y.com",
+                roles: [
+                    { email: "A@y.com", role: "Project Owner", project: "GCGA_27" },
+                    { email: "A@y.com", role: "Project Owner", project: "GCGA_19" },
+                ]
+            },
+            {
+                user: "B@x.com",
+                roles: [
+                    { email: "B@x.com", role: "Viewer", project: "GCGA_39" },
+                ]
+            },
+            {
+                user: "C@z.nz",
+                roles: [
+                    { email: "C@z.nz", role: "Collaborator", project: "GCGA_19" },
+                ]
+            }
         ]
     }
 }
