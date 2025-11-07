@@ -11,13 +11,17 @@
     import "prosemirror-example-setup/style/style.css";
     import "../../material/[slug]/material.sass";
 
-    export let text: string;
+    interface Props {
+        text: string;
+    }
+
+    let { text = $bindable() }: Props = $props();
 
     // Mix the nodes from prosemirror-schema-list into the basic schema to
     // create a schema with list support.
 
-    let content: HTMLDivElement;
-    let editor: HTMLDivElement;
+    let content: HTMLDivElement = $state();
+    let editor: HTMLDivElement = $state();
 
     class ProseMirrorView {
         view: EditorView;
@@ -61,5 +65,5 @@
     })
 </script>
 
-<div bind:this={content} class="hidden"/>
-<div bind:this={editor} class="w-full bg-white min-h-content p-2 m-1"/>
+<div bind:this={content} class="hidden"></div>
+<div bind:this={editor} class="w-full bg-white min-h-content p-2 m-1"></div>

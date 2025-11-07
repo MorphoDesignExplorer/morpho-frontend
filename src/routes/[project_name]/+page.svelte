@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import Sidepane from './Sidepane.svelte';
     import Swatches from './Swatches.svelte';
     import type { PageData } from './$types';
@@ -7,7 +9,11 @@
     import Graph from './Graph.svelte';
     import { get_display_options, get_filter_predicates, set_display_options } from '$lib/context';
 
-    export let data: PageData;
+    interface Props {
+        data: PageData;
+    }
+
+    let { data }: Props = $props();
 
     let filter_predicates = get_filter_predicates();
 
@@ -19,33 +25,39 @@
 
     let display_options = get_display_options();
 
-    $: $display_options = {
-        sidepane: false,
-        grid: true,
-        filter: false,
-        graph: false,
-    } as DisplayOptions
+    run(() => {
+        $display_options = {
+            sidepane: false,
+            grid: true,
+            filter: false,
+            graph: false,
+        } as DisplayOptions
+    });
 
     display_options.subscribe((options) => {
         if (!options.graph)
         $filter_predicates.chart_predicate = []
     })
 
-    let caption_tags: Caption[];
+    let caption_tags: Caption[] = $state();
     const default_caption_tags: Caption[] = [{tag_name: "scoped_id", display_name: "Solution ID"}]
-    $: caption_tags = data.project.metadata.captions
-    $: if (data.project.metadata.captions.length === 0) {
-        caption_tags = default_caption_tags;
-    }
+    run(() => {
+        caption_tags = data.project.metadata.captions
+    });
+    run(() => {
+        if (data.project.metadata.captions.length === 0) {
+            caption_tags = default_caption_tags;
+        }
+    });
 
-    let filtered_models: Model[];
+    let filtered_models: Model[] = $state();
 
     let unit_map = [...data.project.options.output_metadata_options, ...data.project.options.variable_metadata_options].reduce((prev: Record<string, string>, field) => {
         prev[field.field_name] = field.field_unit
         return prev
     }, {})
 
-    let model_in_focus: Model;
+    let model_in_focus: Model = $state();
 
     function set_project(model_id: number) {
         let model = data.models.filter(model_object => model_object.id === model_id)[0];
@@ -54,7 +66,7 @@
     }
 
     /** Asset tags that are made public to view for this particular project */
-    $: allowed_tags = data.project.options.asset_options.filter(aopt => aopt.is_public).map(aopt => aopt.tag);
+    let allowed_tags = $derived(data.project.options.asset_options.filter(aopt => aopt.is_public).map(aopt => aopt.tag));
 </script>
 
 <!-- Main Data Display -->

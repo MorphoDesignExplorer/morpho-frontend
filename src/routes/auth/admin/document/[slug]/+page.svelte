@@ -9,8 +9,12 @@
     import Modal from "$lib/components/Modal.svelte";
     import type { ActionData } from "./$types";
 
-    export let data: { document: Document; documents: Document[] };
-    export let form: ActionData;
+    interface Props {
+        data: { document: Document; documents: Document[] };
+        form: ActionData;
+    }
+
+    let { data, form }: Props = $props();
 
     const formData: Writable<Extract<AdminForm, { type: "document" }>> =
         writable({
@@ -23,7 +27,7 @@
             },
         });
 
-    let formElement: HTMLFormElement;
+    let formElement: HTMLFormElement = $state();
     const submitFunc = async () => {
         const response = await fetch(formElement.action, {
             method: "POST",
@@ -54,7 +58,7 @@
         await submitFunc();
     };
 
-    let modal: Modal;
+    let modal: Modal = $state();
     let handleDelete = async () => {
         modal.raise(
             `Are you sure you want to delete '${data.document.slug}'?`,
@@ -83,7 +87,7 @@
 
 <form
     class="flex min-h-full w-[90%] flex-col gap-3 pt-10"
-    on:submit={handleSubmit}
+    onsubmit={handleSubmit}
     action="?/update"
     method="POST"
     bind:this={formElement}
@@ -105,7 +109,7 @@
         <button
             class="self-start bg-red-700 font-bold text-white text-sm px-3 py-1"
             type="button"
-            on:click={handleDelete}>Delete</button
+            onclick={handleDelete}>Delete</button
         >
     </div>
     {#if form && form.code}

@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import Filters from "./Filters.svelte";
     import { get_image_src_or_empty, predicate_equal } from "$lib/utils";
     import type { Caption, DisplayOptions, Model, Project } from "$lib/types";
@@ -8,92 +10,115 @@
     import { get_filter_predicates } from "../../lib/context";
     import { PUBLIC_S3_URI } from "$env/static/public"
 
-    // props
+    
 
-    export let allowed_tags: string[];
 
-    export let models: Model[];
 
-    export let project_metadata: Project;
 
-    export let set_project;
 
-    export let unit_map: Record<string, string>;
 
-    export let caption_tags: Caption[];
 
-    export let filtered_models: Model[];
+    interface Props {
+        // props
+        allowed_tags: string[];
+        models: Model[];
+        project_metadata: Project;
+        set_project: any;
+        unit_map: Record<string, string>;
+        caption_tags: Caption[];
+        filtered_models: Model[];
+    }
+
+    let {
+        allowed_tags,
+        models,
+        project_metadata,
+        set_project,
+        unit_map,
+        caption_tags,
+        filtered_models = $bindable()
+    }: Props = $props();
 
     // component state
 
     let filter_predicates = get_filter_predicates();
 
-    let image_tag: string = allowed_tags[0];
-    $: if (allowed_tags.indexOf(image_tag) == -1) {
-        // code for project changes
-        image_tag = allowed_tags[0];
-    }
+    let image_tag: string = $state(allowed_tags[0]);
+    run(() => {
+        if (allowed_tags.indexOf(image_tag) == -1) {
+            // code for project changes
+            image_tag = allowed_tags[0];
+        }
+    });
 
-    let parameter_names: string[];
-    $: parameter_names = project_metadata.variable_metadata
-        .map((field) => field.field_name)
-        .concat(
-            project_metadata.output_metadata.map((field) => field.field_name),
-        )
-        .concat(["scoped_id"]);
-    let sort_parameter_name = "scoped_id";
-    $: if (parameter_names.indexOf(sort_parameter_name) == -1) {
-        // code for project changes
-        sort_parameter_name = "scoped_id";
-    }
+    let parameter_names: string[] = $state();
+    run(() => {
+        parameter_names = project_metadata.variable_metadata
+            .map((field) => field.field_name)
+            .concat(
+                project_metadata.output_metadata.map((field) => field.field_name),
+            )
+            .concat(["scoped_id"]);
+    });
+    let sort_parameter_name = $state("scoped_id");
+    run(() => {
+        if (parameter_names.indexOf(sort_parameter_name) == -1) {
+            // code for project changes
+            sort_parameter_name = "scoped_id";
+        }
+    });
 
     let display_options: Writable<DisplayOptions> =
         getContext("display_options");
 
     // default argument for caption tag list
     // filter_predicates = [];
-    $: if (!$display_options.grid) {
-        // grid is closed for reloading, wipe filters
-        $filter_predicates.filter_predicate = [];
-    }
-    $: filtered_models = models
-        .filter(
-            predicate_equal(Array.from($filter_predicates.filter_predicate)),
-        )
-        .filter((model) => {
-            if ($filter_predicates.chart_predicate.length === 0) {
-                return true;
-            } else {
-                return (
-                    $filter_predicates.chart_predicate.indexOf(model.id) > -1
-                );
-            }
-        })
-        .sort((a, b) => {
-            const relative = (a: any, b: any) => {
-                return a == b ? 0 : a > b ? 1 : -1;
-            };
-            if (sort_parameter_name == "scoped_id") {
-                return relative(a[sort_parameter_name], b[sort_parameter_name]);
-            } else if (Object.hasOwn(a.parameters, sort_parameter_name)) {
-                return relative(
-                    a.parameters[sort_parameter_name],
-                    b.parameters[sort_parameter_name],
-                );
-            } else if (
-                Object.hasOwn(a.output_parameters, sort_parameter_name)
-            ) {
-                return relative(
-                    a.output_parameters[sort_parameter_name],
-                    b.output_parameters[sort_parameter_name],
-                );
-            } else {
-                return 0;
-            }
-        });
+    run(() => {
+        if (!$display_options.grid) {
+            // grid is closed for reloading, wipe filters
+            $filter_predicates.filter_predicate = [];
+        }
+    });
+    run(() => {
+        filtered_models = models
+            .filter(
+                predicate_equal(Array.from($filter_predicates.filter_predicate)),
+            )
+            .filter((model) => {
+                if ($filter_predicates.chart_predicate.length === 0) {
+                    return true;
+                } else {
+                    return (
+                        $filter_predicates.chart_predicate.indexOf(model.id) > -1
+                    );
+                }
+            })
+            .sort((a, b) => {
+                const relative = (a: any, b: any) => {
+                    return a == b ? 0 : a > b ? 1 : -1;
+                };
+                if (sort_parameter_name == "scoped_id") {
+                    return relative(a[sort_parameter_name], b[sort_parameter_name]);
+                } else if (Object.hasOwn(a.parameters, sort_parameter_name)) {
+                    return relative(
+                        a.parameters[sort_parameter_name],
+                        b.parameters[sort_parameter_name],
+                    );
+                } else if (
+                    Object.hasOwn(a.output_parameters, sort_parameter_name)
+                ) {
+                    return relative(
+                        a.output_parameters[sort_parameter_name],
+                        b.output_parameters[sort_parameter_name],
+                    );
+                } else {
+                    return 0;
+                }
+            });
+    });
 
-    let grid_position: string;
-    $: {
+    let grid_position: string = $state();
+    run(() => {
         if (!$display_options.graph && !$display_options.sidepane) {
             grid_position = "grid-column: 1 / 3; grid-row: 1 / 3;";
         } else if (!$display_options.graph && $display_options.sidepane) {
@@ -103,10 +128,10 @@
         } else if ($display_options.graph && $display_options.sidepane) {
             grid_position = "grid-column: 2 / 3; grid-row: 2 / 3;";
         }
-    }
+    });
 
-    let grid_element: HTMLDivElement;
-    let render_item_count = 50;
+    let grid_element: HTMLDivElement = $state();
+    let render_item_count = $state(50);
     let grid_row_item_count: number;
 
     function getLayoutStatistics() {
@@ -195,7 +220,7 @@
         return captions;
     }
 
-    let item_grid_column_style: string;
+    let item_grid_column_style: string = $state();
 
     onMount(() => {
         function resizeCallback() {
@@ -262,7 +287,7 @@
                 </select>
             </div>
             <button
-                on:click={() => {
+                onclick={() => {
                     $display_options.filter = !$display_options.filter;
                 }}
                 class="bg-blue-500 border border-blue-500 p-1 px-3 select-none flex flex-row items-center gap-3 text-white hover:bg-white hover:text-blue-500 transition-colors ease-linear font-bold"
@@ -281,7 +306,7 @@
                 </svg>
             </button>
             <button
-                on:click={() => {
+                onclick={() => {
                     $display_options.graph = !$display_options.graph;
                 }}
                 class="bg-blue-500 border border-blue-500 p-1 px-3 select-none flex flex-row items-center gap-2 text-white hover:text-blue-500 hover:bg-white transition-colors ease-linear font-bold"
@@ -329,7 +354,7 @@
         <div
             id="swatch-item-grid"
             bind:this={grid_element}
-            on:scroll={get_percentage}
+            onscroll={get_percentage}
             style={item_grid_column_style}
         >
             <!-- TODO virtualize list -->
@@ -338,8 +363,8 @@
                     <div
                         role="button"
                         tabindex="0"
-                        on:click={() => set_project(model.id)}
-                        on:keydown={() => set_project(model.id)}
+                        onclick={() => set_project(model.id)}
+                        onkeydown={() => set_project(model.id)}
                         class="flex flex-col items-center p-2 border border-gray-200 cursor-pointer hover:bg-slate-200 transition ease-out"
                         title="Click to show details"
                     >

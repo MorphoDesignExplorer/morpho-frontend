@@ -3,8 +3,12 @@
     import { Parser, HtmlRenderer } from "commonmark"
     import ProseMirror from '../ProseMirror.svelte';
 
-    export let form: Extract<AdminForm, {type: "document"}>;
-    export let documentList: Document[];
+  interface Props {
+    form: Extract<AdminForm, {type: "document"}>;
+    documentList: Document[];
+  }
+
+  let { form = $bindable(), documentList }: Props = $props();
 
     const parser = new Parser();
     const renderer = new HtmlRenderer();

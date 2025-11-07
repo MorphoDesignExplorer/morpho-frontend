@@ -5,11 +5,15 @@
     import type { ActionResult } from "@sveltejs/kit";
     import { XHRFetch } from "./xhrfetch";
 
-    export let form: ActionData;
+    interface Props {
+        form: ActionData;
+    }
 
-    let submitDisabled = false;
-    let progress = 0;
-    let zipfield: HTMLInputElement;
+    let { form = $bindable() }: Props = $props();
+
+    let submitDisabled = $state(false);
+    let progress = $state(0);
+    let zipfield: HTMLInputElement = $state();
 
     async function handleSubmit(
         event: SubmitEvent & { target: EventTarget & HTMLFormElement },
@@ -90,7 +94,7 @@
     action="?/create"
     method="POST"
     enctype="multipart/form-data"
-    on:submit={handleSubmit}
+    onsubmit={handleSubmit}
 >
     {#if form && form.code}
         <span class="border-l-red-800 border-l-[6px] bg-red-300 w-1/2 p-2">

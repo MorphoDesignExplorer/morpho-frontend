@@ -1,3 +1,4 @@
+import type Actions from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async () => {
@@ -32,3 +33,15 @@ export const load: PageServerLoad = async () => {
         ]
     }
 }
+
+type FormResponse = {
+    status: "success" | "failure"
+    message?: string
+}
+
+export const actions = {
+    update: async ({request}): FormResponse => {
+        console.log(JSON.stringify(await request.json(), null, 4))
+        return { status: "failure", message: "Not implemented." }
+    }
+} satisfies Actions

@@ -2,11 +2,15 @@
     import { RenderDocument } from '$lib/document';
     import type { PageData } from "./$types";
 
-    export let data: PageData;
+    interface Props {
+        data: PageData;
+    }
+
+    let { data }: Props = $props();
 
     let dropdownElement: HTMLDivElement;
     let anchorPixel: HTMLSpanElement;
-    let hover = false;
+    let hover = $state(false);
 
     const sortedProjects = data.projects.sort((left, right) => {
             const left_date = Date.parse(left.creation_date)
@@ -58,7 +62,7 @@
         <h2 class="select-none text-3xl">Morpho Design Explorer</h2>
     </a>
     <div class="flex gap-4">
-        <h3 class="text-3xl font-bold"><a href="/{sortedProjects[0]?.project_name || '#'}" class="underline decoration-blue-500" on:mouseover={enableDropdown} on:focus={()=>{}}>Projects</a></h3>
+        <h3 class="text-3xl font-bold"><a href="/{sortedProjects[0]?.project_name || '#'}" class="underline decoration-blue-500" onmouseover={enableDropdown} onfocus={()=>{}}>Projects</a></h3>
         {#each topLevelDocuments as tld}
         <h3 class="text-3xl font-bold"><a href="material/{tld.slug}" class="underline decoration-blue-500">{tld.title}</a></h3>
         {/each}
@@ -74,8 +78,8 @@
     </div>
 </div>
 
-<div class="absolute bg-white rounded-md border-[1px] border-slate-200 flex flex-col gap-2 p-2" class:hidden={!hover} on:blur={disableDropdown} use:initDropdown>
-    <span use:initAnchorPixel on:blur={disableDropdown}></span>
+<div class="absolute bg-white rounded-md border-[1px] border-slate-200 flex flex-col gap-2 p-2" class:hidden={!hover} onblur={disableDropdown} use:initDropdown>
+    <span use:initAnchorPixel onblur={disableDropdown}></span>
     {#each sortedProjects as project}
         <h3 class="text-xl font-bold"><a href="/{project.project_name}" class="underline decoration-blue-500">{project.metadata.human_name}</a></h3>
     {/each}

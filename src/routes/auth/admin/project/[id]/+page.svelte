@@ -9,8 +9,12 @@
     import type { ActionData } from "./$types";
     import Modal from "$lib/components/Modal.svelte";
 
-    export let data: { project: Project };
-    export let form: ActionData;
+    interface Props {
+        data: { project: Project };
+        form: ActionData;
+    }
+
+    let { data, form }: Props = $props();
 
     const { project } = data;
 
@@ -43,7 +47,7 @@
         },
     });
 
-    let formElement: HTMLFormElement;
+    let formElement: HTMLFormElement = $state();
     const submitFunc = async () => {
         const response = await fetch(formElement.action, {
             method: "POST",
@@ -76,7 +80,7 @@
         }
     };
 
-    let modal: Modal;
+    let modal: Modal = $state();
     let handleDelete = async () => {
         modal.raise(
             `Are you sure you want to delete '${data.project.project_name}'?`,
@@ -107,7 +111,7 @@
 
 <form
     class="flex min-h-full w-[90%] flex-col gap-3 pt-10"
-    on:submit={handleSubmit}
+    onsubmit={handleSubmit}
     action="?/update"
     method="POST"
     bind:this={formElement}
@@ -127,7 +131,7 @@
         <button
             class="bad-button"
             type="button"
-            on:click={handleDelete}>Delete</button
+            onclick={handleDelete}>Delete</button
         >
     </div>
 

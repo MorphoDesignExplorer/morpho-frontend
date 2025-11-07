@@ -1,12 +1,18 @@
 <script lang="ts">
+  import { run } from 'svelte/legacy';
+
   import { enhance } from "$app/forms";
   import type { ActionData } from "./$types";
 
-  export let form: ActionData;
+  interface Props {
+    form: ActionData;
+  }
 
-  let error_message = "";
+  let { form }: Props = $props();
 
-  $: {
+  let error_message = $state("");
+
+  run(() => {
     if (form) {
       if (form.message) {
         error_message = form.message;
@@ -14,7 +20,7 @@
         error_message = "";
       }
     }
-  }
+  });
 </script>
 
 <div

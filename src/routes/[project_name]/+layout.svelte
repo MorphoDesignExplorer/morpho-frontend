@@ -8,7 +8,7 @@
     } from "$lib/context.js";
     import { type DisplayOptions } from "$lib/types";
     import { writable } from "svelte/store";
-    export let data;
+    let { data, children } = $props();
 
     async function navigate_to_page(sub_url: string) {
         $display_options = {
@@ -55,7 +55,7 @@
         <select
             class="bg-transparent"
             value={$page.params.project_name}
-            on:change={async (event) => {
+            onchange={async (event) => {
                 await navigate_to_page(event.currentTarget?.value);
             }}
         >
@@ -127,7 +127,7 @@
         <!-- End Project Sections Navigation -->
     </div>
     <!-- Navbar End -->
-    <slot />
+    {@render children?.()}
 </div>
 
 <style>

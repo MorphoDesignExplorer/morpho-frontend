@@ -6,10 +6,15 @@
     
     import Chevron from "./Chevron.svelte";
 
-    export let data: { projects: Project[]; documents: Document[] };
+    interface Props {
+        data: { projects: Project[]; documents: Document[] };
+        children?: import('svelte').Snippet;
+    }
 
-    let projects_open =  ($page.route.id?.indexOf("project") || -1) > -1;
-    let documents_open = ($page.route.id?.indexOf("document") || -1) > -1;
+    let { data, children }: Props = $props();
+
+    let projects_open =  $state(($page.route.id?.indexOf("project") || -1) > -1);
+    let documents_open = $state(($page.route.id?.indexOf("document") || -1) > -1);
 
     function flip_projects() {
         projects_open = !projects_open;
@@ -47,7 +52,7 @@
             Collaborator Mangement
         </a>
         {/if}
-        <button class="flex flex-col gap-2" on:click={flip_projects}>
+        <button class="flex flex-col gap-2" onclick={flip_projects}>
             <span class="flex justify-between items-center pr-8">
                 <h1 class="text-xl font-extrabold">Projects</h1>
                 <span class="ml-auto px-3 transition-transform" class:rotate-180={projects_open}>
@@ -76,7 +81,7 @@
         {/if}
 
         
-        <button class="flex justify-between items-center pr-8" on:click={flip_documents}>
+        <button class="flex justify-between items-center pr-8" onclick={flip_documents}>
             <h1 class="text-xl font-extrabold">Documents</h1>
             <span class="ml-auto px-3 transition-transform" class:rotate-180={documents_open}>
                 <Chevron/>
@@ -103,7 +108,7 @@
         {/if}
     </div>
 
-    <slot />
+    {@render children?.()}
 </div>
 
 <style>

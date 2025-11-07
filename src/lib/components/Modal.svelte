@@ -1,10 +1,10 @@
 <script lang="ts">
-  let message: string;
-  let onsuccess: () => void;
-  let onfailure: () => void;
-  let enabled = false;
+  let message: string = $state();
+  let onsuccess: () => void = $state();
+  let onfailure: () => void = $state();
+  let enabled = $state(false);
 
-  let modalElement: HTMLDivElement;
+  let modalElement: HTMLDivElement = $state();
 
   export function raise(msg: string, success: () => void, failure: () => void) {
     enabled = true;
@@ -31,12 +31,12 @@
         <button
           class="text-blue-500 font-bold text-xl border rounded-lg shadow-lg border-blue-500 w-1/2 px-2 py-1"
           tabindex="0"
-          on:click={onsuccess}>Yes</button
+          onclick={onsuccess}>Yes</button
         >
         <button
           class="text-white bg-blue-500 font-bold rounded-lg shadow-lg text-xl w-1/2 px-2 py-1"
           tabindex="0"
-          on:click={onfailure}>No</button
+          onclick={onfailure}>No</button
         >
       </div>
     </div>

@@ -7,7 +7,11 @@
     import { invalidateAll } from "$app/navigation";
     import { onMount } from "svelte";
 
-    export let data: {documents: Document[]};
+    interface Props {
+        data: {documents: Document[]};
+    }
+
+    let { data }: Props = $props();
 
     const form: Writable<Extract<AdminForm, {type: "document"}>> = writable({
         type: "document",
@@ -19,7 +23,7 @@
         }
     })
 
-    let formElement: HTMLFormElement;
+    let formElement: HTMLFormElement = $state();
     const submitFunc = async () => {
         const response = await fetch(formElement.action, {
             method: "POST",
@@ -50,7 +54,7 @@
     }
 </script>
 
-<form class="flex min-h-full w-[90%] flex-col gap-3 pt-10" on:submit={handleSubmit} action="?/create" method="POST" bind:this={formElement}>
+<form class="flex min-h-full w-[90%] flex-col gap-3 pt-10" onsubmit={handleSubmit} action="?/create" method="POST" bind:this={formElement}>
     <h1 class="text-3xl font-extrabold">
         <span class="text-blue-900">Admin</span> > Create Document
     </h1>

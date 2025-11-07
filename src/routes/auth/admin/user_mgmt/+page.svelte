@@ -1,42 +1,30 @@
 <script lang="ts">
+
   import { enhance } from "$app/forms";
   import MatrixForm from "./MatrixForm.svelte";
   import Modal from "$lib/components/Modal.svelte";
   import Minus from "$lib/components/Minus.svelte";
   import Plus from "$lib/components/Plus.svelte";
-  import Fuse from "fuse.js";
   import { MakeInvite } from "./invite/api";
+    import { SubmitJson } from "$lib/common";
 
-  export let data;
+  let { data } = $props();
 
-  let modal: Modal;
-  let formElement: HTMLFormElement;
+  let modal: Modal | undefined = $state();
+  let formElement: HTMLFormElement | undefined = $state();
 
-  let invite_mail = "";
-  let search_value = "";
-  let fuseOptions = {
-    isCaseSensitive: false,
-    threshold: 0.3,
-    keys: ["roles.email", "roles.role", "roles.project"],
-  };
-
-  const fuse = new Fuse(data.matrix, fuseOptions);
-  let filtered_matrix: typeof data.matrix = [];
-  $: if (search_value === "") {
-    filtered_matrix = data.matrix;
-  } else {
-    filtered_matrix = fuse.search(search_value).map((val) => val.item);
-  }
+  let invite_mail = $state("");
+  let search_value = $state("");
 </script>
 
 <Modal bind:this={modal} />
 
 <form
-  use:enhance
   bind:this={formElement}
   class="flex min-h-full w-[90%] flex-col gap-3 pt-10"
   action="?/update"
   method="POST"
+  onsubmit={SubmitJson(() => data.matrix)}
 >
   <div class="form-group text-xl">
     <span class="font-bold">Current Role:</span>
@@ -52,7 +40,7 @@
         placeholder="Email"
       />
       <button
-        on:click={() => MakeInvite({ email: invite_mail }, () => {})}
+        onclick={() => MakeInvite({ email: invite_mail }, () => {})}
         type="button"
         class="w-40 h-full rounded-lg good-button select-none">Invite</button
       >
@@ -70,7 +58,7 @@
       placeholder="Search over email, role, project, etc..."
       bind:value={search_value}
     />
-    <MatrixForm data={{...data, matrix: filtered_matrix}} />
+    <MatrixForm {search_value} bind:data={data} />
   </div>
 </form>
 

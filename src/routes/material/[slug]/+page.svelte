@@ -3,7 +3,11 @@
     import type { PageServerData } from "./$types";
     import NavLink from "./navlink.svelte";
 
-    export let data: PageServerData;
+    interface Props {
+        data: PageServerData;
+    }
+
+    let { data }: Props = $props();
 
     const topLevel: Document[] = data.documents[""];
     const currentDocument = data.documentSet.get(data.slug);
@@ -12,7 +16,7 @@
         return id.split(".").map((item) => parseInt(item));
     }
 
-    let nestingHierarchy: Document[] = [];
+    let nestingHierarchy: Document[] = $state([]);
 </script>
 
 <div

@@ -1,13 +1,21 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import { get_filter_predicates, type ManualFilter, type ManualFilterOptype } from "$lib/context"
     import { slide } from "svelte/transition";
 
-    export let parameters: string[];
+    interface Props {
+        parameters: string[];
+    }
+
+    let { parameters }: Props = $props();
 
     let filter_predicates = get_filter_predicates();
 
-    let filters: ManualFilter[] = $filter_predicates.filter_predicate;
-    $: $filter_predicates.filter_predicate = filters;
+    let filters: ManualFilter[] = $state($filter_predicates.filter_predicate);
+    run(() => {
+        $filter_predicates.filter_predicate = filters;
+    });
 
 
     const optype: Record<string, ManualFilterOptype> = {
@@ -21,13 +29,13 @@
 
     const empty_filter = {lvalue: "", op: optype.eq, rvalue: ""};
 
-    $: {
+    run(() => {
         if (filters.length == 0) {
             filters.push(Object.assign({}, empty_filter))
         } if (filters[filters.length-1].lvalue != "") {
             filters.push(Object.assign({}, empty_filter))
         }
-    }
+    });
 </script>
 
 <div class="flex flex-col w-full p-2 gap-2">
@@ -51,7 +59,7 @@
         <!-- R-Value Input -->
         <input name={`rvalue-${index}`} bind:value={field.rvalue} class="h-full border-l border-y border-gray-200 p-2" placeholder="parameter value...">
         <!-- Delete Filter Button -->
-        <button class="h-full bg-gray-50 border border-gray-200 font-bold p-2" on:click={() => {
+        <button class="h-full bg-gray-50 border border-gray-200 font-bold p-2" onclick={() => {
             filters = filters.filter((item, idx) => (idx == index) ? false: true);
         }}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">

@@ -2,12 +2,21 @@
     import type { Document } from "$lib/types";
     import NavLink from "./navlink.svelte";
     import { page } from "$app/stores";
-    export let document: Document;
-    export let level: number = 0;
-    export let documents: { [k: string]: Document[] };
 
-    export let openContaining: (document: Document[]) => void;
-    let open = false;
+    interface Props {
+        document: Document;
+        level?: number;
+        documents: { [k: string]: Document[] };
+        openContaining: (document: Document[]) => void;
+    }
+
+    let {
+        document,
+        level = 0,
+        documents,
+        openContaining
+    }: Props = $props();
+    let open = $state(false);
 
     if (document.slug == $page.params.slug) {
         open = true;

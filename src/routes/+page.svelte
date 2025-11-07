@@ -1,5 +1,5 @@
 <script lang="ts">
     import MainPage from "./MainPage.svelte";
-    export let data;
+    let { data } = $props();
 </script>
 <MainPage data={data}/>

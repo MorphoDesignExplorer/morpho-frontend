@@ -2,8 +2,12 @@
     import { type AdminForm, type Project } from "$lib/types";
     import ProseMirror from "../../ProseMirror.svelte";
 
-    export let project: Project;
-    export let form: Extract<AdminForm, { type: "project" }>;
+    interface Props {
+        project: Project;
+        form: Extract<AdminForm, { type: "project" }>;
+    }
+
+    let { project, form = $bindable() }: Props = $props();
 
     function addCaption() {
         form.form.captions = [
@@ -91,14 +95,14 @@
                 <button
                     type="button"
                     class="neutral-button"
-                    on:click={removeCaption(index)}>Remove</button
+                    onclick={removeCaption(index)}>Remove</button
                 >
             </span>
         {/each}
         <button
             type="button"
             class="neutral-button"
-            on:click={addCaption}>Add</button
+            onclick={addCaption}>Add</button
         >
     </div>
 </div>

@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
     import { page } from '$app/stores';
     import type { Model } from '$lib/types';
     import * as echarts from 'echarts';
@@ -7,23 +9,33 @@
     import { slide } from 'svelte/transition';
     import { get_display_options, get_filter_predicates } from '$lib/context';
 
-    export let models: Model[];
-    export let set_project;
-    export let parameters: string[];
-    export let unit_map: Record<string, string>;
-    export let model_in_focus: Model;
+    interface Props {
+        models: Model[];
+        set_project: any;
+        parameters: string[];
+        unit_map: Record<string, string>;
+        model_in_focus: Model;
+    }
+
+    let {
+        models,
+        set_project,
+        parameters = $bindable(),
+        unit_map,
+        model_in_focus
+    }: Props = $props();
 
     parameters = parameters.sort()
     const default_parameters: string[] = $page.data.metadata.captions.map(item => item.tag_name);
     let filter_predicates = get_filter_predicates()
     let display_options = get_display_options();
 
-    let chart: HTMLElement;
-    let chart_object: echarts.ECharts;
-    let container: HTMLDivElement;
+    let chart: HTMLElement = $state();
+    let chart_object: echarts.ECharts = $state();
+    let container: HTMLDivElement = $state();
 
     let current_display: Writable<"scatter" | "parallel"> = writable("scatter");
-    let configuration_active = false;
+    let configuration_active = $state(false);
     let chart_state = writable({
         parameter_toggle: parameters.map(item => {
             return default_parameters.includes(item)
@@ -40,59 +52,12 @@
         }
     }
 
-    $: $current_display && render();
-    $: XY_chart_state && render();
-    $: models && render();
-    $: if (model_in_focus) {
-        setTimeout(() => {
-            chart_object.dispatchAction({
-                type: "downplay",
-                seriesIndex: 0,
-                dataIndex: [...Array(models.length).keys()]
-            })
-            chart_object.dispatchAction({
-                type: "highlight",
-                seriesIndex: 0,
-                dataIndex: models.indexOf(model_in_focus)
-            })
-        }, 20);
-    }
-    $: if (chart_object) {
-        // documentation: https://echarts.apache.org/en/api.html#events.{event_name}
-        chart_object.on("click", (params) => {
-            set_project(
-                models.at(params.dataIndex)?.id
-            )
-        })
-        chart_object.on("axisareaselected", event => {
-            const series = chart_object.getModel().getSeries()[0];
-            const indices: number[] = series.getRawIndicesByActiveState("active");
-            $filter_predicates.chart_predicate = models.filter((_, index) => indices.indexOf(index) > -1).map(model => model.id);
-        })
-        chart_object.on("brushselected", event => {
-            const indices: number[] = event.batch[0].selected[0].dataIndex;
-            $filter_predicates.chart_predicate = models.filter((_, index) => indices.indexOf(index) > -1).map(model => model.id);
-        })
-        chart_object.getZr().on("click", (event) => {
-            if (!event.target) {
-                chart_object.dispatchAction({
-                    type: "downplay",
-                    seriesIndex: 0,
-                    dataIndex: [...Array(models.length).keys()]
-                })
-                
-                if ($current_display === "scatter") {
-                    // $filter_predicates.chart_predicate = []
-                }
-            }
-        })
-    }
 
 
-    let XY_chart_state = {
+    let XY_chart_state = $state({
         parameter_x: default_parameters[0],
         parameter_y: default_parameters[1]
-    }
+    })
 
     function get_data(param_x: string, param_y: string) {
         return models.map(model => {
@@ -237,12 +202,69 @@
     }
 
     let grid_position = "grid-column: 1 / 2; grid-row: 1 / 3;";
+    run(() => {
+        $current_display && render();
+    });
+    run(() => {
+        XY_chart_state && render();
+    });
+    run(() => {
+        models && render();
+    });
+    run(() => {
+        if (model_in_focus) {
+            setTimeout(() => {
+                chart_object.dispatchAction({
+                    type: "downplay",
+                    seriesIndex: 0,
+                    dataIndex: [...Array(models.length).keys()]
+                })
+                chart_object.dispatchAction({
+                    type: "highlight",
+                    seriesIndex: 0,
+                    dataIndex: models.indexOf(model_in_focus)
+                })
+            }, 20);
+        }
+    });
+    run(() => {
+        if (chart_object) {
+            // documentation: https://echarts.apache.org/en/api.html#events.{event_name}
+            chart_object.on("click", (params) => {
+                set_project(
+                    models.at(params.dataIndex)?.id
+                )
+            })
+            chart_object.on("axisareaselected", event => {
+                const series = chart_object.getModel().getSeries()[0];
+                const indices: number[] = series.getRawIndicesByActiveState("active");
+                $filter_predicates.chart_predicate = models.filter((_, index) => indices.indexOf(index) > -1).map(model => model.id);
+            })
+            chart_object.on("brushselected", event => {
+                const indices: number[] = event.batch[0].selected[0].dataIndex;
+                $filter_predicates.chart_predicate = models.filter((_, index) => indices.indexOf(index) > -1).map(model => model.id);
+            })
+            chart_object.getZr().on("click", (event) => {
+                if (!event.target) {
+                    chart_object.dispatchAction({
+                        type: "downplay",
+                        seriesIndex: 0,
+                        dataIndex: [...Array(models.length).keys()]
+                    })
+                    
+                    if ($current_display === "scatter") {
+                        // $filter_predicates.chart_predicate = []
+                    }
+                }
+            })
+        }
+    });
 </script>
 
 <div class="graph-container w-full h-full pb-4 flex flex-col items-center border-r-2 border-blue-500 text-base overflow-scroll" style={grid_position} bind:this={container}>
     <div class="mt-4 pl-2 w-full flex items-end gap-2 border-b-4 border-blue-500">
         <button class="p-0.5 flex items-center justify-center border-x border-t border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition ease-in-out"
-        on:click={() => {
+        onclick={() => {
             $display_options.graph = false;
         }}
         >
@@ -251,7 +273,7 @@
             </svg>
         </button>
         <button
-            on:click={() => {$current_display = "scatter"}}
+            onclick={() => {$current_display = "scatter"}}
             class="p-0.5 px-3 flex items-center justify-center border-x border-t border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition ease-in-out font-bold"
             class:bg-blue-500={$current_display == "scatter"}
             class:text-white={$current_display == "scatter"}
@@ -259,7 +281,7 @@
             Scatter Plot
         </button>
         <button
-            on:click={() => {$current_display = "parallel"}}
+            onclick={() => {$current_display = "parallel"}}
             class="p-0.5 px-3 flex items-center justify-center border-x border-t border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition ease-in-out font-bold"
             class:bg-blue-500={$current_display == "parallel"}
             class:text-white={$current_display == "parallel"}
@@ -267,7 +289,7 @@
             Parallel Coordinates
         </button>
     </div>
-    <canvas class="relative" bind:this={chart}/>
+    <canvas class="relative" bind:this={chart}></canvas>
 
     <div class="px-4 flex flex-col gap-2 w-full">
         <div class="w-full flex border-b-4 border-blue-500">
