@@ -6,7 +6,7 @@ import { Option as O } from "effect";
 import { SES } from "@aws-sdk/client-ses";
 import { ENVIRONMENT } from "$lib/variables";
 
-export const load: PageServerLoad = async ({ locals, cookies }) => {
+export const load: PageServerLoad = async ({ locals }) => {
     if (O.isSome(locals.user)) {
         return redirect(302, "/auth/admin")
     }

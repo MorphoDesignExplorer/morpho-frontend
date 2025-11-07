@@ -4,8 +4,14 @@ import { CreateDocument } from "$lib/database_create";
 import type { AdminForm, Document } from "$lib/types";
 import { redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
+import { Option as O } from "effect";
 
-export const load: PageServerLoad = async ({cookies}) => {
+export const load: PageServerLoad = async ({locals}) => {
+
+   if (O.isNone(locals.user)) {
+       return redirect(301, "/");
+   }
+    
     const documents: Document[] = await GetDocuments();
 
     const data: {documents: Document[]} = {
@@ -16,7 +22,7 @@ export const load: PageServerLoad = async ({cookies}) => {
 }
 
 export const actions = {
-    create: async({locals, cookies, request}) => {
+    create: async({locals, request}) => {
         if (O.isNone(locals.user)) {
             return redirect(301, "/")
         }

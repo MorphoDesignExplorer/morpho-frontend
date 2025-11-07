@@ -4,13 +4,11 @@ import {
     S3Client,
     S3ServiceException
 } from '@aws-sdk/client-s3'
-import { verifyToken } from '$lib/auth.js'
 import mime from "mime";
 
-export async function POST({request, cookies}) {
-    const [_, ok] = await verifyToken(cookies.get("jwt") || "")
-    if (!ok) {
-        redirect(301, '/auth/login/')
+export async function POST({ locals, request }) {
+    if (O.isNone(locals.user)) {
+        return new Response("Unauthenticated", { status: 401 });
     }
 
     const formdata = await request.formData()

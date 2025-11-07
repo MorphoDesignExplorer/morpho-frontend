@@ -11,7 +11,7 @@ export type InvitePostRequest = {
   email: "string"
 }
 
-export const POST: RequestHandler = async ({ locals, request, cookies }) => {
+export const POST: RequestHandler = async ({ locals, request }) => {
   if (O.isNone(locals.user)) {
       return json({status: "failure", message: "Unauthorized"})
   }
@@ -22,7 +22,7 @@ export const POST: RequestHandler = async ({ locals, request, cookies }) => {
     console.log("mailing to", wellFormedRequest.email)
     return json({status: "failure", message: "NOT IMPLEMENTED"})
   } catch(e) {
-    reportError({cookies})(e);
+    reportError({locals})(e);
     return json({status: "failure", message: "Server error."})
   }
 }

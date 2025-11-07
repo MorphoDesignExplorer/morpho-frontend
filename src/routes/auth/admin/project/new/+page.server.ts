@@ -3,7 +3,7 @@ import { redirect, type Actions } from "@sveltejs/kit";
 import { Option as O } from "effect";
 
 export const actions = {
-    create: async ({ locals, cookies, request }) => {
+    create: async ({ locals, request }) => {
         if (O.isNone(locals.user)) {
             return redirect(301, "/")
         }
@@ -16,7 +16,7 @@ export const actions = {
                     method: "POST",
                     body: JSON.stringify(requestJson),
                     headers: {
-                        Authorization: "Bearer " + cookies.get("jwt") || "",
+                        credentials: "same-origin"
                     },
                 });
 

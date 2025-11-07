@@ -10,7 +10,7 @@ type FormResponse = {
     message: string
 }
 
-export const load: PageServerLoad = async ({ locals, cookies }) => {
+export const load: PageServerLoad = async ({ locals }) => {
     if (O.isSome(locals.user)) {
         return redirect(302, "/auth/admin")
     }

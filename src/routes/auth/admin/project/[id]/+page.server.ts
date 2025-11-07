@@ -16,7 +16,7 @@ export const load: PageServerLoad = async ({ params }) => {
 };
 
 export const actions = {
-    update: async ({ locals, cookies, request, params }) => {
+    update: async ({ locals, request, params }) => {
         if (O.isNone(locals.user)) {
             return redirect(301, "/");
         }
@@ -31,7 +31,7 @@ export const actions = {
             error(400, "Invalid route.")
         }
     },
-    delete: async ({ locals, cookies, params }) => {
+    delete: async ({ locals, params }) => {
         if (O.isNone(locals.user)) {
             return redirect(301, "/");
         }

@@ -17,7 +17,7 @@ export const load: PageServerLoad = async ({ params }) => {
 };
 
 export const actions = {
-    update: async ({ locals, cookies, request }) => {
+    update: async ({ locals, request }) => {
         if (O.isNone(locals.user)) {
             return redirect(301, "/")
         }
@@ -29,7 +29,7 @@ export const actions = {
         let response = await UpdateDocument(form.form.id, form.form.slug, form.form.text, form.form.title, form.form.parent);
         return response;
     },
-    delete: async ({ locals, cookies, request }) => {
+    delete: async ({ locals, request }) => {
         if (O.isNone(locals.user)) {
             return redirect(301, "/auth/admin")
         }

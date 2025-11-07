@@ -1,8 +1,9 @@
 import { redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { ResetPassword, verifyResetToken } from "$lib/auth";
+import { Option as O } from "effect";
 
-export const load: PageServerLoad = async ({ cookies, url }) => {
+export const load: PageServerLoad = async ({ locals, url }) => {
     if (O.isSome(locals.user)) {
         return redirect(302, "/auth/admin")
     }
@@ -17,7 +18,7 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
 }
 
 export const actions = {
-    submit: async ({ request, cookies }): Promise<{ message: string, code: "OK" | "INVALID" | "NOK" }> => {
+    submit: async ({ request }): Promise<{ message: string, code: "OK" | "INVALID" | "NOK" }> => {
         const form = await request.formData();
         const pwd = form.get("pwd")?.toString();
         const confirm = form.get("confirm")?.toString();
@@ -25,7 +26,6 @@ export const actions = {
 
         if (pwd && confirm && token && pwd == confirm) {
             if (await ResetPassword(token, pwd)) {
-                cookies.set("pending_message", "Password Reset was Successful!", { maxAge: 60, path: "/" })
                 return redirect(302, "/auth/login/")
             } else {
                 return {

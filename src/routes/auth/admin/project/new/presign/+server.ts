@@ -12,7 +12,7 @@ async function createPresignedUrlWithClient(
     return getSignedUrl(client, command, { expiresIn: 3600 }); // link is valid for one hour.
 }
 
-export const GET = async ({ locals, cookies, url }) => {
+export const GET = async ({ locals, url }) => {
     if (O.isNone(locals.user)) {
         return new Response("Unauthenticated", { status: 401 });
     }
