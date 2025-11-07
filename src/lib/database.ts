@@ -1,7 +1,7 @@
 import sqlite3 from "sqlite3"
 import { open, type ISqlite } from "sqlite"
 import { Option as O, Either as E } from "effect";
-import { DB_FILE_PATH } from "$env/static/private";
+import { DB_FILE_PATH } from "$lib/variables";
 
 export const db = await open({ filename: DB_FILE_PATH, driver: sqlite3.Database });
 

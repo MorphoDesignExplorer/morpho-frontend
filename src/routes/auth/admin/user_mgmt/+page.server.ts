@@ -1,8 +1,8 @@
 import type { PageServerLoad } from "./$types";
 import { GetRoles } from "$lib/database_get";
-import { Option as O } from "effect";
+import { type Actions } from "@sveltejs/kit"
 
-export const load: PageServerLoad = async ({locals}) => {
+export const load: PageServerLoad = async ({ locals }) => {
     // TODO get MID matrix
     // TODO calculate unique users from matrix
     // TODO get All roles possible from the roles table
@@ -42,7 +42,7 @@ type FormResponse = {
 }
 
 export const actions = {
-    update: async ({request}): FormResponse => {
+    update: async ({ request }): Promise<FormResponse> => {
         console.log(JSON.stringify(await request.json(), null, 4))
         return { status: "failure", message: "Not implemented." }
     }

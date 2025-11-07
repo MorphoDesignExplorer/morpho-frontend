@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import AWS from "aws-sdk";
-import { ENC_SECRET, ENVIRONMENT, PASS_SECRET } from "$env/static/private"
+import { ENC_SECRET, ENVIRONMENT, PASS_SECRET } from "$lib/variables"
 import { Either as E, Option as O } from "effect";
 import { DbExec, DbQueryOne } from "./database";
 import { reportError } from "./error";
@@ -77,9 +77,9 @@ export async function generateToken(email: string): Promise<string> {
 export async function verifyToken(encodedToken: string): Promise<["", boolean]> {
     // TODO right now a stub token is returned for compatibility purposes. Remove this later.
     // TODO any error in the chain should terminate it and return false
-    const maybe_email = E.mapLeft(reportError({encodedToken}))(await DbQueryOne<{email: string, expiration: string}>("SELECT email, expires_at - unixepoch() as expiration FROM auth_token WHERE token = ? AND unixepoch() < expires_at", encodedToken));
+    const maybe_email = E.mapLeft(reportError({ encodedToken }))(await DbQueryOne<{ email: string, expiration: string }>("SELECT email, expires_at - unixepoch() as expiration FROM auth_token WHERE token = ? AND unixepoch() < expires_at", encodedToken));
     if (E.isRight(maybe_email) && O.isSome(maybe_email.right)) {
-        E.mapLeft(reportError({encodedToken}))(await DbExec("UPDATE auth_token SET last_used_at = unixepoch() WHERE token = ?", encodedToken));
+        E.mapLeft(reportError({ encodedToken }))(await DbExec("UPDATE auth_token SET last_used_at = unixepoch() WHERE token = ?", encodedToken));
         return [maybe_email.right.value.email, true]
     } else {
         return ["", false]
@@ -88,7 +88,7 @@ export async function verifyToken(encodedToken: string): Promise<["", boolean]> 
 
 
 export async function generateResetToken(email: string): Promise<O.Option<string>> {
-    const email_exists = E.mapLeft(reportError({email}))(await DbQueryOne("select email from user where email = ?", email));
+    const email_exists = E.mapLeft(reportError({ email }))(await DbQueryOne("select email from user where email = ?", email));
 
     if (E.isRight(email_exists) && O.isSome(email_exists.right)) {
         const potential_token = await DbQueryOne<{ token: string }>(`SELECT token FROM password_reset_tokens WHERE email = ? AND (unixepoch() - created_at) < 300;`, email);
@@ -96,7 +96,7 @@ export async function generateResetToken(email: string): Promise<O.Option<string
             return O.some(potential_token.right.value.token)
         } else {
             const token = crypto.randomBytes(128).toString("base64url");
-            E.mapLeft(reportError({token, email}))(await DbExec("INSERT INTO password_reset_tokens (token, email) VALUES (?, ?)", token, email));
+            E.mapLeft(reportError({ token, email }))(await DbExec("INSERT INTO password_reset_tokens (token, email) VALUES (?, ?)", token, email));
             return O.some(token)
         }
     } else {
@@ -113,7 +113,7 @@ export async function verifyResetToken(token: string): Promise<boolean> {
 }
 
 export async function GetResetTokenMetadata(token: string): Promise<{ valid: boolean, email: string }> {
-    const maybe_reset_token_details = E.mapLeft(reportError({token}))(
+    const maybe_reset_token_details = E.mapLeft(reportError({ token }))(
         await DbQueryOne<{ created_at: string, email: string, current_time: string }>(
             `SELECT email, created_at, unixepoch() as current_time FROM password_reset_tokens WHERE token = ?`, token
         )
@@ -135,8 +135,8 @@ export async function ResetPassword(token: string, password: string): Promise<bo
     if (details.valid) {
         const hashedPassword = crypto.createHash("sha512").update(password + await getPassSecret()).digest("base64");
         // TODO IMPORTANT convert this into an sql transaction that terminates if anything in this chain fails
-        E.mapLeft(reportError({token, email}))(await DbExec("UPDATE user SET password_hash = ? WHERE email = ?", hashedPassword, details.email));
-        E.mapLeft(reportError({token}))(await DbExec("DELETE FROM password_reset_tokens WHERE token = ?", token));
+        E.mapLeft(reportError({ token, email }))(await DbExec("UPDATE user SET password_hash = ? WHERE email = ?", hashedPassword, details.email));
+        E.mapLeft(reportError({ token }))(await DbExec("DELETE FROM password_reset_tokens WHERE token = ?", token));
         return true
     } else {
         return false

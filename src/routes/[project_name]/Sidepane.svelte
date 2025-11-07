@@ -7,7 +7,7 @@
   import LazyImagePlus from "./LazyImagePlus.svelte";
   import { get_display_options } from "$lib/context";
   import type { ProjectOptions } from "$lib/types";
-  import { PUBLIC_S3_URI } from "$env/static/public";
+  import { env } from "$env/dynamic/public";
 
   let display_options: Writable<DisplayOptions> = get_display_options();
 
@@ -154,7 +154,7 @@
               aria-label="Open image in another tab"
               tabindex="0"
               class="bg-white text-blue-500 hover:bg-blue-500 hover:text-white transition ease-in-out font-bold p-1 text-sm w-fit absolute top-0 right-0 rounded-es-md"
-              href={PUBLIC_S3_URI + get_image_src_or_empty(model, tag)}
+              href={env.PUBLIC_S3_URI + get_image_src_or_empty(model, tag)}
               target="_blank"
             >
               <svg
@@ -175,7 +175,7 @@
             <LazyImagePlus
               placeholder="https://placehold.co/300/f8fafc/f8fafc"
               class="m-1 w-60"
-              src={PUBLIC_S3_URI + get_image_src_or_empty(model, tag)}
+              src={env.PUBLIC_S3_URI + get_image_src_or_empty(model, tag)}
               alt={model.id}
             />
           </div>
