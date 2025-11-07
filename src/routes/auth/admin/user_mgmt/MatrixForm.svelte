@@ -1,8 +1,8 @@
 <script lang="ts">
   import { run } from "svelte/legacy";
   import type { PageData } from "./$types";
-  import Plus from "$lib/components/Plus.svelte";
-  import Minus from "$lib/components/Minus.svelte";
+  import Plus from "$lib/icons/Plus.svelte";
+  import Minus from "$lib/icons/Minus.svelte";
   import Fuse from "fuse.js";
 
   let {

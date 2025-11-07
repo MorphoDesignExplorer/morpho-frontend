@@ -5,6 +5,10 @@
     import { page } from "$app/stores";
     
     import Chevron from "./Chevron.svelte";
+    import PaperClip from "$lib/icons/PaperClip.svelte";
+    import ProjectIcon from "$lib/icons/Project.svelte";
+    import PersonIcon from "$lib/icons/Person.svelte";
+    import LogoutIcon from "$lib/icons/Logout.svelte";
 
     interface Props {
         data: { projects: Project[]; documents: Document[] };
@@ -32,28 +36,34 @@
 
 <div class="relative flex min-h-screen bg-sky-50">
     <div
-        class="flex flex-col bg-blue-100 w-1/4 min-h-full pt-10 mr-10 gap-5 border-r-2 border-r-blue-500 pl-4 rounded-r-lg shadow-lg"
+        class="flex flex-col bg-blue-100 w-1/4 min-h-full pt-10 mr-10 gap-2 border-r-2 border-r-blue-500 px-4 rounded-r-lg shadow-lg"
     >
         <span class="flex flex-col items-start">
-            <h1 class="text-3xl font-extrabold">Welcome</h1>
+            <h1 class="text-3xl font-extrabold">Welcome!</h1>
             <br />
             <p class="text-blue-600"><a href="/">Home</a></p>
-            <p class="text-blue-600"><a href="/auth/admin/">Admin Root</a></p>
-            <br />
-            <br />
-            <br />
-            <p class="text-blue-600"><a href="/auth/logout/">Logout</a></p>
         </span>
+        <a
+            href="/auth/logout/"
+            class="flex items-center gap-2 bg-blue-200 rounded-lg p-1"
+        >
+            <LogoutIcon className="min-w-8 max-w-8 rounded-lg bg-blue-400 text-blue-800 p-1"/>
+
+            <h1 class="text-xl font-extrabold">Logout</h1>
+        </a>
         {#if true} <!--// TODO this needs to be filtered via the MID matrix-->
         <a
             href="/auth/admin/user_mgmt"
-            class="font-normal text-blue-600 text-xl"
+            class="flex items-center gap-2 bg-blue-200 rounded-lg p-1"
         >
-            Collaborator Mangement
+            <PersonIcon className="min-w-8 max-w-8 rounded-lg bg-blue-400 text-blue-800 p-1"/>
+            <h1 class="text-xl font-extrabold">Collaborators</h1>
         </a>
         {/if}
+
         <button class="flex flex-col gap-2" onclick={flip_projects}>
-            <span class="flex justify-between items-center pr-8">
+            <span class="flex gap-2 items-center bg-blue-200 rounded-lg p-1">
+                <ProjectIcon className="min-w-8 max-w-8 rounded-lg bg-blue-400 text-blue-800 p-1"/>
                 <h1 class="text-xl font-extrabold">Projects</h1>
                 <span class="ml-auto px-3 transition-transform" class:rotate-180={projects_open}>
                     <Chevron/>
@@ -61,7 +71,7 @@
                 <a
                     href="/auth/admin/project/new"
                     class="good-button"
-                    >Add +</a
+                    >Add</a
                 >
             </span>
         </button>
@@ -73,7 +83,7 @@
                     <a
                         target="_self"
                         href="/auth/admin/project/{project.project_name}/"
-                        >{project.metadata.human_name} ({project.project_name})</a
+                        >{project.options.display_name} ({project.project_name})</a
                     >
                 </li>
             {/each}
@@ -81,7 +91,8 @@
         {/if}
 
         
-        <button class="flex justify-between items-center pr-8" onclick={flip_documents}>
+        <button class="flex gap-2 items-center bg-blue-200 rounded-lg p-1" onclick={flip_documents}>
+            <PaperClip className="min-w-8 max-w-8 rounded-lg bg-blue-400 text-blue-800 p-1"/>
             <h1 class="text-xl font-extrabold">Documents</h1>
             <span class="ml-auto px-3 transition-transform" class:rotate-180={documents_open}>
                 <Chevron/>
@@ -89,7 +100,7 @@
             <a
                 href="/auth/admin/document/new"
                 class="good-button"
-                >Add +</a
+                >Add</a
             >
         </button>
 
