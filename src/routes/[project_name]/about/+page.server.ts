@@ -1,6 +1,5 @@
 import type { PageServerLoad } from "./$types";
 import {Parser, HtmlRenderer} from "commonmark";
-import { common_actions } from "../common_actions";
 import { type Actions } from "@sveltejs/kit";
 
 export const load: PageServerLoad = async ({parent}) => {
@@ -13,6 +12,3 @@ export const load: PageServerLoad = async ({parent}) => {
     };
 }
 
-export const actions = {
-    ...common_actions
-} as Actions;
