@@ -121,3 +121,56 @@ const EmptyOptions: ProjectOptions = {
 export function mergeDefaultOptions(input: Partial<ProjectOptions>): ProjectOptions {
     return Object.assign(JSON.parse(JSON.stringify(EmptyOptions)), input);
 }
+
+/**
+User Management Types
+*/
+
+/**
+Represents a user in the database.
+*/
+export type User = {
+    email: string
+    password_hash: string
+};
+
+/**
+Represents the permissions a role has.
+This is structed as a JSON object to keep it extendible in the future.
+*/
+export type Role = {
+    role_name: string
+    /// user management permissions
+    can_invite: boolean
+    can_drop_user: boolean
+    can_assign_user: boolean
+    /// project management permissions
+    can_create_project: boolean
+    can_upload_to_project: boolean
+    can_update_project_options: boolean
+    can_delete_project: boolean
+    /// document management permissions
+    can_create_document: boolean
+    can_delete_document: boolean
+    can_update_document: boolean
+    /// special permissions
+    is_admin: boolean
+};
+
+export function DefaultRole(): Role {
+    return {
+        role_name: "",
+        can_invite: false,
+        can_drop_user: false,
+        can_assign_user: false,
+        can_create_project: false,
+        can_upload_to_project: false,
+        can_update_project_options: false,
+        can_delete_project: false,
+        can_create_document: false,
+        can_delete_document: false,
+        can_update_document: false,
+        is_admin: false
+    }
+}
+

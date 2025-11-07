@@ -1,8 +1,9 @@
 import { Option as O, Either as E } from "effect";
 import { DbQueryAll, DbQueryOne, DbExec } from "./database";
-import type { Project, Document, Model } from "./types";
-import { mergeDefaultOptions } from "./types";
+import type { Project, Document, Model, User, Role } from "./types";
+import { mergeDefaultOptions, DefaultRole } from "./types";
 import { reportError } from "./error";
+import { ParseJson } from "$lib/common";
 import { Parser, HtmlRenderer } from "commonmark";
 
 export async function GetProjects(projectName: O.Option<string>, filtered_for_public: boolean = true): Promise<Project[]> {
@@ -49,7 +50,7 @@ export async function GetProjects(projectName: O.Option<string>, filtered_for_pu
         filtered_result,
         {
             onLeft: (err: Error) => {
-                reportError({projectName, filtered_for_public})(err)
+                reportError({ projectName, filtered_for_public })(err)
                 return []
             },
             onRight: (projects: Project[]) => projects
@@ -111,13 +112,13 @@ export async function GetModels(projectName: string): Promise<Model[]> {
 
     const maybe_model_rows = await DbQueryAll<Record<string, string>[]>("SELECT id, scoped_id, parameters, output_parameters FROM solution WHERE project_name = ?", projectName)
     const model_rows = E.getOrElse<Error, Record<string, string>[]>(e => {
-        reportError({projectName})(e);
+        reportError({ projectName })(e);
         return [];
     })(maybe_model_rows);
 
     const maybe_asset_rows = await DbQueryAll<{ tag: string, file: string, solution_id: string }[]>("SELECT asset.tag, asset.file, asset.solution_id FROM asset WHERE asset.solution_id in (SELECT id FROM solution WHERE project_name = ?)", projectName)
     const asset_rows = E.getOrElse<Error, { tag: string, file: string, solution_id: string }[]>(e => {
-        reportError({projectName})(e);
+        reportError({ projectName })(e);
         return [];
     })(maybe_asset_rows);
 
@@ -138,7 +139,7 @@ export async function GetModels(projectName: string): Promise<Model[]> {
 }
 
 export async function CachePut(key: string, value: string): Promise<void> {
-    E.mapLeft(reportError({key, value}))(await DbExec("INSERT INTO cache VALUES (?, ?, unixepoch('now'));", key, value));
+    E.mapLeft(reportError({ key, value }))(await DbExec("INSERT INTO cache VALUES (?, ?, unixepoch('now'));", key, value));
 }
 
 /**
@@ -153,7 +154,7 @@ export async function CacheGet(key: string): Promise<O.Option<string>> {
     return E.match(
         row, {
         onLeft(err) {
-            reportError({key})(err);
+            reportError({ key })(err);
             return O.none()
         },
         onRight(row) {
@@ -165,6 +166,53 @@ export async function CacheGet(key: string): Promise<O.Option<string>> {
     )
 }
 
+export type ProjectName = string;
+
 /**
+Returns a matrix of projects and the roles associated with an email / user.
+Roles can sometimes have no projects associated with them, in the case of the Admin role.
 */
-export async function GetUsers(): Promise
+export async function GetUserPermissions(email: string): Promise<[ProjectName | null, Role][]> {
+    return E.match(
+        await DbQueryAll<{ project_name: string, permissions: string }[]>("SELECT user_roles.project_name, roles.permissions FROM user_roles, roles WHERE user_roles.email = ? AND roles.name = user_roles.role_name", email),
+        {
+            onLeft(err) {
+                reportError({ email })(err);
+                return []
+            },
+            onRight(rows) {
+                return rows.map(row => [
+                        E.getOrElse(
+                            ParseJson(row.permissions),
+                            err => {
+                                reportError(row)(err);
+                                return DefaultRole();
+                            }
+                        )
+                    ]
+                )
+            }
+        }
+    )
+}
+
+export async function GetRoles(): Promise<Role[]> {
+    return E.match(
+        await DbQueryAll<{ permissions: string }[]>("SELECT permissions FROM roles"), {
+        onLeft(err) {
+            reportError({})(err);
+            return [];
+        },
+        onRight(permission_strings) {
+            return permission_strings.map(
+                str => E.getOrElse(
+                    ParseJson(str.permissions),
+                    err => {
+                        reportError({ permission_strings, faulty_json: str.permissions })(err);
+                        return DefaultRole();
+                    }
+                )
+            )
+        }
+    })
+}

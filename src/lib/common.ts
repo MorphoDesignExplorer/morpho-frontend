@@ -1,6 +1,7 @@
 import { applyAction, deserialize } from "$app/forms";
 import { invalidateAll } from "$app/navigation";
 import type { ActionResult } from "@sveltejs/kit";
+import { Either as E } from "effect";
 
 export function BuildServerURL() {
   if (process.env.ENVIRONMENT && process.env.ENVIRONMENT == 'prod') {
@@ -29,4 +30,12 @@ export function SubmitJson(getter: () => Object) {
     }
     applyAction(result)
   };
+}
+
+export function ParseJson<T>(encodedObject: string): E.Either<T> {
+  try {
+    return E.right(JSON.parse(encodedObject) as T)
+  } catch (error) {
+    return E.left(error)
+  }
 }

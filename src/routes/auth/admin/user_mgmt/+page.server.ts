@@ -1,15 +1,17 @@
-import type Actions from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
+import { GetRoles } from "$lib/database_get";
+import { Option as O } from "effect";
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({locals}) => {
     // TODO get MID matrix
     // TODO calculate unique users from matrix
     // TODO get All roles possible from the roles table
 
+    const roles = await GetRoles()
+
     return {
         /// TODO add projects that they can control here
-        role: "Admin",
-        roles: ["Admin", "Project Owner", "Collaborator", "Viewer"], /// TODO filter this based on user's current role
+        roles: roles.map(role => role.role_name), /// TODO filter this based on user's current role
         matrix: [
             {
                 email: "A@y.com",

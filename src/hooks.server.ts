@@ -1,8 +1,10 @@
-import type { ServerInit } from "@sveltejs/kit";
+import type { ServerInit, Handle } from "@sveltejs/kit";
 import { DbExec } from "$lib/database";
-import { Either as E } from "effect";
+import { Either as E, Option as O } from "effect";
 import * as jobs from "$lib/background-jobs";
 import { reportError } from "$lib/error";
+import { GetUserPermissions } from "$lib/database_get";
+import { verifyToken } from "$lib/auth";
 
 /// TODO: Dummy queries. Replace these with ones that actually work.
 export const init: ServerInit = async () => {
@@ -17,18 +19,18 @@ export const init: ServerInit = async () => {
     const ROLE_SCHEMA = `
     CREATE TABLE IF NOT EXISTS roles (
         name TEXT NOT NULL,
-        type TEXT NOT NULL CHECK ( type in ('MID', 'CRUD') ),
-        permissions TEXT NOT NULL,
-        PRIMARY KEY (name, type)
+        permissions JSONB NOT NULL,
+        PRIMARY KEY (name)
     )`
     const PERMISSION_MATRIX_SCHEMA =
         `CREATE TABLE IF NOT EXISTS user_roles (
         email TEXT NOT NULL,
         role_name TEXT NOT NULL,
-        role_type TEXT NOT NULL,
-        FOREIGN KEY (role_name, role_type) REFERENCES roles(name, type),
+        project_name TEXT,
+        FOREIGN KEY (role_name) REFERENCES roles(name)
         FOREIGN KEY (email) REFERENCES user(email),
-        CONSTRAINT user_role_uniq UNIQUE (email, role_name, role_type)
+        FOREIGN KEY (project_name) REFERENCES project(project_name)
+        CONSTRAINT user_role_uniq UNIQUE (email, role_name, project_name)
     );`
 
     const AUTH_TOKEN_SCHEMA = `
@@ -80,12 +82,12 @@ export const init: ServerInit = async () => {
         CREATE TRIGGER IF NOT EXISTS cache.cleanup AFTER INSERT ON cache BEGIN 
             DELETE FROM cache cache WHERE expires < unixepoch('now');
         END;
-    `;    
+    `;
     // makes the server crash. Meant to crash the server when the schema definition queries fail.
     const DDLValidate = (query: string) => ({
         onLeft(error: Error) {
             if (error) {
-                reportError({query})(new Error(error));
+                reportError({ query })(new Error(error));
                 throw new Error(error)
             }
         },
@@ -110,11 +112,23 @@ export const init: ServerInit = async () => {
         CACHE_SCHEMA
     ]
 
-    for (let i = 0; i < statements.length; i ++) {
-        E.match(await DbExec(CACHE_SCHEMA), DDLValidate(CACHE_SCHEMA));
+    for (let i = 0; i < statements.length; i++) {
+        E.match(await DbExec(statements[i]), DDLValidate(statements[i]));
     }
-    
+
     console.log("Database setup complete.")
 
     // TODO Start Background jobs
+}
+
+export const handle: Handle = async ({ event, resolve }) => {
+    const [email, ok] = await verifyToken(event.cookies.get("jwt") || "");
+    if (ok) {
+        const permissions = await GetUserPermissions(email);
+        event.locals.user = O.some({ email, permissions });
+    } else {
+        event.locals.user = O.none()
+    }
+
+    return await resolve(event);
 }

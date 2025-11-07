@@ -1,35 +1,26 @@
 <script lang="ts">
-
-  import { enhance } from "$app/forms";
   import MatrixForm from "./MatrixForm.svelte";
-  import Modal from "$lib/components/Modal.svelte";
-  import Minus from "$lib/components/Minus.svelte";
-  import Plus from "$lib/components/Plus.svelte";
   import { MakeInvite } from "./invite/api";
     import { SubmitJson } from "$lib/common";
 
   let { data } = $props();
 
-  let modal: Modal | undefined = $state();
-  let formElement: HTMLFormElement | undefined = $state();
-
   let invite_mail = $state("");
   let search_value = $state("");
 </script>
 
-<Modal bind:this={modal} />
-
 <form
-  bind:this={formElement}
   class="flex min-h-full w-[90%] flex-col gap-3 pt-10"
   action="?/update"
   method="POST"
   onsubmit={SubmitJson(() => data.matrix)}
 >
+  <!--
   <div class="form-group text-xl">
     <span class="font-bold">Current Role:</span>
     {data.role}
   </div>
+  -->
   <div class="form-group flex-col">
     <p class="font-bold text-xl self-start">Invite collaborator via mail</p>
     <div class="flex w-full justify-between gap-1 items-center">

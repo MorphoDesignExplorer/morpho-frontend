@@ -70,19 +70,19 @@ export async function generateToken(email: string): Promise<string> {
 /*
  * Takes a encrypted token, decrypts it and authenticates it.
  *
- * Return the decrypted token and true if the decryption succeeds.
+ * Return the email associated with the token and true if the decryption succeeds.
  *
  * Return nothing and false if the decryption fails.
  */
-export async function verifyToken(encodedToken: string): Promise<[Object, boolean]> {
+export async function verifyToken(encodedToken: string): Promise<["", boolean]> {
     // TODO right now a stub token is returned for compatibility purposes. Remove this later.
     // TODO any error in the chain should terminate it and return false
-    const maybe_email = E.mapLeft(reportError({encodedToken}))(await DbQueryOne("SELECT email, expires_at - unixepoch() FROM auth_token WHERE token = ? AND unixepoch() < expires_at", encodedToken));
+    const maybe_email = E.mapLeft(reportError({encodedToken}))(await DbQueryOne<{email: string, expiration: string}>("SELECT email, expires_at - unixepoch() as expiration FROM auth_token WHERE token = ? AND unixepoch() < expires_at", encodedToken));
     if (E.isRight(maybe_email) && O.isSome(maybe_email.right)) {
         E.mapLeft(reportError({encodedToken}))(await DbExec("UPDATE auth_token SET last_used_at = unixepoch() WHERE token = ?", encodedToken));
-        return [{}, true]
+        return [maybe_email.right.value.email, true]
     } else {
-        return [{}, false]
+        return ["", false]
     }
 }
 
