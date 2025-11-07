@@ -18,7 +18,7 @@ TODO include information here about how to use this in tandem with DB functions.
 
 The context can be anything pretty much, but the preferable argument is a stringified JSON object.
 */
-export function reportError(context: Record<string, string>): (error: Error) => void {
+export function reportError(context: Record<string, any>): (error: Error) => void {
     return (error: Error) => {
         // TODO send these error traces to an observability platform
 

@@ -135,7 +135,8 @@ export async function ResetPassword(token: string, password: string): Promise<bo
     if (details.valid) {
         const hashedPassword = crypto.createHash("sha512").update(password + await getPassSecret()).digest("base64");
         // TODO IMPORTANT convert this into an sql transaction that terminates if anything in this chain fails
-        E.mapLeft(reportError({ token, email }))(await DbExec("UPDATE user SET password_hash = ? WHERE email = ?", hashedPassword, details.email));
+        const email = details.email;
+        E.mapLeft(reportError({ token, email }))(await DbExec("UPDATE user SET password_hash = ? WHERE email = ?", hashedPassword, email));
         E.mapLeft(reportError({ token }))(await DbExec("DELETE FROM password_reset_tokens WHERE token = ?", token));
         return true
     } else {

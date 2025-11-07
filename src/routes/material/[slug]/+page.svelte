@@ -90,7 +90,7 @@
         {/if}
         <h1 class="text-5xl font-bold">{currentDocument?.title}</h1>
         <h1 class="italic">
-            Written on {new Date(currentDocument?.timestamp).toDateString()}
+            Written on {new Date(currentDocument?.timestamp || "").toDateString()}
         </h1>
         <div class="content">
             {@html data.tree}

@@ -4,6 +4,7 @@ import { redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { GetDocuments } from "$lib/database_get";
 import { DeleteDocument, UpdateDocument } from "$lib/database_update";
+import { Option as O } from "effect";
 
 export const load: PageServerLoad = async ({ params }) => {
     const documents: Document[] = await GetDocuments();

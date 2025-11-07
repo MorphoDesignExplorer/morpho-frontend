@@ -182,6 +182,7 @@ export async function GetUserPermissions(email: string): Promise<[ProjectName | 
             },
             onRight(rows) {
                 return rows.map(row => [
+                        row.project_name,
                         E.getOrElse(
                             ParseJson(row.permissions),
                             err => {

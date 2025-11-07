@@ -1,6 +1,7 @@
-import type RequestHandler from "./$types";
-import {reportError} from "$lib/error";
+import type { RequestHandler } from '@sveltejs/kit';
+import { reportError } from "$lib/error";
 import { json } from '@sveltejs/kit';
+import { Option as O } from "effect";
 
 export type InvitePostResponse = {
   status: "success" | "failure"
@@ -22,7 +23,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
     console.log("mailing to", wellFormedRequest.email)
     return json({status: "failure", message: "NOT IMPLEMENTED"})
   } catch(e) {
-    reportError({locals})(e);
+    reportError({locals})(e as Error);
     return json({status: "failure", message: "Server error."})
   }
 }

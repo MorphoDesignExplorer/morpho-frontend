@@ -1,10 +1,10 @@
 <script lang="ts">
-  let message: string = $state();
-  let onsuccess: () => void = $state();
-  let onfailure: () => void = $state();
+  let message: string = $state("");
+  let onsuccess: () => void = $state(() => {});
+  let onfailure: () => void = $state(() => {});
   let enabled = $state(false);
 
-  let modalElement: HTMLDivElement = $state();
+  let modalElement: HTMLDivElement | undefined = $state();
 
   export function raise(msg: string, success: () => void, failure: () => void) {
     enabled = true;

@@ -32,10 +32,10 @@ export function SubmitJson(getter: () => Object) {
   };
 }
 
-export function ParseJson<T>(encodedObject: string): E.Either<T> {
+export function ParseJson<T>(encodedObject: string): E.Either<T, Error> {
   try {
     return E.right(JSON.parse(encodedObject) as T)
   } catch (error) {
-    return E.left(error)
+    return E.left(error as Error)
   }
 }
