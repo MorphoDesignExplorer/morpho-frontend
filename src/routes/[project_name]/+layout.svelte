@@ -71,7 +71,7 @@
                 }
             }) || [] as project}
                 <option class="text-black" value={project.project_name}
-                    >{project.metadata.human_name}</option
+                    >{project.options.display_name}</option
                 >
             {/each}
         </select>

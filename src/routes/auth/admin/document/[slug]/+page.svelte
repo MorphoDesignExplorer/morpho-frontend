@@ -103,11 +103,11 @@
 
     <div class="flex gap-2">
         <button
-            class="self-start bg-green-700 font-bold text-white text-sm px-3 py-1"
+            class="good-button"
             type="submit">Save</button
         >
         <button
-            class="self-start bg-red-700 font-bold text-white text-sm px-3 py-1"
+            class="bad-button"
             type="button"
             onclick={handleDelete}>Delete</button
         >

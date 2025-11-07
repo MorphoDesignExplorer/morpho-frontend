@@ -23,7 +23,7 @@
         form: {
             project_name: project.project_name,
             is_public: project.options.is_public,
-            human_name: project.metadata.human_name,
+            human_name: project.options.display_name,
             captions: project.metadata.captions,
             variable_metadata_options: project.variable_metadata.map((field, idx) => Object.assign({
                 // following are default values

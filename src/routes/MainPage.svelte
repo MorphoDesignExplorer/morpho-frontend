@@ -81,7 +81,7 @@
 <div class="absolute bg-white rounded-md border-[1px] border-slate-200 flex flex-col gap-2 p-2" class:hidden={!hover} onblur={disableDropdown} use:initDropdown>
     <span use:initAnchorPixel onblur={disableDropdown}></span>
     {#each sortedProjects as project}
-        <h3 class="text-xl font-bold"><a href="/{project.project_name}" class="underline decoration-blue-500">{project.metadata.human_name}</a></h3>
+        <h3 class="text-xl font-bold"><a href="/{project.project_name}" class="underline decoration-blue-500">{project.options.display_name}</a></h3>
     {/each}
 </div>
 

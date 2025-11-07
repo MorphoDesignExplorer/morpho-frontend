@@ -60,6 +60,6 @@
     </h1>
     <hr class="border-2 border-blue-500" />
 
-    <button class="self-start bg-green-700 font-bold text-white text-sm px-3 py-1" type="submit">Submit</button>
+    <button class="good-button" type="submit">Submit</button>
     <DocumentForm form={$form} documentList={data.documents}/>
 </form>

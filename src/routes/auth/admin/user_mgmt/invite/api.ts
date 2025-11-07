@@ -1,6 +1,6 @@
 import type { InvitePostResponse, InvitePostRequest } from "./+server.ts";
 
-export async function MakeInvite(req: InvitePostRequest, callback: (response: InvitePostResposne) => void) {
+export async function MakeInvite(req: InvitePostRequest, callback: (response: InvitePostResponse) => void) {
   const response = await fetch("/auth/admin/user_mgmt/invite", {
     method: "POST",
     body: JSON.stringify(req),
