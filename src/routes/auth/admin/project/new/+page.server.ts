@@ -1,12 +1,11 @@
-import { verifyToken } from "$lib/auth";
 import { BuildServerURL } from "$lib/common";
 import { redirect, type Actions } from "@sveltejs/kit";
+import { Option as O } from "effect";
 
 export const actions = {
-    create: async ({ cookies, request }) => {
-        let [_, ok] = await verifyToken(cookies.get("jwt") || "");
-        if (!ok) {
-            return redirect(301, "/");
+    create: async ({ locals, cookies, request }) => {
+        if (O.isNone(locals.user)) {
+            return redirect(301, "/")
         }
 
         try {

@@ -1,4 +1,3 @@
-import { verifyToken } from "$lib/auth";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import mime from "mime";
@@ -13,9 +12,8 @@ async function createPresignedUrlWithClient(
     return getSignedUrl(client, command, { expiresIn: 3600 }); // link is valid for one hour.
 }
 
-export const GET = async ({ cookies, url }) => {
-    let [_, ok] = await verifyToken(cookies.get("jwt") || "");
-    if (!ok) {
+export const GET = async ({ locals, cookies, url }) => {
+    if (O.isNone(locals.user)) {
         return new Response("Unauthenticated", { status: 401 });
     }
 

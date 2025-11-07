@@ -32,7 +32,6 @@ export const init: ServerInit = async () => {
         FOREIGN KEY (project_name) REFERENCES project(project_name)
         CONSTRAINT user_role_uniq UNIQUE (email, role_name, project_name)
     );`
-
     const AUTH_TOKEN_SCHEMA = `
         CREATE TABLE IF NOT EXISTS auth_token (
             token TEXT NOT NULL PRIMARY KEY,
@@ -43,9 +42,9 @@ export const init: ServerInit = async () => {
             is_revoked BOOLEAN DEFAULT 0,
             FOREIGN KEY (email) REFERENCES user(email) ON DELETE CASCADE
         );
-
-        CREATE INDEX IF NOT EXISTS idx_auth_tokens_expires_at ON auth_token(expires_at);
-
+    `
+    const AUTH_TOKEN_INDEX = `CREATE INDEX IF NOT EXISTS idx_auth_tokens_expires_at ON auth_token(expires_at)`;
+    const AUTH_TOKEN_CLEANUP_AFTER_INSERT = `
         CREATE TRIGGER IF NOT EXISTS cleanup_expired_tokens
         AFTER INSERT ON auth_token
         BEGIN
@@ -53,7 +52,8 @@ export const init: ServerInit = async () => {
             WHERE expires_at < unixepoch("now")
                OR is_revoked = 1;
         END;
-
+    `
+    const AUTH_TOKEN_CLEANUP_AFTER_UPDATE = `
         CREATE TRIGGER IF NOT EXISTS update_token_last_used
         AFTER UPDATE OF last_used_at ON auth_token
         BEGIN
@@ -62,14 +62,16 @@ export const init: ServerInit = async () => {
                OR is_revoked = 1;
         END;
     `
+
     const RESET_TOKEN_SCHEMA = `
         CREATE TABLE IF NOT EXISTS password_reset_tokens (
             token TEXT PRIMARY KEY,
             email TEXT NOT NULL,
             created_at INTEGER DEFAULT (unixepoch())
         );
-
-        -- Trigger to cleanup expired reset tokens after any insert
+    `
+    // Trigger to cleanup expired reset tokens after any insert
+    const RESET_TOKEN_CLEANUP = `
         CREATE TRIGGER IF NOT EXISTS cleanup_expired_reset_tokens
         AFTER INSERT ON password_reset_tokens
         BEGIN
@@ -79,8 +81,8 @@ export const init: ServerInit = async () => {
     `
     let CACHE_SCHEMA = `
         CREATE TABLE IF NOT EXISTS cache (key TEXT, value TEXT, expires_at INTEGER);
-        CREATE TRIGGER IF NOT EXISTS cache.cleanup AFTER INSERT ON cache BEGIN 
-            DELETE FROM cache cache WHERE expires < unixepoch('now');
+        CREATE TRIGGER IF NOT EXISTS cleanup AFTER INSERT ON cache BEGIN 
+            DELETE FROM cache WHERE expires < unixepoch('now');
         END;
     `;
     // makes the server crash. Meant to crash the server when the schema definition queries fail.
@@ -108,7 +110,11 @@ export const init: ServerInit = async () => {
         ROLE_SCHEMA,
         PERMISSION_MATRIX_SCHEMA,
         AUTH_TOKEN_SCHEMA,
+        AUTH_TOKEN_INDEX,
+        AUTH_TOKEN_CLEANUP_AFTER_INSERT,
+        AUTH_TOKEN_CLEANUP_AFTER_UPDATE,
         RESET_TOKEN_SCHEMA,
+        RESET_TOKEN_CLEANUP,
         CACHE_SCHEMA
     ]
 

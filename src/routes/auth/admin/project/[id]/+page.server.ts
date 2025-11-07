@@ -1,4 +1,3 @@
-import { verifyToken } from "$lib/auth";
 import { error, redirect, type Actions } from "@sveltejs/kit";
 import type { AdminForm, Project } from "$lib/types";
 import type { PageServerLoad } from "./$types";
@@ -17,9 +16,8 @@ export const load: PageServerLoad = async ({ params }) => {
 };
 
 export const actions = {
-    update: async ({ cookies, request, params }) => {
-        let [_, ok] = await verifyToken(cookies.get("jwt") || "");
-        if (!ok) {
+    update: async ({ locals, cookies, request, params }) => {
+        if (O.isNone(locals.user)) {
             return redirect(301, "/");
         }
 
@@ -33,9 +31,8 @@ export const actions = {
             error(400, "Invalid route.")
         }
     },
-    delete: async ({ cookies, params }) => {
-        let [_, ok] = await verifyToken(cookies.get("jwt") || "");
-        if (!ok) {
+    delete: async ({ locals, cookies, params }) => {
+        if (O.isNone(locals.user)) {
             return redirect(301, "/");
         }
 

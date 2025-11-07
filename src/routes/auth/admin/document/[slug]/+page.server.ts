@@ -1,4 +1,3 @@
-import { verifyToken } from "$lib/auth";
 import { BuildServerURL } from "$lib/common";
 import type { AdminForm, Document } from "$lib/types";
 import { redirect, type Actions } from "@sveltejs/kit";
@@ -18,10 +17,9 @@ export const load: PageServerLoad = async ({ params }) => {
 };
 
 export const actions = {
-    update: async ({ cookies, request }) => {
-        let [_, ok] = await verifyToken(cookies.get("jwt") || "");
-        if (!ok) {
-            return redirect(301, "/");
+    update: async ({ locals, cookies, request }) => {
+        if (O.isNone(locals.user)) {
+            return redirect(301, "/")
         }
 
         const form: Extract<AdminForm, { type: "document" }> = JSON.parse(
@@ -31,15 +29,13 @@ export const actions = {
         let response = await UpdateDocument(form.form.id, form.form.slug, form.form.text, form.form.title, form.form.parent);
         return response;
     },
-    delete: async ({ cookies, request }) => {
-        let [_, ok] = await verifyToken(cookies.get("jwt") || "");
-        if (!ok) {
-            return redirect(301, "/");
+    delete: async ({ locals, cookies, request }) => {
+        if (O.isNone(locals.user)) {
+            return redirect(301, "/auth/admin")
         }
 
 
         const deleteRequest = (await request.json()) as { idOrSlug: string };
-        console.log(deleteRequest)
         let response = await DeleteDocument(deleteRequest.idOrSlug);
         return response
     },

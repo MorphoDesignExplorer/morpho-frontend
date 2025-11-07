@@ -1,6 +1,6 @@
 import { redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { generateToken, getPassSecret, verifyToken } from "$lib/auth";
+import { generateToken, getPassSecret } from "$lib/auth";
 import crypto from "node:crypto";
 import { DbQueryOne } from "$lib/database";
 import { Option as O, Either as E } from "effect";
@@ -10,10 +10,8 @@ type FormResponse = {
     message: string
 }
 
-export const load: PageServerLoad = async ({ cookies }) => {
-    let [_, ok] = await verifyToken(cookies.get("jwt") || "")
-    // redirect the user out of this page if they are verified (i.e. logged in).
-    if (ok) {
+export const load: PageServerLoad = async ({ locals, cookies }) => {
+    if (O.isSome(locals.user)) {
         return redirect(302, "/auth/admin")
     }
 }

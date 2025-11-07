@@ -74,7 +74,7 @@ export async function generateToken(email: string): Promise<string> {
  *
  * Return nothing and false if the decryption fails.
  */
-export async function verifyToken(encodedToken: string): Promise<["", boolean]> {
+export async function verifyToken(encodedToken: string): Promise<[string, boolean]> {
     // TODO right now a stub token is returned for compatibility purposes. Remove this later.
     // TODO any error in the chain should terminate it and return false
     const maybe_email = E.mapLeft(reportError({ encodedToken }))(await DbQueryOne<{ email: string, expiration: string }>("SELECT email, expires_at - unixepoch() as expiration FROM auth_token WHERE token = ? AND unixepoch() < expires_at", encodedToken));

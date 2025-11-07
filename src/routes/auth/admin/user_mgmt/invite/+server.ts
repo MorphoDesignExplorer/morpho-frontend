@@ -1,6 +1,5 @@
 import type RequestHandler from "./$types";
 import {reportError} from "$lib/error";
-import { verifyToken } from '$lib/auth';
 import { json } from '@sveltejs/kit';
 
 export type InvitePostResponse = {
@@ -12,10 +11,9 @@ export type InvitePostRequest = {
   email: "string"
 }
 
-export const POST: RequestHandler = async ({ request, cookies }) => {
-  let [_, ok] = await verifyToken(cookies.get("jwt") || "");
-  if (!ok) {
-    return json({status: "failure", message: "Unauthorized"})
+export const POST: RequestHandler = async ({ locals, request, cookies }) => {
+  if (O.isNone(locals.user)) {
+      return json({status: "failure", message: "Unauthorized"})
   }
 
   try {

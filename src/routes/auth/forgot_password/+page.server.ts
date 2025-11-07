@@ -1,15 +1,13 @@
 import { redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { generateResetToken, verifyToken } from "$lib/auth";
+import { generateResetToken } from "$lib/auth";
 import { reportError } from "$lib/error";
 import { Option as O } from "effect";
 import { SES } from "@aws-sdk/client-ses";
 import { ENVIRONMENT } from "$lib/variables";
 
-export const load: PageServerLoad = async ({ cookies }) => {
-    let [_, ok] = await verifyToken(cookies.get("jwt") || "")
-    // redirect the user out of this page if they are verified (i.e. logged in).
-    if (ok) {
+export const load: PageServerLoad = async ({ locals, cookies }) => {
+    if (O.isSome(locals.user)) {
         return redirect(302, "/auth/admin")
     }
 }

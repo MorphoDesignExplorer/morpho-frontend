@@ -1,14 +1,12 @@
 import { redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { ResetPassword, verifyResetToken, verifyToken } from "$lib/auth";
+import { ResetPassword, verifyResetToken } from "$lib/auth";
 
 export const load: PageServerLoad = async ({ cookies, url }) => {
-    let [_, ok] = await verifyToken(cookies.get("jwt") || "")
-    // redirect the user out of this page if they are verified (i.e. logged in).
-    if (ok) {
+    if (O.isSome(locals.user)) {
         return redirect(302, "/auth/admin")
     }
-
+    
     let token = url.searchParams.get("token") || ""
     let valid_token = await verifyResetToken(token);
     if (valid_token) {

@@ -1,4 +1,3 @@
-import { verifyToken } from "$lib/auth";
 import { BuildServerURL } from "$lib/common";
 import { GetDocuments } from "$lib/database_get";
 import { CreateDocument } from "$lib/database_create";
@@ -17,9 +16,8 @@ export const load: PageServerLoad = async ({cookies}) => {
 }
 
 export const actions = {
-    create: async({cookies, request}) => {
-        let [_, ok] = await verifyToken(cookies.get("jwt") || "");
-        if (!ok) {
+    create: async({locals, cookies, request}) => {
+        if (O.isNone(locals.user)) {
             return redirect(301, "/")
         }
 
