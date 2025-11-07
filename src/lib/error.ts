@@ -2,7 +2,7 @@
 
 import { CloudWatchLogsClient, PutLogEventsCommand } from "@aws-sdk/client-cloudwatch-logs"; // ES Modules import
 
-import { ENVIRONMENT } from "$env/static/private"
+import { ENVIRONMENT } from "$lib/variables"
 
 export function reportMessage(message: string) {
     // TODO send these logs to an observability platform
@@ -18,10 +18,10 @@ TODO include information here about how to use this in tandem with DB functions.
 
 The context can be anything pretty much, but the preferable argument is a stringified JSON object.
 */
-export function reportError(context: Record<string, string>): (error: Error) => {} {
+export function reportError(context: Record<string, string>): (error: Error) => void {
     return (error: Error) => {
         // TODO send these error traces to an observability platform
-    
+
         const ERR_FORMAT = `
 Message:
 ${error.message}
