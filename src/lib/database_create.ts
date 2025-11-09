@@ -1,6 +1,9 @@
 import type { Document, AdminForm } from "$lib/types";
-import { Either as E } from "effect";
+import { Either as E, pipe } from "effect";
 import { DbExec } from "$lib/database";
+import AdmZip from "adm-zip";
+import { reportError } from "$lib/error";
+import { WrapFault, andThen, andThenA, andThen2A } from "./common";
 
 type CreateDocumentResponse = {
   status: "success" | "failure"
@@ -35,6 +38,23 @@ export async function CreateDocument(form: Extract<AdminForm, {type: "document"}
     }
     
   )
+}
 
+function MakeTree(entires: AdmZip.IZipEntry[]) {
+  entires[0].extra
+}
+
+/**
+Takes a project ZIP file spit out my the Morpho Grasshopper Plugin and ingest it.
+This zip file is usually hosted on AWS and accessed through S3-FS.
+*/
+export async function UploadProject(pathToZip: string) {
+  const pipeResult = pipe(
+    WrapFault(() => new AdmZip(pathToZip)),
+    andThen((zipHandle: AdmZip) => {
+      return E.right(zipHandle.getEntryCount())
+    }),
+  )
+  E.mapLeft(reportError({}))(pipeResult)
 }
 

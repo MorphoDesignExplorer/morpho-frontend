@@ -45,7 +45,7 @@
         </span>
         <a
             href="/auth/logout/"
-            class="flex items-center gap-2 bg-blue-200 rounded-lg p-1"
+            class="flex items-center gap-2 bg-blue-200 rounded-lg p-1 shadow-sm"
         >
             <LogoutIcon className="min-w-8 max-w-8 rounded-lg bg-blue-400 text-blue-800 p-1"/>
 
@@ -54,7 +54,7 @@
         {#if true} <!--// TODO this needs to be filtered via the MID matrix-->
         <a
             href="/auth/admin/user_mgmt"
-            class="flex items-center gap-2 bg-blue-200 rounded-lg p-1"
+            class="flex items-center gap-2 bg-blue-200 rounded-lg p-1 shadow-sm"
         >
             <PersonIcon className="min-w-8 max-w-8 rounded-lg bg-blue-400 text-blue-800 p-1"/>
             <h1 class="text-xl font-extrabold">Collaborators</h1>
@@ -62,7 +62,7 @@
         {/if}
 
         <button class="flex flex-col gap-2" onclick={flip_projects}>
-            <span class="flex gap-2 items-center bg-blue-200 rounded-lg p-1">
+            <span class="flex gap-2 items-center bg-blue-200 rounded-lg p-1 shadow-sm">
                 <ProjectIcon className="min-w-8 max-w-8 rounded-lg bg-blue-400 text-blue-800 p-1"/>
                 <h1 class="text-xl font-extrabold">Projects</h1>
                 <span class="ml-auto px-3 transition-transform" class:rotate-180={projects_open}>
@@ -91,7 +91,7 @@
         {/if}
 
         
-        <button class="flex gap-2 items-center bg-blue-200 rounded-lg p-1" onclick={flip_documents}>
+        <button class="flex gap-2 items-center bg-blue-200 rounded-lg p-1 shadow-sm" onclick={flip_documents}>
             <PaperClip className="min-w-8 max-w-8 rounded-lg bg-blue-400 text-blue-800 p-1"/>
             <h1 class="text-xl font-extrabold">Documents</h1>
             <span class="ml-auto px-3 transition-transform" class:rotate-180={documents_open}>
