@@ -1,0 +1,44 @@
+[
+  {
+    "role_name": "Admin",
+    "can_invite": true,
+    "can_drop_user": true,
+    "can_assign_user": true,
+    "can_create_project": true,
+    "can_update_project_options": true,
+    "can_delete_project": true,
+    "can_rewrite_project": true,
+    "can_create_document": true,
+    "can_delete_document": true,
+    "can_update_document": true,
+    "is_admin": true
+  },
+  {
+    "role_name": "Project Owner",
+    "can_invite": true,
+    "can_drop_user": true,
+    "can_assign_user": true,
+    "can_create_project": true,
+    "can_update_project_options": true,
+    "can_delete_project": true,
+    "can_rewrite_project": true,
+    "can_create_document": true,
+    "can_delete_document": true,
+    "can_update_document": true,
+    "is_admin": false
+  },
+  {
+    "role_name": "Project Editor",
+    "can_invite": false,
+    "can_drop_user": false,
+    "can_assign_user": false,
+    "can_create_project": false,
+    "can_update_project_options": true,
+    "can_delete_project": false,
+    "can_rewrite_project": true,
+    "can_create_document": false,
+    "can_delete_document": false,
+    "can_update_document": false,
+    "is_admin": false
+  }
+]

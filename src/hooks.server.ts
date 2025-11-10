@@ -5,6 +5,7 @@ import * as jobs from "$lib/background-jobs";
 import { reportError } from "$lib/error";
 import { GetUserPermissions } from "$lib/database_get";
 import { verifyToken } from "$lib/auth";
+import default_roles from "$lib/default-roles.json"
 
 /// TODO: Dummy queries. Replace these with ones that actually work.
 export const init: ServerInit = async () => {
@@ -120,6 +121,12 @@ export const init: ServerInit = async () => {
 
     for (let i = 0; i < statements.length; i++) {
         E.match(await DbExec(statements[i]), DDLValidate(statements[i]));
+    }
+
+    // insert default roles
+    let INSERT_ROLE_STATEMENT = `INSERT OR IGNORE INTO roles (name, permissions) VALUES (?, ?)`;
+    for (let i = 0; i < default_roles.length; i ++) {
+        E.match(await DbExec(INSERT_ROLE_STATEMENT, default_roles[i].role_name, JSON.stringify(default_roles[i])), DDLValidate(INSERT_ROLE_STATEMENT + "\n::\n" + JSON.stringify(default_roles[i])))
     }
 
     console.log("Database setup complete.")
