@@ -2,6 +2,7 @@
     import { run } from 'svelte/legacy';
 
     import Filters from "./Filters.svelte";
+    import FilterIcon from "$lib/icons/Filter.svelte";
     import { get_image_src_or_empty, predicate_equal } from "$lib/utils";
     import type { Caption, DisplayOptions, Model, Project } from "$lib/types";
     import { getContext, onMount } from "svelte";
@@ -236,38 +237,22 @@
     <!-- Options Container -->
     <div
         id="swatch-option"
-        class="flex flex-col justify-end border-b-4 border-b-blue-500 shadow-sm"
+        class="flex flex-col justify-end border-b border-gray-200 shadow-sm"
     >
-        <div class="flex h-10 pl-2 gap-3 border-b-4 border-blue-500 mt-2">
-            <div class="flex select-none">
+        <div class="flex flex-wrap pl-2 gap-3 my-4">
+            <div class="menu-item">
                 <!-- Thumbnail Select -->
-                <label
-                    for="image-select"
-                    class="h-full p-1 flex items-center border-x border-t border-blue-500 bg-blue-500 text-white font-bold"
-                    >Thumbnail</label
-                >
-                <select
-                    id="image-select"
-                    class="h-full p-1 hover:bg-gray-200 border-t border-r border-blue-500 text-blue-500 font-bold transition-colors ease-linear cursor-pointer"
-                    bind:value={image_tag}
-                >
+                <label for="image-select" class="font-bold" >Thumbnail</label>
+                <select id="image-select" class="bg-white" bind:value={image_tag}>
                     {#each allowed_tags as tag}
                         <option value={tag}>{tag}</option>
                     {/each}
                 </select>
             </div>
-            <div class="flex select-none">
+            <div class="menu-item">
                 <!-- Select Sort Parameter -->
-                <label
-                    for="image-select"
-                    class="h-full p-1 flex items-center border-x border-t border-blue-500 bg-blue-500 text-white font-bold"
-                    >Sort By</label
-                >
-                <select
-                    id="image-select"
-                    class="h-full p-1 hover:bg-gray-200 border-t border-r border-blue-500 text-blue-500 font-bold transition-colors ease-linear cursor-pointer"
-                    bind:value={sort_parameter_name}
-                >
+                <label for="image-select" class="font-bold">Sort By</label>
+                <select id="image-select" class="bg-white" bind:value={sort_parameter_name}>
                     {#each parameter_names as param_name}
                         {#if param_name == "scoped_id"}
                             <option value={param_name}>Scoped ID</option>
@@ -281,26 +266,17 @@
                 onclick={() => {
                     $display_options.filter = !$display_options.filter;
                 }}
-                class="bg-blue-500 border border-blue-500 p-1 px-3 select-none flex flex-row items-center gap-3 text-white hover:bg-white hover:text-blue-500 transition-colors ease-linear font-bold"
+                class="menu-button"
             >
                 <!-- Filter Collection -->
                 Filters
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    class="size-6"
-                >
-                    <path
-                        d="M18.75 12.75h1.5a.75.75 0 0 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM12 6a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 6ZM12 18a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 18ZM3.75 6.75h1.5a.75.75 0 1 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM5.25 18.75h-1.5a.75.75 0 0 1 0-1.5h1.5a.75.75 0 0 1 0 1.5ZM3 12a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 3 12ZM9 3.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5ZM12.75 12a2.25 2.25 0 1 1 4.5 0 2.25 2.25 0 0 1-4.5 0ZM9 15.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Z"
-                    />
-                </svg>
+                <FilterIcon/>
             </button>
             <button
                 onclick={() => {
                     $display_options.graph = !$display_options.graph;
                 }}
-                class="bg-blue-500 border border-blue-500 p-1 px-3 select-none flex flex-row items-center gap-2 text-white hover:text-blue-500 hover:bg-white transition-colors ease-linear font-bold"
+                class="menu-button"
             >
                 <!-- Graph Toggle -->
                 Graph
@@ -317,12 +293,11 @@
                     />
                 </svg>
             </button>
-            <span
-                class="bg-blue-500 border border-blue-500 p-1 px-3 select-none flex flex-row items-center gap-2 text-white font-bold"
-            >
-                No. of Solutions:<b>{filtered_models.length}</b>
+            <span class="menu-item font-bold">
+                <span>No. of Solutions:</span>
+                <span class="text-blue-600">{filtered_models.length}</span>
             </span>
-            <span class="bg-blue-500 border border-blue-500 p-1 px-3 select-none flex flex-row items-center gap-2 text-white font-bold">
+            <span class="menu-button">
                 <a href="https://morpho-images.s3.us-east-1.amazonaws.com/assets/{project_metadata.project_name}/archive.zip">Download Data Zip</a>
             </span>
         </div>
@@ -356,7 +331,7 @@
                         tabindex="0"
                         onclick={() => set_project(model.id)}
                         onkeydown={() => set_project(model.id)}
-                        class="flex flex-col items-center p-2 border border-gray-200 cursor-pointer hover:bg-slate-200 transition ease-out"
+                        class="flex flex-col items-center p-2 border border-gray-200 cursor-pointer hover:bg-slate-200 transition ease-out bg-white/70"
                         title="Click to show details"
                     >
                         <LazyImagePlus
@@ -422,5 +397,13 @@
         scrollbar-color: #3b82f6 white;
 
         @apply h-full w-full p-4 overflow-scroll grid;
+    }
+
+    .menu-item {
+        @apply px-3 p-1 flex gap-4 rounded-lg bg-white shadow shadow-blue-400/30 select-none items-center border border-blue-600
+    }
+
+    .menu-button {
+        @apply px-3 p-1 flex gap-4 rounded-lg bg-white shadow shadow-blue-400/30 select-none items-center border border-blue-600 hover:bg-blue-600 hover:text-white active:shadow-none transition-colors font-bold
     }
 </style>

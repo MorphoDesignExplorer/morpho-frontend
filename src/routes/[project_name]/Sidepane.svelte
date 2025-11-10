@@ -9,6 +9,8 @@
   import type { ProjectOptions } from "$lib/types";
   import { env } from "$env/dynamic/public";
 
+  import CrossIcon from "$lib/icons/Cross.svelte"
+
   let display_options: Writable<DisplayOptions> = get_display_options();
 
   export let options: ProjectOptions;
@@ -77,23 +79,10 @@
       $display_options.sidepane = !$display_options.sidepane;
     }}
     bind:this={close_button}
-    class="flex items-center justify-center w-fit p-1 bg-white text-blue-500 border border-blue-500 hover:text-white hover:bg-blue-500 transition ease-in-out font-bold shadow-md"
+    class="menu-button w-fit"
     aria-label="Close Sidepane"
   >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke-width="1.5"
-      stroke="currentColor"
-      class="size-6"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        d="M6 18 18 6M6 6l12 12"
-      />
-    </svg>
+    <CrossIcon/>
   </button>
   <div id="solution-number" class="flex flex-row items-center my-2">
     <span class="text-xl font-semibold">Solution #{model.scoped_id}</span>
@@ -220,5 +209,9 @@
 
   .scroll-smooth {
     scroll-behavior: smooth;
+  }
+  
+  .menu-button {
+    @apply p-1 flex gap-4 rounded-lg bg-white shadow shadow-blue-400/30 select-none items-center border border-blue-600 hover:bg-blue-600 hover:text-white active:shadow-none transition-colors font-bold
   }
 </style>
