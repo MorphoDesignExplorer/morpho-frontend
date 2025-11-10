@@ -19,7 +19,6 @@ export function SubmitJson(getter: () => Object) {
     event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement },
   ) => {
     event.preventDefault();
-    console.log(JSON.stringify(getter()))
     const response = await fetch(event.currentTarget.action, {
       method: "POST",
       body: JSON.stringify(getter())

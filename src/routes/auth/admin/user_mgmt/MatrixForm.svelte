@@ -3,16 +3,20 @@
   import type { PageData } from "./$types";
   import Plus from "$lib/icons/Plus.svelte";
   import Minus from "$lib/icons/Minus.svelte";
+  import Hint from "$lib/components/Hint.svelte"
   import Fuse from "fuse.js";
 
   let {
     data = $bindable(),
     search_value,
+    lintingData
   }: {
-    data: PageData;
-    search_value: string;
+    data: PageData,
+    search_value: string,
+    lintingData: any // TODO add type signature for linting data
   } = $props();
 
+  // determines how long the role select element must be 
   const maxRoleLength = data.roles.reduce(
     (max, current) => Math.max(current.length, max),
     0,
@@ -23,37 +27,46 @@
   const maxProjectLength = data.projects
     .map((project) => project.project_name)
     .reduce((max, current) => Math.max(current.length, max), 0);
+
+  // determines how long the project select element must be 
   const projectSize = `width: ${Math.floor(maxProjectLength * 1.25)}rem`;
 
   function addRole(email: string): () => void {
     return () => {
-      const userIndex = data.matrix.findIndex((item) => item.email == email);
-      // TODO need a better default here... maybe an empty field that disables submit?
-      if (userIndex != -1) {
-        data.matrix[userIndex] = {
-          ...data.matrix[userIndex],
-          roles: [
-            ...data.matrix[userIndex].roles,
-            { email, role: "", project: "" },
-          ],
-        };
-      }
+      data.matrix = data.matrix.map(item => {
+        if (item.email === email) {
+          const new_item = { ...item, roles: [...item.roles, { email, role: "---", project: "---" }] }
+          return new_item;
+        } else {
+          return item;
+        }
+      })
     };
   }
 
   function removeRole(email: string, roleIdx: number) {
     return () => {
-      const userIndex = data.matrix.findIndex((item) => item.email == email);
-      if (userIndex != -1) {
-        data.matrix[userIndex] = {
-          ...data.matrix[userIndex],
-          roles: data.matrix[userIndex].roles.filter(
-            (_: any, idx: number) => idx != roleIdx,
-          ),
-        };
-      }
+      data.matrix = data.matrix.map(item => {
+        if (item.email === email) {
+          const new_item = { ...item, roles: item.roles.filter((_, idx) => idx != roleIdx) }
+          return new_item
+        } else {
+          return item
+        }
+      })
     };
   }
+
+  // TODO use FormLint typing
+  function getRoleLint(email: string, roleIdx: number): string | undefined {
+    return lintingData
+      ?.roleLints
+      ?.find( row => row.email == email)
+      ?.errors
+      ?.find(errorItem => errorItem.idx == roleIdx)
+  }
+
+  let hinter: Hint = $state();
 
   let fuseOptions = {
     isCaseSensitive: false,
@@ -71,25 +84,40 @@
   });
 </script>
 
+<Hint bind:this={hinter} />
+
 {#each filtered_matrix as user, user_idx}
   <table class="table-auto mx-auto w-3/4">
     <tbody>
       {#each user.roles as role, roleIdx}
-        <tr>
+        <tr class:text-red-600={getRoleLint(user.email, roleIdx) != undefined}>
           <td class="w-40"
             >{#if roleIdx == 0}{user.email}{/if}</td
           >
-          <td style={roleSize}>
-            <select class="w-full">
+          <!-- Role Selection -->
+          <td
+            style={roleSize}
+            class="px-2"
+            onmouseover={hinter.raise(getRoleLint(user.email, roleIdx)?.message)}
+            onmouseleave={hinter.dispose}
+          >
+            <select class="w-full" bind:value={user.roles[roleIdx].role}>
               {#each data.roles as role_name}
                 <option value={role_name} selected={role_name === role.role}
                   >{role_name}</option
                 >
               {/each}
+              <option value="---">---</option>
             </select>
           </td>
-          <td style={projectSize}>
-            <select class="w-full">
+          <!-- Project Selection -->
+          <td
+            style={projectSize}
+            class="px-2"
+            onmouseover={hinter.raise(getRoleLint(user.email, roleIdx)?.message)}
+            onmouseleave={hinter.dispose}
+          >
+            <select class="w-full" bind:value={user.roles[roleIdx].project}>
               {#each project_names as project_name}
                 <option
                   value={project_name}
@@ -97,11 +125,13 @@
                   >{project_name}</option
                 >
               {/each}
+              <option value="---">---</option>
             </select>
           </td>
+          <!-- Remove Button -->
           <td>
             <button
-              on:click={removeRole(user.email, roleIdx)}
+              onclick={removeRole(user.email, roleIdx)}
               type="button"
               class="bad-button flex items-center gap-2 w-28"
             >
@@ -114,9 +144,10 @@
         <td></td>
         <td></td>
         <td></td>
+        <!-- Add Button, at the end -->
         <td class="text-left">
           <button
-            on:click={addRole(user.email)}
+            onclick={addRole(user.email)}
             type="button"
             class="good-button flex items-center gap-2 w-28"
           >

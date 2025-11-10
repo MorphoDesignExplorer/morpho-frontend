@@ -88,12 +88,13 @@
         {#if projects_open}
         <ol class="ml-8" transition:fade={{"delay": 0, "duration": 100}}>
             {#each data.projects as project}
-                <li class="text-blue-600" class:font-bold={$page.params.id === project.project_name}>
+                <li class="text-blue-600 my-2" class:font-bold={$page.params.id === project.project_name}>
                     <a
                         target="_self"
                         href="/auth/admin/project/{project.project_name}/"
-                        >{project.options.display_name} ({project.project_name})</a
                     >
+                        {project.options.display_name} <span class="bg-white ml-2 p-1 rounded text-sm shadow-sm border border-gray-300">{project.project_name}</span>
+                    </a>
                 </li>
             {/each}
         </ol>

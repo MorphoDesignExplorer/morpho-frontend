@@ -1,26 +1,21 @@
 <script lang="ts">
   import MatrixForm from "./MatrixForm.svelte";
   import { MakeInvite } from "./invite/api";
-    import { SubmitJson } from "$lib/common";
+  import { SubmitJson } from "$lib/common";
 
-  let { data } = $props();
+  let { data, form } = $props();
 
   let invite_mail = $state("");
   let search_value = $state("");
+  let pageData = $state(data) // make received state mutable
 </script>
 
 <form
   class="flex min-h-full w-[90%] flex-col gap-3 pt-10"
   action="?/update"
   method="POST"
-  onsubmit={SubmitJson(() => data.matrix)}
+  onsubmit={SubmitJson(() => pageData.matrix )}
 >
-  <!--
-  <div class="form-group text-xl">
-    <span class="font-bold">Current Role:</span>
-    {data.role}
-  </div>
-  -->
   <div class="form-group flex-col">
     <p class="font-bold text-xl self-start">Invite collaborator via mail</p>
     <div class="flex w-full justify-between gap-1 items-center">
@@ -49,7 +44,7 @@
       placeholder="Search over email, role, project, etc..."
       bind:value={search_value}
     />
-    <MatrixForm {search_value} bind:data={data} />
+    <MatrixForm {search_value} bind:data={pageData} lintingData={form?.lintingData} />
   </div>
 </form>
 
