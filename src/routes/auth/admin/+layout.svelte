@@ -9,6 +9,7 @@
     import ProjectIcon from "$lib/icons/Project.svelte";
     import PersonIcon from "$lib/icons/Person.svelte";
     import LogoutIcon from "$lib/icons/Logout.svelte";
+    import HomeIcon from "$lib/icons/Home.svelte";
 
     interface Props {
         data: { projects: Project[]; documents: Document[] };
@@ -40,21 +41,29 @@
     >
         <span class="flex flex-col items-start">
             <h1 class="text-3xl font-extrabold">Welcome!</h1>
-            <br />
-            <p class="text-blue-600"><a href="/">Home</a></p>
+            <p class="font-bold">Current Role: {"hi!"}</p>
         </span>
         <a
-            href="/auth/logout/"
-            class="flex items-center gap-2 bg-blue-200 rounded-lg p-1 shadow-sm"
+            href="/"
+            class="navbar-item"
         >
-            <LogoutIcon className="min-w-8 max-w-8 rounded-lg bg-blue-400 text-blue-800 p-1"/>
+            <HomeIcon className="min-w-8 max-w-8 rounded-lg bg-blue-400 text-blue-800 p-1"/>
 
-            <h1 class="text-xl font-extrabold">Logout</h1>
+            <h1 class="text-xl font-extrabold">Home</h1>
         </a>
+        <form
+            action="/auth/logout/"
+            method="POST"
+        >
+            <button class="navbar-item w-full">
+                <LogoutIcon className="min-w-8 max-w-8 rounded-lg bg-blue-400 text-blue-800 p-1"/>
+                <h1 class="text-xl font-extrabold">Logout</h1>
+            </button>
+        </form>
         {#if true} <!--// TODO this needs to be filtered via the MID matrix-->
         <a
             href="/auth/admin/user_mgmt"
-            class="flex items-center gap-2 bg-blue-200 rounded-lg p-1 shadow-sm"
+            class="navbar-item"
         >
             <PersonIcon className="min-w-8 max-w-8 rounded-lg bg-blue-400 text-blue-800 p-1"/>
             <h1 class="text-xl font-extrabold">Collaborators</h1>
@@ -62,7 +71,7 @@
         {/if}
 
         <button class="flex flex-col gap-2" onclick={flip_projects}>
-            <span class="flex gap-2 items-center bg-blue-200 rounded-lg p-1 shadow-sm">
+            <span class="navbar-item">
                 <ProjectIcon className="min-w-8 max-w-8 rounded-lg bg-blue-400 text-blue-800 p-1"/>
                 <h1 class="text-xl font-extrabold">Projects</h1>
                 <span class="ml-auto px-3 transition-transform" class:rotate-180={projects_open}>
@@ -91,7 +100,7 @@
         {/if}
 
         
-        <button class="flex gap-2 items-center bg-blue-200 rounded-lg p-1 shadow-sm" onclick={flip_documents}>
+        <button class="navbar-item" onclick={flip_documents}>
             <PaperClip className="min-w-8 max-w-8 rounded-lg bg-blue-400 text-blue-800 p-1"/>
             <h1 class="text-xl font-extrabold">Documents</h1>
             <span class="ml-auto px-3 transition-transform" class:rotate-180={documents_open}>
@@ -123,7 +132,7 @@
 </div>
 
 <style>
-    .list-dashed-arrows {
-        list-style: "⇢ ";
+    .navbar-item {
+        @apply flex items-center gap-2 bg-blue-200 rounded-lg p-1 active:brightness-105
     }
 </style>
