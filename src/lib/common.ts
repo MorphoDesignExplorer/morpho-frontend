@@ -47,6 +47,14 @@ export function WrapFault<T>(job: (...params: any[]) => T, ...params: any[]): E.
   }
 }
 
+export async function WrapAsyncFault<T>(job: (...params: any[]) => Promise<T>, ...params: any[]): Promise<E.Either<T, Error>> {
+  try {
+    return E.right(await job(params))
+  } catch (error) {
+    return E.left(error as Error)
+  }
+}
+
 /**
 Given a function that takes a value and returns a result,
 Returns a function that takes a result and returns a result.

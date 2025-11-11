@@ -1,4 +1,4 @@
-import { type Project, type Role,  type UserDetails } from "$lib/types";
+import { type CollaborationMatrixForm, type Project, type Role,  type UserDetails } from "$lib/types";
 
 /**
  * Checks if the user has a set of permissions.
@@ -93,3 +93,13 @@ export function SortRoles(roles: Role[]): Role[] {
     return roles.sort(RoleCmp)
 }
 
+export function ToMatrixForm(users: UserDetails[]): CollaborationMatrixForm {
+  return users.map(user => ({
+    email: user.email,
+    roles: user.permissions.map(([projectName, role]) => ({
+      email: user.email,
+      role: role.role_name,
+      project: projectName
+    }))
+  }))
+}

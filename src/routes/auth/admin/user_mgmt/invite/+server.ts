@@ -1,7 +1,8 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { reportError } from "$lib/error";
 import { json } from '@sveltejs/kit';
-import { Option as O } from "effect";
+import { Option as O, Either as E } from "effect";
+import { CreateUser } from '$lib/database_update';
 
 export type InvitePostResponse = {
   status: "success" | "failure"
@@ -9,7 +10,7 @@ export type InvitePostResponse = {
 }
 
 export type InvitePostRequest = {
-  email: "string"
+  email: string
 }
 
 export const POST: RequestHandler = async ({ locals, request }) => {
@@ -17,13 +18,14 @@ export const POST: RequestHandler = async ({ locals, request }) => {
       return json({status: "failure", message: "Unauthorized"})
   }
 
-  try {
-    // TODO send email here
-    const wellFormedRequest: InvitePostRequest = await request.json();
-    console.log("mailing to", wellFormedRequest.email)
-    return json({status: "failure", message: "NOT IMPLEMENTED"})
-  } catch(e) {
-    reportError({locals})(e as Error);
-    return json({status: "failure", message: "Server error."})
-  }
+  const req = await request.json() as InvitePostRequest
+  return json(E.match(await CreateUser(req.email), {
+      onLeft(error) {
+          reportError({req})(error)
+          return {status: "failure", message: error.message}
+      },
+      onRight() {
+          return {status: "success", message: "Invite was sent to the email successfully."}
+      }
+  }))
 }

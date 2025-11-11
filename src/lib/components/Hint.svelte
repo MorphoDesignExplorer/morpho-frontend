@@ -3,19 +3,19 @@
   let popover: HTMLDivElement | undefined = $state();
   let popoverPosition: string = $state("");
 
-  export function raise(message) {
+  export function raise(message: string) {
     return (event: Event & { currentTarget: EventTarget & HTMLElement }) => {
       let boundingRect = event.currentTarget.getBoundingClientRect()
       if (message && popover) {
         popoverMessage = message;
-        popoverPosition = `top: ${boundingRect.top - boundingRect.height}px; left: ${boundingRect.left}px;`;
+        popoverPosition = `top: ${boundingRect.top - 1.5*boundingRect.height}px; left: ${boundingRect.left}px;`;
         popover.showPopover();
       }
     }
   }
 
   export function dispose() {
-    popover.hidePopover();
+    popover?.hidePopover();
   }
 </script>
 

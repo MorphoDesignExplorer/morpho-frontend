@@ -4,6 +4,7 @@ import { ENC_SECRET, ENVIRONMENT, PASS_SECRET } from "$lib/variables"
 import { Either as E, Option as O, pipe } from "effect";
 import { DbExec, DbQueryOne } from "./database";
 import { reportError } from "./error";
+import { andThenAsync } from "./common";
 
 /*
  *  Checks cookies to verify that the client holds a token.
@@ -136,26 +137,21 @@ export async function ResetPassword(token: string, password: string): Promise<bo
     const hashedPassword = crypto.createHash("sha512").update(password + await getPassSecret()).digest("base64");
     const email = details.email;
 
-    const result1 = await DbExec("UPDATE user SET password_hash = ? WHERE email = ?", hashedPassword, email);
-    if (E.isLeft(result1)) {
-      reportError({details, token})(result1.left);
-      return false;
-    }
+    const result = await pipe(
+      DbExec("BEGIN TRANSACTION"),
+      andThenAsync(async () => DbExec("UPDATE user SET password_hash = ? WHERE email = ?", hashedPassword, email)),
+      andThenAsync(async () => DbExec("DELETE FROM password_reset_tokens WHERE token = ?", token))
+    )
 
-    const result2 = await DbExec("DELETE FROM password_reset_tokens WHERE token = ?", token)
-    if (E.isLeft(result2)) {
-      reportError({details, token})(result2.left);
-      return false;
-    }
-
-    // Is there a more elegant way to do this? yes.
-    // use asyncfmap like this:
-    // const result = await pipe(
-    //   DbExec("UPDATE user SET password_hash = ? WHERE email = ?", hashedPassword, email),
-    //   asyncfmap(async () => DbExec("DELETE FROM password_reset_tokens WHERE token = ?", token)),
-    // )
-    // E.mapLeft(reportError({ token, email }))(result)
-    // but, this is not maintainable by anyone unfamiliar with functional programming.
+    await E.match(result, {
+      async onLeft(error) {
+        reportError({token, email})(error)
+        await DbExec("ROLLBACK")
+      },
+      async onRight() {
+        await DbExec("COMMIT");
+      }
+    })
 
     return true
   } else {

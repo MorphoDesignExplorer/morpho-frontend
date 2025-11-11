@@ -13,8 +13,6 @@
     CheckUserProperties,
     UserCanCollaborate,
     UserCanEditDocuments,
-    UserEditableProjects,
-    UserIsAdmin,
   } from "$lib/user";
 
   let { data, children } = $props();

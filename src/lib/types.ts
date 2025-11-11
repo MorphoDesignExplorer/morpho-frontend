@@ -181,3 +181,7 @@ export type UserDetails = {
     permissions: [string, Role][]
 }
 
+export type CollaborationMatrixForm = {
+    email: string,
+    roles: {email: string, role: string, project: string}[]
+}[]

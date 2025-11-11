@@ -1,5 +1,5 @@
 import sqlite3 from "sqlite3"
-import { open, type ISqlite } from "sqlite"
+import { open, Statement, type ISqlite } from "sqlite"
 import { Option as O, Either as E } from "effect";
 import { DB_FILE_PATH } from "$lib/variables";
 
@@ -10,6 +10,19 @@ export async function DbExec(query: string, ...params: any[]): Promise<E.Either<
         const response = await db.run(query, params);
         return E.right(response);
     } catch (err) {
+        if (!(err instanceof Error)) {
+            return E.left(new Error(err as any));
+        } else {
+            return E.left(err);
+        }
+    }
+}
+
+export async function DbPrepare(statement: string): Promise<E.Either<Statement, Error>> {
+    try {
+        const response = await db.prepare(statement)
+        return E.right(response)
+    } catch(err) {
         if (!(err instanceof Error)) {
             return E.left(new Error(err as any));
         } else {
