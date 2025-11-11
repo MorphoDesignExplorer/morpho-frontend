@@ -1,6 +1,6 @@
 import { Option as O, Either as E } from "effect";
 import { DbQueryAll, DbQueryOne, DbExec } from "./database";
-import type { Project, Document, Model, User, Role } from "./types";
+import type { Project, Document, Model, UserDetails, Role } from "./types";
 import { mergeDefaultOptions, DefaultRole } from "./types";
 import { reportError } from "./error";
 import { ParseJson } from "$lib/common";
@@ -174,7 +174,12 @@ Roles can sometimes have no projects associated with them, in the case of the Ad
 */
 export async function GetUserPermissions(email: string): Promise<[ProjectName | null, Role][]> {
     return E.match(
-        await DbQueryAll<{ project_name: string, permissions: string }[]>("SELECT user_roles.project_name, roles.permissions FROM user_roles, roles WHERE user_roles.email = ? AND roles.name = user_roles.role_name", email),
+        await DbQueryAll<
+            { project_name: string, permissions: string }[]
+        >(
+            "select u.project_name, r.permissions from user_roles as u, roles as r where u.role_name = r.name AND u.email = ?",
+            email
+        ),
         {
             onLeft(err) {
                 reportError({ email })(err);
@@ -182,16 +187,34 @@ export async function GetUserPermissions(email: string): Promise<[ProjectName | 
             },
             onRight(rows) {
                 return rows.map(row => [
-                        row.project_name,
-                        E.getOrElse(
-                            ParseJson(row.permissions),
-                            err => {
-                                reportError(row)(err);
-                                return DefaultRole();
-                            }
-                        )
-                    ]
-                )
+                    row.project_name,
+                    E.getOrElse(ParseJson(row.permissions), err => {
+                        reportError({row})(err)
+                        return DefaultRole()
+                    })
+                ])
+            }
+        }
+    )
+}
+
+export async function GetAllUsers(): Promise<UserDetails[]> {
+    // is this inefficient? yes, highly so.
+    // does this get the job done? also, yes.
+    return await E.match(
+        await DbQueryAll<{email: string}[]>("select email from user"),
+        {
+            onLeft(err) {
+                reportError({})(err);
+                return []
+            },
+            async onRight(emails) {
+                return await Promise.all(emails.map(async (email) => {
+                    return {
+                        email: email.email,
+                        permissions: await GetUserPermissions(email.email)
+                    } as UserDetails
+                }))
             }
         }
     )

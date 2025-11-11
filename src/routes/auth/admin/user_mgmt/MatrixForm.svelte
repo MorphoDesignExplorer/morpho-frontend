@@ -5,6 +5,7 @@
   import Minus from "$lib/icons/Minus.svelte";
   import Hint from "$lib/components/Hint.svelte"
   import Fuse from "fuse.js";
+    import type { FormLint } from "./+page.server";
 
   let {
     data = $bindable(),
@@ -13,23 +14,8 @@
   }: {
     data: PageData,
     search_value: string,
-    lintingData: any // TODO add type signature for linting data
+    lintingData: FormLint | undefined
   } = $props();
-
-  // determines how long the role select element must be 
-  const maxRoleLength = data.roles.reduce(
-    (max, current) => Math.max(current.length, max),
-    0,
-  );
-  const roleSize = `width: ${Math.floor(maxRoleLength * 1.25)}rem;`;
-
-  let project_names = data.projects.map((project) => project.project_name);
-  const maxProjectLength = data.projects
-    .map((project) => project.project_name)
-    .reduce((max, current) => Math.max(current.length, max), 0);
-
-  // determines how long the project select element must be 
-  const projectSize = `width: ${Math.floor(maxProjectLength * 1.25)}rem`;
 
   function addRole(email: string): () => void {
     return () => {
@@ -57,16 +43,17 @@
     };
   }
 
-  // TODO use FormLint typing
-  function getRoleLint(email: string, roleIdx: number): string | undefined {
+  $effect(() => console.log(lintingData))
+
+  function getRoleLint(email: string, roleIdx: number) {
     return lintingData
       ?.roleLints
-      ?.find( row => row.email == email)
+      ?.find(row => row.email == email)
       ?.errors
       ?.find(errorItem => errorItem.idx == roleIdx)
   }
 
-  let hinter: Hint = $state();
+  let hinter: Hint | undefined = $state();
 
   let fuseOptions = {
     isCaseSensitive: false,
@@ -86,75 +73,88 @@
 
 <Hint bind:this={hinter} />
 
+<table class="table-auto block my-4">
 {#each filtered_matrix as user, user_idx}
-  <table class="table-auto mx-auto w-3/4">
-    <tbody>
-      {#each user.roles as role, roleIdx}
-        <tr class:text-red-600={getRoleLint(user.email, roleIdx) != undefined}>
-          <td class="w-40"
-            >{#if roleIdx == 0}{user.email}{/if}</td
-          >
-          <!-- Role Selection -->
-          <td
-            style={roleSize}
-            class="px-2"
-            onmouseover={hinter.raise(getRoleLint(user.email, roleIdx)?.message)}
-            onmouseleave={hinter.dispose}
-          >
-            <select class="w-full" bind:value={user.roles[roleIdx].role}>
-              {#each data.roles as role_name}
-                <option value={role_name} selected={role_name === role.role}
-                  >{role_name}</option
-                >
-              {/each}
-              <option value="---">---</option>
-            </select>
-          </td>
-          <!-- Project Selection -->
-          <td
-            style={projectSize}
-            class="px-2"
-            onmouseover={hinter.raise(getRoleLint(user.email, roleIdx)?.message)}
-            onmouseleave={hinter.dispose}
-          >
-            <select class="w-full" bind:value={user.roles[roleIdx].project}>
-              {#each project_names as project_name}
-                <option
-                  value={project_name}
-                  selected={project_name === role.project}
-                  >{project_name}</option
-                >
-              {/each}
-              <option value="---">---</option>
-            </select>
-          </td>
-          <!-- Remove Button -->
-          <td>
-            <button
-              onclick={removeRole(user.email, roleIdx)}
-              type="button"
-              class="bad-button flex items-center gap-2 w-28"
-            >
-              <Minus /> Remove
-            </button>
-          </td>
-        </tr>
-      {/each}
-      <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <!-- Add Button, at the end -->
-        <td class="text-left">
+  <tbody>
+    {#if user.roles.length == 0}
+    <td>{user.email}</td>
+    <td></td>
+    <td></td>
+    <td>
+      <button
+          onclick={addRole(user.email)}
+          type="button"
+          class="good-button flex items-center gap-2 w-28"
+        >
+          <Plus /> Add Role
+        </button>
+      </td>
+    {:else}
+    {#each user.roles as role, roleIdx}
+      <tr class:text-red-600={getRoleLint(user.email, roleIdx) != undefined}>
+        <td>{#if roleIdx == 0}{user.email}{/if}</td>
+        <!-- Role Selection -->
+        <td
+          onmouseover={hinter.raise(getRoleLint(user.email, roleIdx)?.message)}
+          onmouseleave={hinter.dispose}
+        >
+          <select class="w-full" bind:value={user.roles[roleIdx].role}>
+            {#each 
+              data.assignableRoles
+              .find(proj => proj.project == role.project)?.roles || []
+              as assignableRole
+            }
+              <option value={assignableRole.role_name} selected={assignableRole.role_name === role.role}
+                >{assignableRole.role_name}</option
+              >
+            {/each}
+            <option value="---">---</option>
+          </select>
+        </td>
+        <!-- Project Selection -->
+        <td
+          onmouseover={hinter.raise(getRoleLint(user.email, roleIdx)?.message)}
+          onmouseleave={hinter.dispose}
+        >
+          <select class="w-full" bind:value={user.roles[roleIdx].project}>
+            {#each data.projects as project}
+              <option
+                value={project.project_name}
+                selected={project.project_name === role.project}
+                >{project.project_name}</option
+              >
+            {/each}
+            <option value="---">---</option>
+          </select>
+        </td>
+        <!-- Remove Button -->
+        <td>
           <button
-            onclick={addRole(user.email)}
+            onclick={removeRole(user.email, roleIdx)}
             type="button"
-            class="good-button flex items-center gap-2 w-28"
+            class="bad-button flex items-center gap-2 w-28"
           >
-            <Plus /> Add Role
+            <Minus /> Remove
           </button>
         </td>
       </tr>
-    </tbody>
-  </table>
+    {/each}
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <!-- Add Button, at the end -->
+      <td class="text-left">
+        <button
+          onclick={addRole(user.email)}
+          type="button"
+          class="good-button flex items-center gap-2 w-28"
+        >
+          <Plus /> Add Role
+        </button>
+      </td>
+    </tr>
+  {/if}
+  </tbody>
 {/each}
+</table>

@@ -155,6 +155,7 @@ export type Role = {
     can_update_document: boolean
     /// special permissions
     is_admin: boolean
+    is_original_project_owner: boolean
 };
 
 export function DefaultRole(): Role {
@@ -170,7 +171,13 @@ export function DefaultRole(): Role {
         can_create_document: false,
         can_delete_document: false,
         can_update_document: false,
-        is_admin: false
+        is_admin: false,
+        is_original_project_owner: false,
     }
+}
+
+export type UserDetails = {
+    email: string
+    permissions: [string, Role][]
 }
 

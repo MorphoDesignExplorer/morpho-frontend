@@ -6,6 +6,7 @@ import { reportError } from "$lib/error";
 import { GetUserPermissions } from "$lib/database_get";
 import { verifyToken } from "$lib/auth";
 import default_roles from "$lib/default-roles.json"
+import type { UserDetails } from "$lib/types";
 
 /// TODO: Dummy queries. Replace these with ones that actually work.
 export const init: ServerInit = async () => {
@@ -138,7 +139,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     const [email, ok] = await verifyToken(event.cookies.get("jwt") || "");
     if (ok) {
         const permissions = await GetUserPermissions(email);
-        event.locals.user = O.some({ email, permissions });
+        event.locals.user = O.some({ email, permissions }) as UserDetails;
     } else {
         event.locals.user = O.none()
     }

@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { writable, type Writable } from "svelte/store";
     import ProjectForm from "./ProjectForm.svelte";
     import type { AdminForm, Project } from "$lib/types";
     import { applyAction, deserialize } from "$app/forms";
@@ -8,6 +7,7 @@
     import { onMount } from "svelte";
     import type { ActionData } from "./$types";
     import Modal from "$lib/components/Modal.svelte";
+    import { UserIsAdmin } from "$lib/user";
 
     interface Props {
         data: { project: Project };
@@ -16,9 +16,9 @@
 
     let { data, form }: Props = $props();
 
-    const { project } = data;
+    const { project, role, user } = data;
 
-    let formData: Writable<Extract<AdminForm, { type: "project" }>> = writable({
+    let formData: Extract<AdminForm, { type: "project" }> = $state({
         type: "project",
         form: {
             project_name: project.project_name,
@@ -47,11 +47,11 @@
         },
     });
 
-    let formElement: HTMLFormElement = $state();
+    let formElement: HTMLFormElement | undefined = $state();
     const submitFunc = async () => {
-        const response = await fetch(formElement.action, {
+        const response = await fetch(formElement?.action || "", {
             method: "POST",
-            body: JSON.stringify($formData),
+            body: JSON.stringify(formData),
         });
         const result: ActionResult = deserialize(await response.text());
         if (result.type == "success") {
@@ -74,7 +74,7 @@
     let handleSubmit = async (
         event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement },
     ) => {
-        if ($formData.type == "project" || $formData.type == "document") {
+        if (formData.type == "project" || formData.type == "document") {
             event.preventDefault();
             await submitFunc();
         }
@@ -119,20 +119,24 @@
     <h1 class="text-3xl font-extrabold">
         <span class="text-blue-900">Admin</span> > Edit
         <span class="span underline decoration-dotted"
-            >{$formData.form.project_name}</span
+            >{formData.form.project_name}</span
         >
     </h1>
     <hr class="border-2 border-blue-500" />
     <div class="flex gap-2">
+        {#if role?.can_update_project_options || UserIsAdmin(user)}
         <button
             class="good-button"
             type="submit">Save</button
         >
+        {/if}
+        {#if role?.can_delete_project || UserIsAdmin(user)}
         <button
             class="bad-button"
             type="button"
             onclick={handleDelete}>Delete</button
         >
+        {/if}
     </div>
 
     {#if form && form.code}
@@ -145,7 +149,7 @@
         </span>
     {/if}
 
-    <ProjectForm form={$formData} {project} />
+    <ProjectForm form={formData} {project} />
 </form>
 
 <style>

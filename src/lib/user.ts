@@ -1,51 +1,95 @@
-import { type Role, type Project, DefaultRole } from "$lib/types";
-import { type ProjectName } from "$lib/database_get";
+import { type Project, type Role,  type UserDetails } from "$lib/types";
 
-type PermissionMatrix = [ProjectName, Role][]
-
-export function CanCreateProject(permissions: PermissionMatrix): boolean {
-  return permissions.reduce(
-    (prev, current) => (
-      prev || current[1].is_admin || current[1].can_create_project
-    ),
-    false
-  )
-}
-
-export function PermitFilteredProjects(permissions: PermissionMatrix, projects: Project[]): Project[] {
-  return projects.filter(project => {
-    permissions.reduce(
-      (prev, [project_name, role]) => (
-        prev || (project_name === project.project_name
-          && (
-            role.can_delete_project
-            || role.can_upload_to_project
-            || role.can_update_project_options
-            || role.is_admin
-          ))
-      ),
-      false
+/**
+ * Checks if the user has a set of permissions.
+ * Specify permissions by name.
+ */
+export function CheckUserProperties(user: UserDetails, ...properties: (keyof Omit<Role, "role_name">)[]): boolean {
+  const propertyFunc = ([_, role]: [any, Omit<Role, "role_name">]) => {
+    return properties.map(
+      key => role[key]
     )
-    return false;
-  })
+    .reduce(
+      (truthValue, current) => (
+        truthValue || (current === true)
+      ), false
+    )
+  };
+
+  return user
+    .permissions
+    .map(
+      propertyFunc
+    )
+    .find(
+      truthVal => truthVal === true
+    ) || false
 }
 
-export function CanManage(permissions: PermissionMatrix): boolean {
-  return permissions.reduce(
-    (prev, [_, role]) => (
-      prev || (role.is_admin, role.can_assign_user, role.can_invite, role.can_drop_user)
-    ), false);
-}
+export const UserCanCreateProject= (user: UserDetails) => CheckUserProperties(user, "can_create_project");
+export const UserIsAdmin = (user: UserDetails) => CheckUserProperties(user, "is_admin");
+export const UserCanCollaborate = (user: UserDetails) => CheckUserProperties(
+  user,
+  "can_assign_user",
+  "can_drop_user",
+  "can_invite",
+);
+export const UserCanEditDocuments = (user: UserDetails) => CheckUserProperties(
+  user, 
+  "can_create_document",
+  "can_update_document",
+  "can_delete_document"
+);
 
-export function GetProjectPermissions(permissions: PermissionMatrix, name: ProjectName): Role {
-  let project = permissions.filter(([project_name, role]) => (
-    project_name == name
-  )).at(0)
 
-  if (project) {
-    return project[1]
+export function UserEditableProjects(user: UserDetails, projects: Project[]): Project[] {
+  if (UserIsAdmin(user)) {
+    return projects
   } else {
-    return DefaultRole();
+    return projects.filter(project => RoleOnProject(user, project.project_name) != undefined)
   }
+}
+
+export function RoleOnProject(user: UserDetails, projectName: string): Role | undefined {
+  return user.permissions.find(
+    ([_projectName, role]) => projectName == _projectName
+  )?.[1]
+}
+
+export function RoleCmp(left: Role, right: Role)  {
+  const leftKeys = new Set((Object.keys(left) as (keyof Role)[]).filter(key => left[key] === true))
+  const rightKeys= new Set((Object.keys(right) as (keyof Role)[]).filter(key => right[key] === true))
+
+  if (leftKeys.isSubsetOf(rightKeys) && leftKeys.size < rightKeys.size) {
+      return -1;
+  } else if (rightKeys.isSubsetOf(leftKeys) && leftKeys.size < rightKeys.size) {
+      return 1;
+  } else {
+      return 0;
+  }
+}
+
+/** Check if the user has any permission that can manage this role on this project. */
+export function CanManageRole(user: UserDetails,  projectName: string, role: Role): boolean {
+  if (UserIsAdmin(user)) {
+    return true
+  }
+
+  const targetRole = user
+    .permissions
+    .find(
+      ([_projectName, _]) => projectName == _projectName
+    )
+    ?.[1]
+
+  if (targetRole) {
+    return RoleCmp(role, targetRole) == -1
+  } else {
+    return false
+  }
+}
+
+export function SortRoles(roles: Role[]): Role[] {
+    return roles.sort(RoleCmp)
 }
 
