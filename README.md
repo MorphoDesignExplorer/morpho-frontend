@@ -1,5 +1,3 @@
-# THIS IS AN AI-GENERATED DRAFT
-
 # Morpho Design Explorer - Frontend
 
 Welcome to the Morpho Design Explorer frontend repository! This document will help you get started with the project.
